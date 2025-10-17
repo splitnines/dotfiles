@@ -153,7 +153,8 @@ source /usr/share/doc/fzf/examples/completion.zsh
 # history hack
 fh() {
   local cmd
-  cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' --height=80% --border --no-reverse) || return
+  # cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' --height=80% --border --no-reverse) || return
+  cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ') || return
   cmd="${cmd#*[0-9]  }"
   eval "$cmd"
 }
@@ -165,9 +166,8 @@ fv() {
   file=$(find . -type f \
     | fzf --layout=reverse --border \
           --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-          --preview-window=up:40%:wrap \
+          --preview-window=up:50%:wrap \
           --prompt='Select file → ' \
-          --height=80% \
           --exit-0)
 
   # Open the selected file in Neovim if one was chosen
@@ -178,7 +178,12 @@ fv() {
 fcd() {
   local dir
   dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
-  [[ -n "$dir" ]] && cd "$dir"
+  [[ -z "$dir" ]] && return
+  if [[ "$dir" == "~"* ]]; then
+    cd "${dir/#\~/$HOME}" || echo "No such directory: $dir"
+  else
+    cd "$dir" || echo "No such directory: $dir"
+  fi
 }
 
 # ripgrep file search
@@ -187,9 +192,8 @@ fs() {
   file=$(rg --files-with-matches --no-heading --color=never "$1" 2>/dev/null \
     | fzf --layout=reverse --border \
           --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-          --preview-window=up:40%:wrap \
+          --preview-window=up:50%:wrap \
           --prompt="Search results → " \
-          --height=80% \
           --exit-0)
 
   [[ -n "$file" ]] && nvim "$file"
