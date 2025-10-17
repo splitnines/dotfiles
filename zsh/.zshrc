@@ -102,6 +102,7 @@ export VISUAL="nvim"
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 [ -f ~/.bash_aliases ] && source ~/.bash_aliases
+alias h="history"
 
 # Always show user@host as terminal title
 case $TERM in
@@ -150,7 +151,7 @@ source /usr/share/doc/fzf/examples/completion.zsh
 # fzf fucntions and bindings
 
 # history hack
-h() {
+fh() {
   local cmd
   cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' --height=80% --border --no-reverse) || return
   cmd="${cmd#*[0-9]  }"
