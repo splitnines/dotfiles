@@ -186,7 +186,7 @@ fs() {
   file=$(rg --files-with-matches --no-heading --color=never "$1" 2>/dev/null \
     | fzf --layout=reverse --border \
           --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-          --preview-window=right:60%:wrap \
+          --preview-window=up:40%:wrap \
           --prompt="Search results → " \
           --height=80% \
           --exit-0)
