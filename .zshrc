@@ -181,7 +181,7 @@ fcd() {
 }
 
 # ripgrep file search
-fsearch() {
+fs() {
   local file
   file=$(rg --files-with-matches --no-heading --color=never "$1" 2>/dev/null \
     | fzf --layout=reverse --border \
