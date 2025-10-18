@@ -181,6 +181,12 @@ alias ....="cd ../../.."
 alias ty="ttyper -w25 -lenglish1000"
 alias tl="/usr/bin/tmux ls"
 alias ta="/usr/bin/tmux attach -t"
+alias update="sudo apt update && sudo apt upgrade -y"
+alias p="/usr/bin/ping"
+alias t="/usr/bin/telnet"
+alias rcd="/usr/bin/script -m advanced"
+
+[ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
 
 case $TERM in
   xterm*|tmux*|screen*) print -Pn "\e]0;%n@%m\a" ;;
