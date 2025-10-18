@@ -214,7 +214,7 @@ fh() {
 
 fv() {
   local file
-  file=$(find . -type f | fzf --layout=reverse --border \
+  file=$(find . -type f | fzf \
     --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
     --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0)
   [[ -n "$file" ]] && nvim "$file"
@@ -230,7 +230,7 @@ fcd() {
 fs() {
   local file
   file=$(rg --files-with-matches --no-heading --color=never "$1" 2>/dev/null |
-    fzf --layout=reverse --border --prompt="Search results → " --exit-0)
+    fzf --prompt="Search results → " --exit-0)
   [[ -n "$file" ]] && nvim "$file"
 }
 
