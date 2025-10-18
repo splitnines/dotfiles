@@ -30,6 +30,11 @@ if $IS_WSL; then
     done
 fi
 
+# NVM setup
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Load nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
 export PATH
 
 # ===========================
@@ -52,9 +57,17 @@ git_branch() {
   printf " %s%s%s%s%s" "$RED" "$branch" "$ORANGE" "$dirty" "$RESET"
 }
 
+python_env() {
+  if [[ -n "$VIRTUAL_ENV" ]]; then
+    # Get just the environment name (final folder name)
+    local env_name=${VIRTUAL_ENV:t}
+    printf "%s[%s%s%s]-%s" "$GRAY" "$GREEN" "$env_name" "$GRAY" "$RESET"
+  fi
+}
+
 setopt PROMPT_SUBST
 build_prompt() {
-  PS1=$'\n'"${GRAY}[${BLUE}%n@%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
+  PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n@%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
 }
 
 autoload -Uz add-zsh-hook
@@ -208,7 +221,7 @@ function zle-line-finish { echo -ne "\e[2 q"; }
 zle -N zle-line-finish
 
 # ===========================
-# fzf integration
+# fzf integration and functiions
 # ===========================
 source /usr/share/doc/fzf/examples/key-bindings.zsh
 source /usr/share/doc/fzf/examples/completion.zsh
@@ -246,3 +259,97 @@ fk() {
   ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
 }
 
+# ===========================
+# Python environment helpers
+# ===========================
+E_RESET=$'\e[0m'
+E_RED=$'\e[38;2;214;4;4m'
+E_GREEN=$'\e[38;2;0;200;0m'
+E_BLUE=$'\e[38;2;68;157;252m'
+E_ORANGE=$'\e[38;2;250;156;5m'
+
+pyon() {
+  local venv_dir
+  if [[ -n "$1" ]]; then
+    venv_dir="$1"
+  elif [[ -d .venv ]]; then
+    venv_dir=".venv"
+  elif [[ -d venv ]]; then
+    venv_dir="venv"
+  else
+    echo "${E_RED}No virtual environment found.${E_RESET}"
+    return 1
+  fi
+
+  if [[ ! -f "$venv_dir/bin/activate" ]]; then
+    echo "${E_RED}No activate script found in $venv_dir/bin.${E_RESET}"
+    return 1
+  fi
+
+  echo "${E_GREEN}Activating Python environment: ${E_BLUE}${venv_dir}${E_RESET}"
+  source "$venv_dir/bin/activate"
+}
+
+pyoff() {
+  if [[ -z "$VIRTUAL_ENV" ]]; then
+    echo "${E_RED}No virtual environment active.${E_RESET}"
+    return 1
+  fi
+  if type deactivate &>/dev/null; then
+    deactivate
+    echo "${E_ORANGE}Python environment deactivated.${E_RESET}"
+  else
+    export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$VIRTUAL_ENV/bin" | paste -sd:)
+    unset VIRTUAL_ENV
+    echo "${E_ORANGE}Python environment deactivated (manual cleanup).${E_RESET}"
+  fi
+}
+
+# ===========================
+# Auto Python venv activation
+# ===========================
+autoload -Uz add-zsh-hook
+
+# Track which venv is active
+__ZSH_AUTO_VENV_CURRENT=""
+
+__zsh_auto_venv() {
+  local dir venv_path=""
+
+  # Walk up the directory tree to find .venv or venv
+  dir=$PWD
+  while [[ "$dir" != "/" ]]; do
+    if [[ -d "$dir/.venv" ]]; then
+      venv_path="$dir/.venv"
+      break
+    elif [[ -d "$dir/venv" ]]; then
+      venv_path="$dir/venv"
+      break
+    fi
+    dir=${dir:h}
+  done
+
+  # If found and not already active, activate it
+  if [[ -n "$venv_path" && "$VIRTUAL_ENV" != "$venv_path" ]]; then
+    # If another venv is active, deactivate first
+    if [[ -n "$VIRTUAL_ENV" && "$VIRTUAL_ENV" != "$venv_path" ]]; then
+      pyoff >/dev/null
+    fi
+    source "$venv_path/bin/activate" >/dev/null 2>&1 && \
+      __ZSH_AUTO_VENV_CURRENT="$venv_path" && \
+      echo "${E_GREEN}Activated Python venv:${E_BLUE} ${venv_path}${E_RESET}"
+    return
+  fi
+
+  # If no venv found but one is active, deactivate it
+  if [[ -z "$venv_path" && -n "$VIRTUAL_ENV" ]]; then
+    pyoff >/dev/null
+    __ZSH_AUTO_VENV_CURRENT=""
+  fi
+}
+
+# Hook runs every time you cd
+add-zsh-hook chpwd __zsh_auto_venv
+
+# Run once at shell startup too
+__zsh_auto_venv
