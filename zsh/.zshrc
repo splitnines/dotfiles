@@ -179,6 +179,8 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ty="ttyper -w25 -lenglish1000"
+alias tl="/usr/bin/tmux ls"
+alias ta="/usr/bin/tmux attach -t"
 
 case $TERM in
   xterm*|tmux*|screen*) print -Pn "\e]0;%n@%m\a" ;;
