@@ -1,205 +1,239 @@
-# If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+# ZSH config
 
-# Add to path
-export PATH="/usr/local/go/bin:$PATH"
+# ===========================
+# Path
+# ===========================
+typeset -U path PATH
+path=(
+  /usr/local/sbin
+  /usr/local/bin
+  /usr/sbin
+  /usr/bin
+  /sbin
+  /bin
+)
+[[ -d "$HOME/.local/bin" ]] && path=("$HOME/.local/bin" $path)
+[[ -d "$HOME/bin" ]] && path=("$HOME/bin" $path)
+[[ -d "$HOME/.cargo/bin" ]] && path=("$HOME/.cargo/bin" $path)
+[[ -d "/usr/local/go/bin" ]] && path=("/usr/local/go/bin" $path)
 
-# Path to your Oh My Zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+# Windows interop (optional, WSL only)
+if grep -qi "microsoft" /proc/version 2>/dev/null; then
+    IS_WSL=true
+else
+    IS_WSL=false
+fi
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time Oh My Zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="intheloop"
+if $IS_WSL; then
+    for p in /usr/lib/wsl/lib /mnt/c/WINDOWS/System32 /mnt/c/WINDOWS; do
+        [[ -d $p ]] && path+=($p)
+    done
+fi
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
+export PATH
 
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+# ===========================
+# Prompt
+# ===========================
+ESC=$'\e'
 
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-zstyle ':omz:update' mode reminder  # just remind me to update when it's time
+RESET="%{${ESC}[0m%}"
+GRAY="%{${ESC}[38;2;64;64;64m%}"
+GREEN="%{${ESC}[38;2;0;200;0m%}"
+BLUE="%{${ESC}[38;2;68;157;252m%}"
+RED="%{${ESC}[38;2;214;4;4m%}"
+ORANGE="%{${ESC}[38;2;250;156;5m%}"
 
-# Uncomment the following line to change how often to auto-update (in days).
-zstyle ':omz:update' frequency 13
+git_branch() {
+  local branch dirty
+  branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+  [[ -z $branch ]] && return
+  [[ -n $(git status --porcelain 2>/dev/null) ]] && dirty="*" || dirty=""
+  printf " %s%s%s%s%s" "$RED" "$branch" "$ORANGE" "$dirty" "$RESET"
+}
 
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
+setopt PROMPT_SUBST
+build_prompt() {
+  PS1=$'\n'"${GRAY}[${BLUE}%n@%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
+}
 
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd build_prompt
 
-# Uncomment the following line to disable auto-setting terminal title.
+# ===========================
+# History
+# ===========================
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+
+setopt HIST_IGNORE_DUPS       # Don't record duplicate commands
+setopt HIST_IGNORE_SPACE      # Skip commands starting with a space
+setopt HIST_REDUCE_BLANKS     # Remove extra blanks
+setopt INC_APPEND_HISTORY      # Append to history immediately
+setopt SHARE_HISTORY           # Share history across sessions
+setopt APPEND_HISTORY          # Don’t overwrite, just append
+setopt EXTENDED_HISTORY        # Record timestamps
+setopt HIST_EXPIRE_DUPS_FIRST  # Drop oldest duplicates when trimming
+setopt HIST_SAVE_NO_DUPS       # Don’t save duplicate entries
+
+alias h='fc -li 1'
+
+# Force write to history after each command
+autoload -Uz add-zsh-hook
+save_history_now() { fc -AI; }
+add-zsh-hook precmd save_history_now
+
+# ===========================
+# Completion
+# ===========================
+autoload -Uz compinit && compinit
+
+# Git completion & aliases
+if type git &>/dev/null; then
+  autoload -Uz bashcompinit && bashcompinit
+  source <(git completion zsh 2>/dev/null || git completion bash 2>/dev/null)
+fi
+
+# git aliases
+alias g='git'
+alias ga='git add .'
+alias gb='git branch'
+alias gc='git commit -m'
+alias gco='git checkout'
+alias gd='git diff'
+alias gu='git pull'
+alias gp='git push'
+alias gs='git status'
+
+# ===========================
+# Tab completion enhancements
+# ===========================
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' matcher-list 'r:|[._-]=* r:|=*'
+
+setopt AUTO_MENU
+setopt AUTO_LIST
+setopt COMPLETE_IN_WORD
+setopt ALWAYS_TO_END
+setopt AUTO_PARAM_SLASH
+setopt MENU_COMPLETE
+
+# ===========================
+# Autocorrection
+# ===========================
+setopt CORRECT
+setopt CORRECT_ALL
+
+# ===========================
+# Misc settings
+# ===========================
 DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
 ENABLE_CORRECTION="true"
 
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
+# pager settings
+PAGER="less"
+export LESS_TERMCAP_mb=$'\e[1;31m'      # Start bold red
+export LESS_TERMCAP_md=$'\e[1;32m'      # Start bold green
+export LESS_TERMCAP_me=$'\e[0m'         # End mode
+export LESS_TERMCAP_se=$'\e[0m'         # End standout mode
+export LESS_TERMCAP_so=$'\e[1;44;33m'   # Start standout (yellow text on blue background)
+export LESS_TERMCAP_ue=$'\e[0m'         # End underline
+export LESS_TERMCAP_us=$'\e[1;4;36m'    # Start underline cyan
 
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
-
-source $ZSH/oh-my-zsh.sh
-
-# User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='nvim'
-# else
-#   export EDITOR='nvim'
-# fi
+# The one, true editor
 export EDITOR="nvim"
 export VISUAL="nvim"
 
-# Compilation flags
-# export ARCHFLAGS="-arch $(uname -m)"
+# colors
+autoload -U colors and colors
 
-# Set personal aliases, overriding those provided by Oh My Zsh libs,
-# plugins, and themes. Aliases can be placed here, though Oh My Zsh
-# users are encouraged to define aliases within a top-level file in
-# the $ZSH_CUSTOM folder, with .zsh extension. Examples:
-# - $ZSH_CUSTOM/aliases.zsh
-# - $ZSH_CUSTOM/macos.zsh
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-[ -f ~/.bash_aliases ] && source ~/.bash_aliases
-alias h="history"
+# Better globbing
+setopt globdots
+setopt EXTENDED_GLOB
 
-# Always show user@host as terminal title
+# ===========================
+# Aliases
+# ===========================
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
+alias l='ls -CF'
+alias la='ls -A'
+alias ll='ls -AlFh'
+alias ls='ls --color=auto'
+alias path='echo "$PATH" | tr ":" "\n"'
+alias q='exit'
+alias le='less -X'
+alias bat='/usr/bin/batcat --style=plain'
+alias nv='/usr/bin/nvim'
+alias cal='ncal -C'
+alias python='/usr/bin/python3'
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias ty="ttyper -w25 -lenglish1000"
+
 case $TERM in
-  xterm*|tmux*|screen*)
-    print -Pn "\e]0;%n@%m\a"
-    ;;
+  xterm*|tmux*|screen*) print -Pn "\e]0;%n@%m\a" ;;
 esac
 
-# Add custom env variables
-if [ -f "$HOME/.myenv" ]; then
-    source "$HOME/.myenv"
-fi
+[ -f "$HOME/.myenv" ] && source "$HOME/.myenv"
 
-# Use vi mode
+# ===========================
+# Vi mode and cursor changes
+# ===========================
 bindkey -v
-
-# Change cursor shape depending on vi mode
 function zle-keymap-select {
-  if [[ $KEYMAP == vicmd ]]; then
-    # Normal mode (command mode)
-    echo -ne "\e[2 q"  # box cursor
-  else
-    # Insert mode
-    echo -ne "\e[6 q"  # bar cursor
-  fi
+  [[ $KEYMAP == vicmd ]] && echo -ne "\e[2 q" || echo -ne "\e[6 q"
 }
 zle -N zle-keymap-select
-
-# Ensure the cursor starts correctly when zsh loads
-function zle-line-init {
-  zle -K viins
-  echo -ne "\e[6 q"  # start with bar cursor
-}
+function zle-line-init { zle -K viins; echo -ne "\e[6 q"; }
 zle -N zle-line-init
-
-# Ensure cursor resets on exit
-function zle-line-finish {
-  echo -ne "\e[2 q"
-}
+function zle-line-finish { echo -ne "\e[2 q"; }
 zle -N zle-line-finish
 
-# fzf intergration
+# ===========================
+# fzf integration
+# ===========================
 source /usr/share/doc/fzf/examples/key-bindings.zsh
 source /usr/share/doc/fzf/examples/completion.zsh
 
-# fzf fucntions and bindings
-
-# history hack
 fh() {
   local cmd
-  # cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' --height=80% --border --no-reverse) || return
-  cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ') || return
-  cmd="${cmd#*[0-9]  }"
+  cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' | sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
   eval "$cmd"
 }
 
-# Preview files and open selected file in nvim
 fv() {
   local file
-  # file=$(find . -maxdepth 1 -type f \
-  file=$(find . -type f \
-    | fzf --layout=reverse --border \
-          --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-          --preview-window=up:50%:wrap \
-          --prompt='Select file → ' \
-          --exit-0)
-
-  # Open the selected file in Neovim if one was chosen
+  file=$(find . -type f | fzf --layout=reverse --border \
+    --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
+    --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0)
   [[ -n "$file" ]] && nvim "$file"
 }
 
-# Directory jumping
 fcd() {
   local dir
   dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
   [[ -z "$dir" ]] && return
-  if [[ "$dir" == "~"* ]]; then
-    cd "${dir/#\~/$HOME}" || echo "No such directory: $dir"
-  else
-    cd "$dir" || echo "No such directory: $dir"
-  fi
+  [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
 }
 
-# ripgrep file search
 fs() {
   local file
-  file=$(rg --files-with-matches --no-heading --color=never "$1" 2>/dev/null \
-    | fzf --layout=reverse --border \
-          --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-          --preview-window=up:50%:wrap \
-          --prompt="Search results → " \
-          --exit-0)
-
+  file=$(rg --files-with-matches --no-heading --color=never "$1" 2>/dev/null |
+    fzf --layout=reverse --border --prompt="Search results → " --exit-0)
   [[ -n "$file" ]] && nvim "$file"
 }
 
-# kill processes
 fk() {
   ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
 }
+
