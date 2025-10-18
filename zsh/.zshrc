@@ -204,6 +204,7 @@ zle -N zle-line-finish
 # ===========================
 source /usr/share/doc/fzf/examples/key-bindings.zsh
 source /usr/share/doc/fzf/examples/completion.zsh
+export FZF_DEFAULT_OPTS='--height=100% --border'
 
 fh() {
   local cmd
