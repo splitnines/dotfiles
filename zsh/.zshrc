@@ -255,6 +255,23 @@ fs() {
   [[ -n "$file" ]] && nvim "$file"
 }
 
+fsa() {
+  local file
+  file=$(find / \
+    -path /proc -prune -o \
+    -path /sys -prune -o \
+    -path /dev -prune -o \
+    -path /run -prune -o \
+    -path /tmp -prune -o \
+    -path /var/lib -prune -o \
+    -path /var/run -prune -o \
+    -path /snap -prune -o \
+    -type f -readable -print 2>/dev/null | \
+    fzf --prompt='Search all files → ')
+
+  [[ -n "$file" ]] && nvim "$file"
+}
+
 fk() {
   ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
 }
