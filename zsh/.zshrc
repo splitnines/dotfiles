@@ -129,6 +129,7 @@ zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}:ma=48;5;238;38;5;229"
 zstyle ':completion:*' matcher-list 'r:|[._-]=* r:|=*'
 
 setopt AUTO_MENU
