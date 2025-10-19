@@ -69,8 +69,9 @@ setopt PROMPT_SUBST
 build_prompt() {
   PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n@%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
 }
+unsetopt PROMPT_CR
+unsetopt PROMPT_SP
 
-PROMPT="$ "
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd build_prompt
 
