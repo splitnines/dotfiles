@@ -233,6 +233,40 @@ function zle-line-finish { echo -ne "\e[2 q"; }
 zle -N zle-line-finish
 
 # ===========================
+# SSH Agent Loader
+# ===========================
+# SSH_ENV="$HOME/.ssh/agent_env"
+# SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.zsh"
+#
+# if [[ -x "$SSH_BOOTSTRAP" ]]; then
+#     # Run the script if agent file missing or invalid
+#     if [[ ! -f "$SSH_ENV" ]] || ! grep -q "SSH_AUTH_SOCK" "$SSH_ENV"; then
+#         # "$SSH_BOOTSTRAP" /dev/null
+#         "$SSH_BOOTSTRAP"
+#     fi
+#
+#     # Load environment from the file (if it exists)
+#     if [[ -f "$SSH_ENV" ]]; then
+#         source "$SSH_ENV" >/dev/null
+#
+#         # If agent PID is stale, restart
+#         if ! kill -0 "$SSH_AGENT_PID" 2>/dev/null; then
+#             "$SSH_BOOTSTRAP" >/dev/null
+#             source "$SSH_ENV" >/dev/null
+#         fi
+#     fi
+# fi
+SSH_ENV="$HOME/.ssh/agent_env"
+SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.zsh"
+
+if [[ -x "$SSH_BOOTSTRAP" ]]; then
+    # Run the bootstrap script to ensure the agent is started/reused
+    "$SSH_BOOTSTRAP"
+    # Then load its environment variables into this shell
+    [[ -f "$SSH_ENV" ]] && source "$SSH_ENV" >/dev/null
+fi
+
+# ===========================
 # fzf integration and functiions
 # ===========================
 source /usr/share/doc/fzf/examples/key-bindings.zsh
