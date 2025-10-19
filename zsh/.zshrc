@@ -115,8 +115,8 @@ alias gb='git branch'
 alias gc='git commit -m'
 alias gco='git checkout'
 alias gd='git diff'
-alias gu='git pull'
-alias gp='git push'
+alias pull='git pull'
+alias push='git push'
 alias gs='git status'
 
 # ===========================
