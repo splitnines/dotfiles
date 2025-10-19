@@ -55,6 +55,13 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "markdown", "text" },
+  callback = function()
+    require("ibl").setup_buffer(0, { enabled = false })
+  end,
+})
+
 -- ===========================
 -- Keymaps
 -- ===========================
@@ -116,7 +123,7 @@ require("lazy").setup({
     -- Utility plugins
     { "tpope/vim-sleuth" },
     { "lukas-reineke/virt-column.nvim", opts = {} },
-    -- { "lewis6991/gitsigns.nvim", opts = {} },
+    -- git status in the gutter
     {
       "lewis6991/gitsigns.nvim",
       event = { "BufReadPre", "BufNewFile" },
@@ -156,27 +163,30 @@ require("lazy").setup({
       end,
     },
 
+    -- Fix language filter in Mason
     {
       "stevearc/dressing.nvim",
       opts = {},
       event = "VeryLazy",
     },
 
+    -- Auto close brackets
     {
       "windwp/nvim-autopairs",
       event = "InsertEnter",
       config = true, -- or a function to customize settings
     },
 
+    -- Vertical lines at indent levels
     {
       "lukas-reineke/indent-blankline.nvim",
       main = "ibl",
       opts = {
         indent = {
-          char = "│", -- character for vertical lines
+          char = "│",
         },
         scope = {
-          enabled = true, -- highlights current context
+          enabled = true,
           show_start = true,
           show_end = false,
         },
@@ -256,7 +266,6 @@ require("lazy").setup({
         "WhoIsSethDaniel/mason-tool-installer.nvim",
 
         -- Useful status updates for LSP.
-        -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
         { "j-hui/fidget.nvim", opts = {} },
 
         -- Allows extra capabilities provided by nvim-cmp
