@@ -3,7 +3,7 @@
 # SSH Agent Bootstrap
 # ====================================
 #
-# Place in $HOME/.ssh/ directory
+# stow in $HOME/.ssh/
 
 SSH_ENV="$HOME/.ssh/agent_env"
 
