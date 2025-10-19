@@ -162,6 +162,12 @@ require("lazy").setup({
       event = "VeryLazy",
     },
 
+    {
+      "windwp/nvim-autopairs",
+      event = "InsertEnter",
+      config = true, -- or a function to customize settings
+    },
+
     -- File explorer (fixed)
     {
       "nvim-neo-tree/neo-tree.nvim",
