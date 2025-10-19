@@ -1,4 +1,4 @@
----@meta
+--@meta
 ---@diagnostic disable: undefined-field
 
 -- Define once, globally available
@@ -35,7 +35,7 @@ end)
 -- FileType-specific Settings
 -- ===========================
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "c", "cpp", "python", "markdown" },
+  pattern = { "c", "cpp", "python" },
   callback = function()
     vim.opt_local.colorcolumn = "79"
     vim.opt_local.shiftwidth = 4
@@ -55,6 +55,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- Turn off vertical lines at indents
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "markdown", "text" },
   callback = function()
@@ -145,6 +146,7 @@ require("lazy").setup({
       },
     },
 
+    -- Show pending keybinds
     {
       "folke/which-key.nvim",
       event = "VimEnter",
@@ -154,16 +156,59 @@ require("lazy").setup({
         wk.setup({
           plugins = { spelling = true },
           replace = { ["<leader>"] = "SPC", ["<space>"] = "SPC" },
+          icons = {
+            -- set icon mappings to true if you have a Nerd Font
+            mappings = vim.g.have_nerd_font,
+            -- if using a Nerd Font, use default icons
+            keys = vim.g.have_nerd_font and {} or {
+              Up = "<Up> ",
+              Down = "<Down> ",
+              Left = "<Left> ",
+              Right = "<Right> ",
+              C = "<C-…> ",
+              M = "<M-…> ",
+              D = "<D-…> ",
+              S = "<S-…> ",
+              CR = "<CR> ",
+              Esc = "<Esc> ",
+              ScrollWheelDown = "<ScrollWheelDown> ",
+              ScrollWheelUp = "<ScrollWheelUp> ",
+              NL = "<NL> ",
+              BS = "<BS> ",
+              Space = "<Space> ",
+              Tab = "<Tab> ",
+              F1 = "<F1>",
+              F2 = "<F2>",
+              F3 = "<F3>",
+              F4 = "<F4>",
+              F5 = "<F5>",
+              F6 = "<F6>",
+              F7 = "<F7>",
+              F8 = "<F8>",
+              F9 = "<F9>",
+              F10 = "<F10>",
+              F11 = "<F11>",
+              F12 = "<F12>",
+            },
+          },
         })
 
         wk.add({
+          -- key groups
           { "<leader>", group = "Leader", mode = { "n", "v" } },
           { "<C-w>", group = "Windows", mode = { "n" } },
+          { "<leader>c", group = "[C]ode", mode = { "n", "x" } },
+          { "<leader>d", group = "[D]ocument" },
+          { "<leader>r", group = "[R]ename" },
+          { "<leader>s", group = "[S]earch" },
+          { "<leader>w", group = "[W]orkspace" },
+          { "<leader>t", group = "[T]oggle" },
+          { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
         })
       end,
     },
 
-    -- Fix language filter in Mason
+    -- Fix language filter window in Mason
     {
       "stevearc/dressing.nvim",
       opts = {},
@@ -174,7 +219,7 @@ require("lazy").setup({
     {
       "windwp/nvim-autopairs",
       event = "InsertEnter",
-      config = true, -- or a function to customize settings
+      config = true,
     },
 
     -- Vertical lines at indent levels
@@ -193,7 +238,7 @@ require("lazy").setup({
       },
     },
 
-    -- File explorer (fixed)
+    -- File explorer
     {
       "nvim-neo-tree/neo-tree.nvim",
       branch = "v3.x",
@@ -220,26 +265,86 @@ require("lazy").setup({
     {
       "nvim-telescope/telescope.nvim",
       branch = "0.1.x",
-      dependencies = { "nvim-lua/plenary.nvim" },
-      config = function()
-        local builtin = require("telescope.builtin")
-        -- require("telescope").setup({})
-        require("telescope").setup({
+      event = "VeryLazy",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        {
+          "nvim-telescope/telescope-fzf-native.nvim",
+          build = "make",
+          cond = function()
+            return vim.fn.executable("make") == 1
+          end,
+        },
+        "nvim-telescope/telescope-ui-select.nvim",
+        { "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
+      },
+
+      opts = function()
+        local actions = require("telescope.actions")
+        local themes = require("telescope.themes")
+
+        return {
           defaults = {
             mappings = {
               i = {
-                ["<esc>"] = require("telescope.actions").close,
-              },
-              n = {
-                ["<esc>"] = require("telescope.actions").close,
+                ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist,
+                ["<Esc>"] = actions.close,
               },
             },
+            layout_strategy = "flex",
+            layout_config = {
+              prompt_position = "bottom",
+            },
+            sorting_strategy = "descending",
           },
-        })
-        vim.keymap.set("n", "<leader>sf", builtin.find_files)
-        vim.keymap.set("n", "<leader>sg", builtin.live_grep)
-        vim.keymap.set("n", "<leader>sb", builtin.buffers)
-        vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
+          extensions = {
+            ["ui-select"] = themes.get_dropdown(),
+          },
+        }
+      end,
+
+      config = function(_, opts)
+        local telescope = require("telescope")
+        telescope.setup(opts)
+
+        -- Load optional extensions safely
+        pcall(telescope.load_extension, "fzf")
+        pcall(telescope.load_extension, "ui-select")
+
+        local builtin = require("telescope.builtin")
+
+        -- Keymaps
+        local map = vim.keymap.set
+        map("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
+        map("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
+        map("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
+        map("n", "<leader>ss", builtin.builtin, { desc = "[S]earch [S]elect" })
+        map("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
+        map("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
+        map("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
+        map("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
+        map("n", "<leader>s.", builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+        map("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
+
+        map("n", "<leader>/", function()
+          builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+            winblend = 10,
+            previewer = false,
+            layout_config = { prompt_position = "bottom" },
+            sorting_strategy = "descending",
+          }))
+        end, { desc = "[/] Fuzzily search in current buffer" })
+
+        map("n", "<leader>s/", function()
+          builtin.live_grep({
+            grep_open_files = true,
+            prompt_title = "Live Grep in Open Files",
+          })
+        end, { desc = "[S]earch [/] in Open Files" })
+
+        map("n", "<leader>sn", function()
+          builtin.find_files({ cwd = vim.fn.stdpath("config") })
+        end, { desc = "[S]earch [N]eovim config files" })
       end,
     },
 
@@ -371,6 +476,7 @@ require("lazy").setup({
       end,
     },
 
+    -- ChatGPT plugin
     {
       "jackMort/ChatGPT.nvim",
       cond = function()
@@ -419,9 +525,6 @@ require("lazy").setup({
         vim.cmd.hi("Comment gui=none")
       end,
     },
-
-    -- To-do highlights
-    { "folke/todo-comments.nvim", dependencies = { "nvim-lua/plenary.nvim" }, opts = { signs = false } },
   },
 })
 
@@ -445,26 +548,33 @@ vim.diagnostic.config({
 -- ===========================
 -- Lint Toggle
 -- ===========================
-local lint_disabled = {}
-vim.api.nvim_create_user_command("ToggleLint", function()
-  local bufnr = vim.api.nvim_get_current_buf()
-  if lint_disabled[bufnr] then
-    lint_disabled[bufnr] = false
-    vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.diagnostic.on_publish_diagnostics
-    print("Diagnostics enabled")
-  else
-    lint_disabled[bufnr] = true
-    local orig = vim.lsp.handlers["textDocument/publishDiagnostics"]
-    vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err, result, ctx, config)
-      if vim.uri_to_bufnr(result.uri) == bufnr then
-        return
+---@diagnostic disable: duplicate-set-field
+do
+  local lint_disabled = {}
+  local orig_publish_diagnostics = vim.lsp.handlers["textDocument/publishDiagnostics"]
+
+  vim.api.nvim_create_user_command("ToggleLint", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+
+    if lint_disabled[bufnr] then
+      -- Re-enable diagnostics
+      lint_disabled[bufnr] = false
+      vim.lsp.handlers["textDocument/publishDiagnostics"] = orig_publish_diagnostics
+      print("Diagnostics enabled")
+    else
+      -- Disable diagnostics for this buffer
+      lint_disabled[bufnr] = true
+      vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err, result, ctx, config)
+        if vim.uri_to_bufnr(result.uri) == bufnr then
+          return
+        end
+        return orig_publish_diagnostics(err, result, ctx, config)
       end
-      return orig(err, result, ctx, config)
+      vim.diagnostic.reset(nil, bufnr)
+      print("Diagnostics disabled")
     end
-    vim.diagnostic.reset(nil, bufnr)
-    print("Diagnostics disabled")
-  end
-end, {})
+  end, {})
+end
 
 -- ===========================
 -- Misc Fixes

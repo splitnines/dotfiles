@@ -49,17 +49,26 @@ BLUE="%{${ESC}[38;2;68;157;252m%}"
 RED="%{${ESC}[38;2;214;4;4m%}"
 ORANGE="%{${ESC}[38;2;250;156;5m%}"
 
+# add git dirty branch indication to prompt
 git_branch() {
   local branch dirty
   branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
   [[ -z $branch ]] && return
-  [[ -n $(git status --porcelain 2>/dev/null) ]] && dirty="*" || dirty=""
+
+  local dirty_icon="⚡"
+
+  if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
+    dirty="$dirty_icon"
+  else
+    dirty=""
+  fi
+
   printf " %s%s%s%s%s" "$RED" "$branch" "$ORANGE" "$dirty" "$RESET"
 }
 
+# add python venv indication to prompt
 python_env() {
   if [[ -n "$VIRTUAL_ENV" ]]; then
-    # Get just the environment name (final folder name)
     local env_name=${VIRTUAL_ENV:t}
     printf "%s[%s%s%s]-%s" "$GRAY" "$GREEN" "$env_name" "$GRAY" "$RESET"
   fi
