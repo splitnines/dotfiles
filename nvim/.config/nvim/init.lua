@@ -168,6 +168,21 @@ require("lazy").setup({
       config = true, -- or a function to customize settings
     },
 
+    {
+      "lukas-reineke/indent-blankline.nvim",
+      main = "ibl",
+      opts = {
+        indent = {
+          char = "│", -- character for vertical lines
+        },
+        scope = {
+          enabled = true, -- highlights current context
+          show_start = true,
+          show_end = false,
+        },
+      },
+    },
+
     -- File explorer (fixed)
     {
       "nvim-neo-tree/neo-tree.nvim",
