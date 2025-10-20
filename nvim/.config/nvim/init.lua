@@ -668,7 +668,28 @@ require("lazy").setup({
             lualine_a = { "mode" },
             lualine_b = { "branch", "diff", "diagnostics" },
             lualine_c = { { "filename", path = 2 } }, -- path=1 shows relative, path=2 shows full
-            lualine_x = { "encoding", "fileformat", "filetype" },
+            lualine_x = {
+
+              -- Add search match indicator
+              function()
+                if vim.v.hlsearch == 0 then
+                  return ""
+                end
+
+                local ok, result = pcall(vim.fn.searchcount, { maxcount = 0 })
+                if not ok or not result or result.total == 0 then
+                  return ""
+                end
+
+                local current = result.current or 0
+                local total = result.total or 0
+                return string.format("%d/%d", current, total)
+              end,
+
+              "encoding",
+              "fileformat",
+              "filetype",
+            },
             lualine_y = {
               function()
                 local line_count = vim.api.nvim_buf_line_count(0)
