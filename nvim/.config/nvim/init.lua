@@ -270,15 +270,66 @@ require("lazy").setup({
         local fb_actions = require("telescope").extensions.file_browser.actions
         local actions = require("telescope.actions")
 
+        -- telescope.setup({
+        --   extensions = {
+        --     file_browser = {
+        --       hijack_netrw = true,
+        --       hidden = true,
+        --       grouped = true,
+        --       respect_gitignore = false,
+        --       -- prompt_title = vim.loop.cwd(),
+        --       initial_mode = "normal", -- start in insert so you can type immediately
+        --       mappings = {
+        --         ["n"] = {
+        --           ["h"] = fb_actions.goto_parent_dir,
+        --           ["l"] = fb_actions.open,
+        --           ["N"] = fb_actions.create,
+        --           ["r"] = fb_actions.rename,
+        --           ["d"] = fb_actions.remove,
+        --           ["y"] = fb_actions.copy,
+        --           ["m"] = fb_actions.move,
+        --         },
+        --         ["i"] = {
+        --           ["<CR>"] = function(prompt_bufnr)
+        --             local entry = require("telescope.actions.state").get_selected_entry()
+        --             if entry and entry.path and vim.fn.isdirectory(entry.path) == 1 then
+        --               fb_actions.goto_parent_dir(prompt_bufnr) -- refresh picker in that directory
+        --               telescope.extensions.file_browser.file_browser({
+        --                 path = entry.path,
+        --                 select_buffer = true,
+        --               })
+        --             else
+        --               actions.select_default(prompt_bufnr)
+        --             end
+        --           end,
+        --           ["<C-h>"] = fb_actions.goto_parent_dir,
+        --         },
+        --       },
+        --     },
+        --   },
+        -- })
+        local telescope = require("telescope")
+        local actions = require("telescope.actions")
+        local fb_actions = require("telescope").extensions.file_browser.actions
+
         telescope.setup({
+          defaults = {
+            path_display = function(_, path)
+              local max_width = 40 -- adjust for your terminal width
+              if #path <= max_width then
+                return path
+              end
+              return path:sub(1, max_width - 3) .. "…"
+            end,
+          },
+
           extensions = {
             file_browser = {
               hijack_netrw = true,
               hidden = true,
               grouped = true,
               respect_gitignore = false,
-              -- prompt_title = vim.loop.cwd(),
-              initial_mode = "normal", -- start in insert so you can type immediately
+              initial_mode = "normal",
               mappings = {
                 ["n"] = {
                   ["h"] = fb_actions.goto_parent_dir,
@@ -293,7 +344,7 @@ require("lazy").setup({
                   ["<CR>"] = function(prompt_bufnr)
                     local entry = require("telescope.actions.state").get_selected_entry()
                     if entry and entry.path and vim.fn.isdirectory(entry.path) == 1 then
-                      fb_actions.goto_parent_dir(prompt_bufnr) -- refresh picker in that directory
+                      fb_actions.goto_parent_dir(prompt_bufnr)
                       telescope.extensions.file_browser.file_browser({
                         path = entry.path,
                         select_buffer = true,
