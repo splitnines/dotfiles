@@ -631,20 +631,6 @@ require("lazy").setup({
 })
 
 -- ===========================
--- Telescope Mouse Behavior Fix
--- ===========================
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "TelescopePrompt", "TelescopeResults" },
-  desc = "Prevent Telescope from closing when clicking with mouse",
-  callback = function()
-    vim.schedule(function()
-      -- Disable mouse input only for Telescope prompt/results
-      vim.opt_local.mouse = ""
-    end)
-  end,
-})
-
--- ===========================
 -- Visual Tweaks
 -- ===========================
 vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#010101" })
