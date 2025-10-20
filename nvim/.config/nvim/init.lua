@@ -266,48 +266,10 @@ require("lazy").setup({
       "nvim-telescope/telescope-file-browser.nvim",
       dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
       config = function()
-        local telescope = require("telescope")
-        local fb_actions = require("telescope").extensions.file_browser.actions
-        local actions = require("telescope.actions")
+        -- local telescope = require("telescope")
+        -- local fb_actions = require("telescope").extensions.file_browser.actions
+        -- local actions = require("telescope.actions")
 
-        -- telescope.setup({
-        --   extensions = {
-        --     file_browser = {
-        --       hijack_netrw = true,
-        --       hidden = true,
-        --       grouped = true,
-        --       respect_gitignore = false,
-        --       -- prompt_title = vim.loop.cwd(),
-        --       initial_mode = "normal", -- start in insert so you can type immediately
-        --       mappings = {
-        --         ["n"] = {
-        --           ["h"] = fb_actions.goto_parent_dir,
-        --           ["l"] = fb_actions.open,
-        --           ["N"] = fb_actions.create,
-        --           ["r"] = fb_actions.rename,
-        --           ["d"] = fb_actions.remove,
-        --           ["y"] = fb_actions.copy,
-        --           ["m"] = fb_actions.move,
-        --         },
-        --         ["i"] = {
-        --           ["<CR>"] = function(prompt_bufnr)
-        --             local entry = require("telescope.actions.state").get_selected_entry()
-        --             if entry and entry.path and vim.fn.isdirectory(entry.path) == 1 then
-        --               fb_actions.goto_parent_dir(prompt_bufnr) -- refresh picker in that directory
-        --               telescope.extensions.file_browser.file_browser({
-        --                 path = entry.path,
-        --                 select_buffer = true,
-        --               })
-        --             else
-        --               actions.select_default(prompt_bufnr)
-        --             end
-        --           end,
-        --           ["<C-h>"] = fb_actions.goto_parent_dir,
-        --         },
-        --       },
-        --     },
-        --   },
-        -- })
         local telescope = require("telescope")
         local actions = require("telescope.actions")
         local fb_actions = require("telescope").extensions.file_browser.actions
@@ -330,7 +292,7 @@ require("lazy").setup({
               grouped = true,
               respect_gitignore = false,
               initial_mode = "normal",
-              previewer = false,
+              previewer = true,
               display_stat = false,
               mappings = {
                 ["n"] = {
@@ -413,7 +375,7 @@ require("lazy").setup({
           },
           pickers = {
             buffers = {
-              previewer = false,
+              previewer = true,
             },
           },
           extensions = {
