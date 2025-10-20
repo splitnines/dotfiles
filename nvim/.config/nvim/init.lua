@@ -409,6 +409,11 @@ require("lazy").setup({
             },
             sorting_strategy = "descending",
           },
+          pickers = {
+            buffers = {
+              previewer = false,
+            },
+          },
           extensions = {
             ["ui-select"] = themes.get_dropdown(),
           },
