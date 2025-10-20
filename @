@@ -315,7 +315,7 @@ require("lazy").setup({
         telescope.setup({
           defaults = {
             path_display = function(_, path)
-              local max_width = 64 -- adjust for your terminal width
+              local max_width = 50 -- adjust for your terminal width
               if #path <= max_width then
                 return path
               end
@@ -331,7 +331,6 @@ require("lazy").setup({
               respect_gitignore = false,
               initial_mode = "normal",
               previewer = false,
-              display_stat = false,
               mappings = {
                 ["n"] = {
                   ["h"] = fb_actions.goto_parent_dir,
