@@ -275,9 +275,14 @@ fi
 # ===========================
 # fzf integration and functiions
 # ===========================
-source /usr/share/doc/fzf/examples/key-bindings.zsh
-source /usr/share/doc/fzf/examples/completion.zsh
-# export FZF_DEFAULT_OPTS='--height=100% --border'
+if [[ -f ~/.fzf/shell/key-bindings.zsh ]]; then
+  source ~/.fzf/shell/key-bindings.zsh
+fi
+
+if [[ -f ~/.fzf/shell/completion.zsh ]]; then
+  source ~/.fzf/shell/completion.zsh
+fi
+
 # ===========================
 # OneDark fzf Colors
 # ===========================
