@@ -315,7 +315,7 @@ require("lazy").setup({
         telescope.setup({
           defaults = {
             path_display = function(_, path)
-              local max_width = 40 -- adjust for your terminal width
+              local max_width = 64 -- adjust for your terminal width
               if #path <= max_width then
                 return path
               end
