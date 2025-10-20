@@ -277,7 +277,8 @@ require("lazy").setup({
               hidden = true,
               grouped = true,
               respect_gitignore = false,
-              initial_mode = "insert", -- start in insert so you can type immediately
+              -- prompt_title = vim.loop.cwd(),
+              initial_mode = "normal", -- start in insert so you can type immediately
               mappings = {
                 ["n"] = {
                   ["h"] = fb_actions.goto_parent_dir,
@@ -312,9 +313,7 @@ require("lazy").setup({
 
         vim.keymap.set("n", "\\", function()
           telescope.extensions.file_browser.file_browser({
-            -- path = vim.fn.expand("%:p:h"),
             path = vim.loop.cwd(),
-            -- select_buffer = true,
             select_buffer = false,
             hidden = true,
           })
