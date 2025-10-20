@@ -38,16 +38,42 @@ export NVM_DIR="$HOME/.nvm"
 export PATH
 
 # ===========================
+# Prioritize local fzf install
+# ===========================
+if [[ -d "$HOME/.fzf/bin" ]]; then
+  path=("$HOME/.fzf/bin" $path)
+fi
+
+# ===========================
+# ls, directory colors
+# ===========================
+if [[ -f "$HOME/.dircolors-onedark" ]]; then
+  eval "$(dircolors ~/.dircolors-onedark)"
+fi
+
+# ===========================
+# OneDark fzf Colors
+# ===========================
+export FZF_DEFAULT_OPTS="
+  --color=fg:#abb2bf,bg:#282c34,hl:#e5c07b
+  --color=fg+:#abb2bf,bg+:#3e4451,hl+:#e5c07b
+  --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
+  --color=border:#3e4451,label:#61afef
+  --border=rounded --margin=1 --padding=1
+"
+
+# ===========================
+# OneDark Color Scheme
+# ===========================
+if [[ -f "$HOME/.config/onedark-colors.sh" ]]; then
+  source "$HOME/.config/onedark-colors.sh"
+else
+  echo "Warning: ~/.config/onedark-colors.sh not found" >&2
+fi
+
+# ===========================
 # Prompt
 # ===========================
-ESC=$'\e'
-
-RESET="%{${ESC}[0m%}"
-GRAY="%{${ESC}[38;2;64;64;64m%}"
-GREEN="%{${ESC}[38;2;0;200;0m%}"
-BLUE="%{${ESC}[38;2;68;157;252m%}"
-RED="%{${ESC}[38;2;214;4;4m%}"
-ORANGE="%{${ESC}[38;2;250;156;5m%}"
 
 # add git dirty branch indication to prompt
 git_branch() {
@@ -176,6 +202,9 @@ export LESS_TERMCAP_us=$'\e[1;4;36m'    # Start underline cyan
 export EDITOR="nvim"
 export VISUAL="nvim"
 
+export BAT_THEME="OneDark"
+export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
+
 # colors
 autoload -U colors and colors
 
@@ -196,7 +225,7 @@ alias ls='ls --color=auto'
 alias path='echo "$PATH" | tr ":" "\n"'
 alias q='exit'
 alias le='less -X'
-alias bat='/usr/bin/batcat --style=plain'
+alias bat='/usr/bin/batcat --style=plain --theme="OneDark"'
 alias nv='/usr/bin/nvim'
 alias cal='ncal -C'
 alias python='/usr/bin/python3'
@@ -233,30 +262,6 @@ zle -N zle-line-init
 function zle-line-finish { echo -ne "\e[2 q"; }
 zle -N zle-line-finish
 
-# ===========================
-# SSH Agent Loader
-# ===========================
-# SSH_ENV="$HOME/.ssh/agent_env"
-# SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.zsh"
-#
-# if [[ -x "$SSH_BOOTSTRAP" ]]; then
-#     # Run the script if agent file missing or invalid
-#     if [[ ! -f "$SSH_ENV" ]] || ! grep -q "SSH_AUTH_SOCK" "$SSH_ENV"; then
-#         # "$SSH_BOOTSTRAP" /dev/null
-#         "$SSH_BOOTSTRAP"
-#     fi
-#
-#     # Load environment from the file (if it exists)
-#     if [[ -f "$SSH_ENV" ]]; then
-#         source "$SSH_ENV" >/dev/null
-#
-#         # If agent PID is stale, restart
-#         if ! kill -0 "$SSH_AGENT_PID" 2>/dev/null; then
-#             "$SSH_BOOTSTRAP" >/dev/null
-#             source "$SSH_ENV" >/dev/null
-#         fi
-#     fi
-# fi
 SSH_ENV="$HOME/.ssh/agent_env"
 SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.zsh"
 
@@ -272,7 +277,20 @@ fi
 # ===========================
 source /usr/share/doc/fzf/examples/key-bindings.zsh
 source /usr/share/doc/fzf/examples/completion.zsh
-export FZF_DEFAULT_OPTS='--height=100% --border'
+# export FZF_DEFAULT_OPTS='--height=100% --border'
+# ===========================
+# OneDark fzf Colors
+# ===========================
+export FZF_DEFAULT_OPTS="
+  --height=100%
+  --border=rounded
+  --margin=1
+  --padding=1
+  --color=fg:#abb2bf,bg:#282c34,hl:#e5c07b
+  --color=fg+:#abb2bf,bg+:#3e4451,hl+:#e5c07b
+  --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
+  --color=border:#3e4451,label:#61afef
+"
 
 fh() {
   local cmd
@@ -326,11 +344,6 @@ fk() {
 # ===========================
 # Python environment helpers
 # ===========================
-E_RESET=$'\e[0m'
-E_RED=$'\e[38;2;214;4;4m'
-E_GREEN=$'\e[38;2;0;200;0m'
-E_BLUE=$'\e[38;2;68;157;252m'
-E_ORANGE=$'\e[38;2;250;156;5m'
 
 pyon() {
   local venv_dir
