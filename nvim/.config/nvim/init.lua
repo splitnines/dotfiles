@@ -330,6 +330,7 @@ require("lazy").setup({
               grouped = true,
               respect_gitignore = false,
               initial_mode = "normal",
+              previewer = false,
               mappings = {
                 ["n"] = {
                   ["h"] = fb_actions.goto_parent_dir,
