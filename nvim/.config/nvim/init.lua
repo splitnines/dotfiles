@@ -239,25 +239,86 @@ require("lazy").setup({
     },
 
     -- File explorer
+    -- {
+    --   "nvim-neo-tree/neo-tree.nvim",
+    --   branch = "v3.x",
+    --   dependencies = {
+    --     "nvim-lua/plenary.nvim",
+    --     "nvim-tree/nvim-web-devicons",
+    --     "MunifTanjim/nui.nvim",
+    --   },
+    --   config = function()
+    --     require("neo-tree").setup({
+    --       filesystem = {
+    --         filtered_items = {
+    --           visible = true,
+    --           hide_dotfiles = false,
+    --           hide_gitignored = false,
+    --         },
+    --       },
+    --     })
+    --     vim.keymap.set("n", "\\", ":Neotree toggle<CR>", { noremap = true, silent = true })
+    --   end,
+    -- },
+
+    -- File explorer
     {
-      "nvim-neo-tree/neo-tree.nvim",
-      branch = "v3.x",
-      dependencies = {
-        "nvim-lua/plenary.nvim",
-        "nvim-tree/nvim-web-devicons",
-        "MunifTanjim/nui.nvim",
-      },
+      "nvim-telescope/telescope-file-browser.nvim",
+      dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
       config = function()
-        require("neo-tree").setup({
-          filesystem = {
-            filtered_items = {
-              visible = true,
-              hide_dotfiles = false,
-              hide_gitignored = false,
+        local telescope = require("telescope")
+        local fb_actions = require("telescope").extensions.file_browser.actions
+        local actions = require("telescope.actions")
+
+        telescope.setup({
+          extensions = {
+            file_browser = {
+              hijack_netrw = true,
+              hidden = true,
+              grouped = true,
+              respect_gitignore = false,
+              initial_mode = "insert", -- start in insert so you can type immediately
+              mappings = {
+                ["n"] = {
+                  ["h"] = fb_actions.goto_parent_dir,
+                  ["l"] = fb_actions.open,
+                  ["N"] = fb_actions.create,
+                  ["r"] = fb_actions.rename,
+                  ["d"] = fb_actions.remove,
+                  ["y"] = fb_actions.copy,
+                  ["m"] = fb_actions.move,
+                },
+                ["i"] = {
+                  ["<CR>"] = function(prompt_bufnr)
+                    local entry = require("telescope.actions.state").get_selected_entry()
+                    if entry and entry.path and vim.fn.isdirectory(entry.path) == 1 then
+                      fb_actions.goto_parent_dir(prompt_bufnr) -- refresh picker in that directory
+                      telescope.extensions.file_browser.file_browser({
+                        path = entry.path,
+                        select_buffer = true,
+                      })
+                    else
+                      actions.select_default(prompt_bufnr)
+                    end
+                  end,
+                  ["<C-h>"] = fb_actions.goto_parent_dir,
+                },
+              },
             },
           },
         })
-        vim.keymap.set("n", "\\", ":Neotree toggle<CR>", { noremap = true, silent = true })
+
+        telescope.load_extension("file_browser")
+
+        vim.keymap.set("n", "\\", function()
+          telescope.extensions.file_browser.file_browser({
+            -- path = vim.fn.expand("%:p:h"),
+            path = vim.loop.cwd(),
+            -- select_buffer = true,
+            select_buffer = false,
+            hidden = true,
+          })
+        end, { desc = "Telescope File Browser" })
       end,
     },
 
@@ -535,10 +596,6 @@ require("lazy").setup({
           options = {
             icons_enabled = true,
             theme = "auto",
-            -- component_separators = { left = "", right = "" },
-            -- section_separators = { left = "", right = "" },
-            -- component_separators = { left = "|", right = "|" },
-            -- section_separators = { left = "", right = "" },
             component_separators = { left = "▏", right = "▕" },
             section_separators = { left = "", right = "" },
             disabled_filetypes = { "NvimTree", "packer", "lazy" },
