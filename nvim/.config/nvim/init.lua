@@ -266,10 +266,6 @@ require("lazy").setup({
       "nvim-telescope/telescope-file-browser.nvim",
       dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
       config = function()
-        -- local telescope = require("telescope")
-        -- local fb_actions = require("telescope").extensions.file_browser.actions
-        -- local actions = require("telescope.actions")
-
         local telescope = require("telescope")
         local actions = require("telescope.actions")
         local fb_actions = require("telescope").extensions.file_browser.actions
@@ -669,23 +665,6 @@ require("lazy").setup({
             lualine_b = { "branch", "diff", "diagnostics" },
             lualine_c = { { "filename", path = 2 } }, -- path=1 shows relative, path=2 shows full
             lualine_x = {
-
-              -- Add search match indicator
-              function()
-                if vim.v.hlsearch == 0 then
-                  return ""
-                end
-
-                local ok, result = pcall(vim.fn.searchcount, { maxcount = 0 })
-                if not ok or not result or result.total == 0 then
-                  return ""
-                end
-
-                local current = result.current or 0
-                local total = result.total or 0
-                return string.format("%d/%d", current, total)
-              end,
-
               "encoding",
               "fileformat",
               "filetype",
