@@ -134,6 +134,18 @@ autoload -Uz add-zsh-hook
 save_history_now() { fc -AI; }
 add-zsh-hook precmd save_history_now
 
+stty stop undef
+zle_highlight=('paste:none')
+
+# Load and register the widgets
+autoload -U up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+# Bind them to the arrow keys
+bindkey '^[[A' up-line-or-beginning-search
+bindkey '^[[B' down-line-or-beginning-search
+
 # ===========================
 # Completion
 # ===========================
