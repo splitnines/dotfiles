@@ -215,7 +215,7 @@ export LESS_TERMCAP_us=$'\e[1;4;36m'    # Start underline cyan
 export EDITOR="nvim"
 export VISUAL="nvim"
 
-export BAT_THEME="OneDark"
+export BAT_THEME="OneHalfDark"
 export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
 
 # colors
@@ -238,7 +238,7 @@ alias ls='ls --color=auto'
 alias path='echo "$PATH" | tr ":" "\n"'
 alias q='exit'
 alias le='less -X'
-alias bat='/usr/bin/batcat --style=plain --theme="OneDark"'
+alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark"'
 alias nv='/usr/bin/nvim'
 alias cal='ncal -C'
 alias python='/usr/bin/python3'
