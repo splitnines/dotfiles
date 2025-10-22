@@ -17,7 +17,7 @@ ONEDARK_YELLOW="#e5c07b"
 ONEDARK_BLUE="#61afef"
 ONEDARK_MAGENTA="#c678dd"
 ONEDARK_CYAN="#56b6c2"
-ONEDARK_ORANGE="#fa9c05"  # extra accent (non-official but fits palette)
+ONEDARK_ORANGE="#fa9c05"
 
 # ==========================================
 # Zsh-Safe Color Variables (for PS1, etc.)
@@ -69,7 +69,3 @@ print_onedark_colors() {
   echo "  ${E_ORANGE}ORANGE${E_RESET}"
   echo
 }
-
-# Uncomment to auto-print palette when sourced interactively
-# print_onedark_colors
-

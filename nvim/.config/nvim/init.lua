@@ -692,6 +692,14 @@ require("lazy").setup({
     },
   },
 })
+-- END PLUGINS
+
+-- CSV Tools
+require("csv.tools")
+
+vim.api.nvim_create_user_command("CSVAlign", function()
+  vim.cmd("%!column -t -s,")
+end, { desc = "Align CSV columns (no borders)" })
 
 -- ===========================
 -- Visual Tweaks
