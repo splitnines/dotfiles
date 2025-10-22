@@ -119,7 +119,7 @@ vim.api.nvim_create_user_command("CSVAlign", function()
     return
   end
   open_in_new_window(out, "Align")
-end, { desc = "Align CSV columns (opens new window)" })
+end, { desc = "Align CSV columns" })
 
 ------------------------------------------------------------
 -- List all column names
@@ -148,7 +148,7 @@ vim.api.nvim_create_user_command("CSVColumns", function()
   vim.api.nvim_buf_set_lines(0, 0, -1, false, fields)
   vim.bo.modified = false
   vim.api.nvim_buf_set_name(0, "[CSV: Columns]")
-end, { desc = "Show column names from the header line (no numbering)" })
+end, { desc = "Show column names from the header line" })
 
 ------------------------------------------------------------
 -- Register sort commands
@@ -157,5 +157,3 @@ make_sort_cmd("CSVSortNum", "num", "Sort numerically ascending")
 make_sort_cmd("CSVSortNumRev", "numrev", "Sort numerically descending")
 make_sort_cmd("CSVSortAlpha", "alpha", "Sort alphabetically ascending")
 make_sort_cmd("CSVSortAlphaRev", "alpharev", "Sort alphabetically descending")
-
--- vim.notify("CSV tools loaded: sort / select / align", vim.log.levels.INFO)

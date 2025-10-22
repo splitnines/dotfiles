@@ -82,7 +82,7 @@ git_branch() {
   branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
   [[ -z $branch ]] && return
 
-  local dirty_icon="⚡"
+  local dirty_icon=" ⚡"
 
   if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
     dirty="$dirty_icon"
