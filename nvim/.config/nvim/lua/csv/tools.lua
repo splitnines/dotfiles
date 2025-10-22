@@ -1,5 +1,4 @@
 -- CSV / TSV utilities for Neovim
--- Sort (header aware), select, and align in new scratch windows
 
 ------------------------------------------------------------
 -- Detect delimiter
@@ -32,7 +31,7 @@ local function open_in_new_window(lines, title)
 end
 
 ------------------------------------------------------------
--- Header-aware sort
+-- Sort
 ------------------------------------------------------------
 local function csv_sort(col, mode)
   local delim = detect_delim()
@@ -123,6 +122,35 @@ vim.api.nvim_create_user_command("CSVAlign", function()
 end, { desc = "Align CSV columns (opens new window)" })
 
 ------------------------------------------------------------
+-- List all column names
+------------------------------------------------------------
+vim.api.nvim_create_user_command("CSVColumns", function()
+  local delim = detect_delim()
+  local header = vim.fn.getline(1)
+
+  if not header or header == "" then
+    vim.notify("No header line found in this file", vim.log.levels.ERROR)
+    return
+  end
+
+  local fields = vim.split(header, delim, { plain = true, trimempty = true })
+
+  if #fields == 0 then
+    vim.notify("Failed to parse header line", vim.log.levels.ERROR)
+    return
+  end
+
+  vim.cmd("new")
+  vim.bo.buftype = "nofile"
+  vim.bo.bufhidden = "wipe"
+  vim.bo.swapfile = false
+  vim.bo.filetype = "csv"
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, fields)
+  vim.bo.modified = false
+  vim.api.nvim_buf_set_name(0, "[CSV: Columns]")
+end, { desc = "Show column names from the header line (no numbering)" })
+
+------------------------------------------------------------
 -- Register sort commands
 ------------------------------------------------------------
 make_sort_cmd("CSVSortNum", "num", "Sort numerically ascending")
@@ -130,4 +158,4 @@ make_sort_cmd("CSVSortNumRev", "numrev", "Sort numerically descending")
 make_sort_cmd("CSVSortAlpha", "alpha", "Sort alphabetically ascending")
 make_sort_cmd("CSVSortAlphaRev", "alpharev", "Sort alphabetically descending")
 
-vim.notify("CSV tools loaded: sort / select / align", vim.log.levels.INFO)
+-- vim.notify("CSV tools loaded: sort / select / align", vim.log.levels.INFO)
