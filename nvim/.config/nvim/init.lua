@@ -683,6 +683,7 @@ end, { desc = "Align CSV columns (no borders)" })
 -- ===========================
 vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#010101" })
 vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#010101" })
+-- vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#282C34" })
 vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1a1a1a" })
 
 -- ===========================
