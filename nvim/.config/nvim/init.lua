@@ -678,17 +678,6 @@ vim.api.nvim_create_user_command("CSVAlign", function()
   vim.cmd("%!column -t -s,")
 end, { desc = "Align CSV columns (no borders)" })
 
--- Disable pylsp formatting
-local lspconfig = require("lspconfig")
-
-lspconfig.pylsp.setup({
-  on_attach = function(client, _)
-    -- disable pylsp formatting so only ruff formats
-    client.server_capabilities.documentFormattingProvider = false
-    client.server_capabilities.documentRangeFormattingProvider = false
-  end,
-})
-
 -- ===========================
 -- Visual Tweaks
 -- ===========================
