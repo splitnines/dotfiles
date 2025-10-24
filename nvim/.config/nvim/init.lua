@@ -117,6 +117,9 @@ if not uv.fs_stat(lazypath) then
   })
 end
 
+-- ===========================
+-- Load Plugins
+-- ===========================
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
@@ -664,6 +667,16 @@ require("lazy").setup({
           },
           tabline = {},
           extensions = { "fugitive", "quickfix", "nvim-tree" },
+        })
+      end,
+    },
+    {
+      "kylechui/nvim-surround",
+      version = "*", -- optional: stable tag
+      event = "VeryLazy", -- optional: load on demand
+      config = function()
+        require("nvim-surround").setup({
+          -- optional configuration here, or leave empty for defaults
         })
       end,
     },
