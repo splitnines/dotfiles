@@ -670,6 +670,8 @@ require("lazy").setup({
         })
       end,
     },
+
+    -- Surround
     {
       "kylechui/nvim-surround",
       version = "*", -- optional: stable tag
@@ -679,6 +681,17 @@ require("lazy").setup({
           -- optional configuration here, or leave empty for defaults
         })
       end,
+    },
+
+    -- Markdown viewer
+    {
+      "MeanderingProgrammer/render-markdown.nvim",
+      dependencies = { "nvim-treesitter/nvim-treesitter" },
+      opts = {
+        anti_conceal = {
+          enabled = false,
+        },
+      },
     },
   },
 })
