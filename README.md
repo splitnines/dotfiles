@@ -7,10 +7,10 @@ They define my shell, editor and terminal preferences.
 
 This repo includes configurations for:
 
-- **Zsh** — custom prompt, aliases, fzf integration, Python venv indicator  
-- **Tmux** — full-length commands, vi key bindings, mouse support, custom status bar  
-- **Neovim** — plugin management with `lazy.nvim`, LSP, Mason, Telescope, Treesitter, and color themes
-- **SSH** - ssh agent script that loads at shell start up
+- **Zsh** — custom prompt, aliases, fzf integration, Python venv indicator, etc...  
+- **Tmux** — vi key bindings, mouse support, custom status bar, etc...  
+- **Neovim** — plugin management with `lazy.nvim`, LSP, Mason, Telescope, Treesitter, and color themes, etc...
+- **SSH** - ssh agent script that loads at shell start up, etc...
 - **OneDark** - global color scheme
 
 ## Installation
