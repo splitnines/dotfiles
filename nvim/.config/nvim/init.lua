@@ -268,7 +268,7 @@ require("lazy").setup({
               grouped = true,
               respect_gitignore = false,
               initial_mode = "normal",
-              previewer = true,
+              previewer = false,
               display_stat = false,
               mappings = {
                 ["n"] = {
