@@ -12,7 +12,6 @@ This repo includes configurations for:
 - **Neovim** — plugin management with `lazy.nvim`, LSP, Mason, Telescope, Treesitter, and color themes
 - **SSH** - ssh agent script that loads at shell start up
 - **OneDark** - global color scheme
-- **Shell Utilities** — helper scripts and functions for navigation, search, and workflow automation  
 
 ## Installation
 
