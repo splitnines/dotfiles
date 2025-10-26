@@ -1,5 +1,5 @@
 --@meta
----@diagnostic disable: undefined-field
+-- -@diagnostic disable: undefined-field
 
 -- Define once, globally available
 _G.uv = vim.uv or vim.loop
@@ -26,6 +26,7 @@ vim.opt.scrolloff = 5
 vim.opt.cursorline = true
 vim.opt.list = false
 vim.opt.inccommand = "split"
+vim.opt.smartindent = true
 
 vim.schedule(function()
   vim.opt.clipboard = "unnamedplus"
@@ -46,7 +47,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "go",
+  pattern = { "go", "tcl" },
   callback = function()
     vim.opt_local.expandtab = false
     vim.opt_local.tabstop = 4
@@ -105,7 +106,6 @@ local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 -- Use vim.uv on Neovim ≥ 0.10, fallback to vim.loop for older versions
 local uv = vim.uv or vim.loop
 
----@diagnostic disable-next-line: undefined-field
 if not uv.fs_stat(lazypath) then
   vim.fn.system({
     "git",
@@ -126,6 +126,7 @@ require("lazy").setup({
   spec = {
     -- Utility plugins
     { "tpope/vim-sleuth" },
+    { "folke/neodev.nvim", opts = {} },
     { "lukas-reineke/virt-column.nvim", opts = {} },
     -- git status in the gutter
     {
@@ -272,13 +273,13 @@ require("lazy").setup({
               display_stat = false,
               mappings = {
                 ["n"] = {
-                  ["h"] = fb_actions.goto_parent_dir,
-                  ["l"] = fb_actions.open,
-                  ["N"] = fb_actions.create,
-                  ["r"] = fb_actions.rename,
-                  ["d"] = fb_actions.remove,
-                  ["y"] = fb_actions.copy,
-                  ["m"] = fb_actions.move,
+                  -- ["h"] = fb_actions.goto_parent_dir,
+                  -- ["l"] = fb_actions.open,
+                  -- ["N"] = fb_actions.create,
+                  -- ["r"] = fb_actions.rename,
+                  -- ["d"] = fb_actions.remove,
+                  -- ["y"] = fb_actions.copy,
+                  -- ["m"] = fb_actions.move,
                 },
                 ["i"] = {
                   ["<CR>"] = function(prompt_bufnr)
@@ -348,10 +349,11 @@ require("lazy").setup({
             },
             sorting_strategy = "descending",
             display_stat = false,
+            hideden = true,
           },
           pickers = {
             buffers = {
-              previewer = true,
+              previewer = false,
             },
           },
           extensions = {
@@ -611,7 +613,8 @@ require("lazy").setup({
         })
 
         vim.keymap.set("n", "<leader>cg", "<cmd>ChatGPT<CR>", { desc = "ChatGPT" })
-        vim.keymap.set("v", "<leader>ce", "<cmd>ChatGPTEditWithInstruction<CR>", { desc = "ChatGPT Edit" })
+        vim.keymap.set("v", "<leader>ce", "<cmd>ChatGPTRun explain_code<CR>", { desc = "ChatGPT Explain Code" })
+        vim.keymap.set("v", "<leader>cd", "<cmd>ChatGPTRun docstring<CR>", { desc = "ChatGPT Doc String" })
       end,
     },
 
@@ -674,12 +677,10 @@ require("lazy").setup({
     -- Surround
     {
       "kylechui/nvim-surround",
-      version = "*", -- optional: stable tag
-      event = "VeryLazy", -- optional: load on demand
+      version = "*",
+      event = "VeryLazy",
       config = function()
-        require("nvim-surround").setup({
-          -- optional configuration here, or leave empty for defaults
-        })
+        require("nvim-surround").setup({})
       end,
     },
 
@@ -693,6 +694,7 @@ require("lazy").setup({
         },
       },
     },
+    --
   },
 })
 -- END PLUGINS
