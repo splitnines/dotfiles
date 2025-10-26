@@ -272,15 +272,6 @@ require("lazy").setup({
               previewer = false,
               display_stat = false,
               mappings = {
-                ["n"] = {
-                  -- ["h"] = fb_actions.goto_parent_dir,
-                  -- ["l"] = fb_actions.open,
-                  -- ["N"] = fb_actions.create,
-                  -- ["r"] = fb_actions.rename,
-                  -- ["d"] = fb_actions.remove,
-                  -- ["y"] = fb_actions.copy,
-                  -- ["m"] = fb_actions.move,
-                },
                 ["i"] = {
                   ["<CR>"] = function(prompt_bufnr)
                     local entry = require("telescope.actions.state").get_selected_entry()
