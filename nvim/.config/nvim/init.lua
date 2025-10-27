@@ -406,7 +406,7 @@ require("lazy").setup({
       build = ":TSUpdate",
       main = "nvim-treesitter.configs",
       opts = {
-        ensure_installed = { "bash", "c", "lua", "python", "markdown" },
+        ensure_installed = { "bash", "c", "lua", "python" },
         auto_install = true,
         highlight = { enable = true },
         indent = { enable = true },
@@ -678,15 +678,15 @@ require("lazy").setup({
     },
 
     -- Markdown viewer
-    {
-      "MeanderingProgrammer/render-markdown.nvim",
-      dependencies = { "nvim-treesitter/nvim-treesitter" },
-      opts = {
-        anti_conceal = {
-          enabled = false,
-        },
-      },
-    },
+    -- {
+    --   "MeanderingProgrammer/render-markdown.nvim",
+    --   dependencies = { "nvim-treesitter/nvim-treesitter" },
+    --   opts = {
+    --     anti_conceal = {
+    --       enabled = false,
+    --     },
+    --   },
+    -- },
     --
   },
 })
