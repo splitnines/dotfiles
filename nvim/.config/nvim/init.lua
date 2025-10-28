@@ -697,19 +697,41 @@ require("lazy").setup({
     },
 
     -- Markdown viewer
-    -- {
-    --   "MeanderingProgrammer/render-markdown.nvim",
-    --   dependencies = { "nvim-treesitter/nvim-treesitter" },
-    --   opts = {
-    --     anti_conceal = {
-    --       enabled = false,
-    --     },
-    --   },
-    -- },
-    --
+    {
+      "MeanderingProgrammer/render-markdown.nvim",
+      dependencies = { "nvim-treesitter/nvim-treesitter" },
+      lazy = true, -- don't load automatically
+      opts = {
+        anti_conceal = {
+          enabled = false,
+        },
+      },
+      config = function(_, opts)
+        require("render-markdown").setup(opts)
+      end,
+    },
   },
 })
 -- END PLUGINS
+
+-- Markdown reder config
+vim.keymap.set("n", "<leader>mk", function()
+  require("lazy").load({ plugins = { "render-markdown.nvim" } })
+  local render = require("render-markdown")
+
+  local buf = vim.api.nvim_get_current_buf()
+  local is_enabled = vim.b[buf].markdown_render_enabled
+
+  if is_enabled then
+    render.disable()
+    vim.b[buf].markdown_render_enabled = false
+    vim.notify("Markdown rendering disabled", vim.log.levels.INFO)
+  else
+    render.enable()
+    vim.b[buf].markdown_render_enabled = true
+    vim.notify("Markdown rendering enabled", vim.log.levels.INFO)
+  end
+end, { desc = "Toggle Markdown Render" })
 
 -- CSV Tools
 require("csv.tools")
