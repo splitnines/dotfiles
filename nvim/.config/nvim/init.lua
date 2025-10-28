@@ -677,6 +677,18 @@ require("lazy").setup({
       end,
     },
 
+    -- Smear (cursor trails)
+    {
+      "sphamba/smear-cursor.nvim",
+      event = "VeryLazy",
+      opts = {
+        -- Optional configuration (these are safe defaults)
+        smear_between_buffers = true,
+        smear_between_neighbor_lines = true,
+        smear_insert_mode = true,
+      },
+    },
+
     -- Markdown viewer
     -- {
     --   "MeanderingProgrammer/render-markdown.nvim",
