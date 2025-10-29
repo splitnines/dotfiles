@@ -481,12 +481,23 @@ require("lazy").setup({
           ensure_installed = { "lua_ls", "pyright", "clangd", "bashls" },
         })
 
+        -- === Add this right here ===
+        local on_attach = function(_, bufnr)
+          local opts = { buffer = bufnr, silent = true, noremap = true }
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+          vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+          vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+          vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+        end
+
         local capabilities = require("cmp_nvim_lsp").default_capabilities()
         -- Use the new native LSP configuration API
         local cfg = vim.lsp.config
 
         cfg("lua_ls", {
           capabilities = capabilities,
+          on_attach = on_attach,
           settings = {
             Lua = {
               completion = { callSnippet = "Replace" },
@@ -501,6 +512,7 @@ require("lazy").setup({
 
         cfg("clangd", {
           capabilities = capabilities,
+          on_attach = on_attach,
           cmd = { "clangd", "--background-index", "--clang-tidy" },
           root_dir = function(fname)
             -- Use lspconfig’s built-in detection, or fallback to cwd
