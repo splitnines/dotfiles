@@ -502,6 +502,19 @@ require("lazy").setup({
         cfg("clangd", {
           capabilities = capabilities,
           cmd = { "clangd", "--background-index", "--clang-tidy" },
+          root_dir = function(fname)
+            -- Use lspconfig’s built-in detection, or fallback to cwd
+            local util = require("lspconfig.util")
+            return util.root_pattern(
+              "compile_commands.json",
+              "compile_flags.txt",
+              ".clangd",
+              ".clang-tidy",
+              ".clang-format",
+              "configure.ac",
+              ".git"
+            )(fname) or vim.fn.getcwd()
+          end,
         })
 
         cfg("pyright", { capabilities = capabilities })
