@@ -88,6 +88,61 @@ vim.keymap.set("n", "<leader>O", ":put! _<CR>")
 -- Diagnostics
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist)
 
+-- LSP: Floating References Window
+vim.keymap.set("n", "grr", function()
+  vim.lsp.buf.references(nil, {
+    on_list = function(list)
+      local items = list.items
+      if #items == 0 then
+        vim.notify("No references found", vim.log.levels.INFO)
+        return
+      end
+
+      -- create a new buffer
+      local buf = vim.api.nvim_create_buf(false, true)
+      local lines = {}
+      for i, item in ipairs(items) do
+        local filename = vim.fn.fnamemodify(item.filename, ":t")
+        local text = item.text or ""
+        table.insert(lines, string.format("%d. %s:%d  %s", i, filename, item.lnum, text))
+      end
+      vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+      vim.api.nvim_buf_set_option(buf, "modifiable", false)
+
+      -- floating window size and position
+      local width = math.min(120, math.floor(vim.o.columns * 0.8))
+      local height = math.min(#lines, math.floor(vim.o.lines * 0.4))
+      local opts = {
+        relative = "editor",
+        style = "minimal",
+        border = "rounded",
+        width = width,
+        height = height,
+        row = math.floor((vim.o.lines - height) / 2),
+        col = math.floor((vim.o.columns - width) / 2),
+      }
+
+      -- open the window
+      local win = vim.api.nvim_open_win(buf, true, opts)
+      vim.api.nvim_win_set_option(win, "cursorline", true)
+
+      -- <CR> = jump to selected reference
+      vim.keymap.set("n", "<CR>", function()
+        local lnum = vim.fn.line(".")
+        local target = items[lnum]
+        vim.api.nvim_win_close(win, true)
+        vim.cmd("edit " .. vim.fn.fnameescape(target.filename))
+        vim.api.nvim_win_set_cursor(0, { target.lnum, target.col - 1 })
+      end, { buffer = buf, nowait = true })
+
+      -- <Esc> = close the window
+      vim.keymap.set("n", "<Esc>", function()
+        vim.api.nvim_win_close(win, true)
+      end, { buffer = buf, nowait = true })
+    end,
+  })
+end, { desc = "Show LSP references in a floating window" })
+
 -- ===========================
 -- Yank Highlight
 -- ===========================
@@ -518,6 +573,7 @@ require("lazy").setup({
           lua = {
             "stylua",
           },
+          python = { "ruff_fix", "ruff_format" },
         },
         formatters = {
           stylua = {
@@ -794,3 +850,31 @@ end
 -- ===========================
 vim.opt.spellfile = vim.fn.stdpath("config") .. "/spell/en.utf-8.add"
 vim.api.nvim_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
+
+-- ===========================
+-- Fix clangd not attaching
+-- ===========================
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "c", "cpp" },
+  callback = function()
+    local active = vim.lsp.get_clients({ name = "clangd" })
+    if #active == 0 then
+      local root = vim.fs.dirname(vim.fs.find({
+        "compile_commands.json",
+        "compile_flags.txt",
+        ".clangd",
+        ".clang-tidy",
+        ".git",
+      }, { upward = true })[1] or vim.api.nvim_buf_get_name(0))
+
+      vim.lsp.start({
+        name = "clangd",
+        cmd = { "clangd", "--background-index", "--clang-tidy" },
+        root_dir = root,
+      })
+    end
+
+    local opts = { buffer = 0, silent = true, noremap = true }
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+  end,
+})
