@@ -107,7 +107,8 @@ vim.keymap.set("n", "grr", function()
         table.insert(lines, string.format("%d. %s:%d  %s", i, filename, item.lnum, text))
       end
       vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-      vim.api.nvim_buf_set_option(buf, "modifiable", false)
+      vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
+      -- vim.api.nvim_buf_set_option(buf, "modifiable", false)
 
       -- floating window size and position
       local width = math.min(120, math.floor(vim.o.columns * 0.8))
@@ -124,7 +125,8 @@ vim.keymap.set("n", "grr", function()
 
       -- open the window
       local win = vim.api.nvim_open_win(buf, true, opts)
-      vim.api.nvim_win_set_option(win, "cursorline", true)
+      -- vim.api.nvim_win_set_option(win, "cursorline", true)
+      vim.api.nvim_set_option_value("cursorline", true, { win = win })
 
       -- <CR> = jump to selected reference
       vim.keymap.set("n", "<CR>", function()
@@ -857,6 +859,7 @@ vim.api.nvim_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "c", "cpp" },
   callback = function()
+    -- Start clangd if not already active
     local active = vim.lsp.get_clients({ name = "clangd" })
     if #active == 0 then
       local root = vim.fs.dirname(vim.fs.find({
@@ -875,6 +878,47 @@ vim.api.nvim_create_autocmd("FileType", {
     end
 
     local opts = { buffer = 0, silent = true, noremap = true }
-    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+
+    vim.keymap.set("n", "gd", function()
+      local params = vim.lsp.util.make_position_params(0, "utf-16")
+
+      -- get all LSP responses for "textDocument/definition"
+      local responses = vim.lsp.buf_request_sync(0, "textDocument/definition", params, 1000)
+      if not responses or vim.tbl_isempty(responses) then
+        vim.notify("No definition found", vim.log.levels.INFO)
+        return
+      end
+
+      -- merge results from all servers
+      local result
+      for _, resp in pairs(responses) do
+        if resp.result and #resp.result > 0 then
+          result = resp.result
+          break
+        end
+      end
+      if not result or vim.tbl_isempty(result) then
+        vim.notify("No definition found", vim.log.levels.INFO)
+        return
+      end
+
+      -- prefer .c / .cpp over .h / .hpp
+      local target
+      for _, item in ipairs(result) do
+        if not item.uri:match("%.h$") and not item.uri:match("%.hpp$") then
+          target = item
+          break
+        end
+      end
+      target = target or result[1]
+
+      local uri = target.uri or target.targetUri
+      local range = target.range or target.targetSelectionRange
+      local fname = vim.uri_to_fname(uri)
+      local pos = { range.start.line + 1, range.start.character }
+
+      vim.cmd("edit " .. vim.fn.fnameescape(fname))
+      vim.api.nvim_win_set_cursor(0, pos)
+    end, opts)
   end,
 })
