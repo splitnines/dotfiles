@@ -168,6 +168,7 @@ alias gd='git diff'
 alias pull='git pull'
 alias push='git push'
 alias gs='git status'
+alias gm='git merge'
 
 # ===========================
 # Tab completion enhancements
