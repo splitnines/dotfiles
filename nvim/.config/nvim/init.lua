@@ -27,7 +27,6 @@ vim.opt.cursorline = true
 vim.opt.list = false
 vim.opt.inccommand = "split"
 vim.opt.smartindent = true
-vim.opt.hidden = true
 
 vim.schedule(function()
   vim.opt.clipboard = "unnamedplus"
@@ -918,6 +917,9 @@ vim.api.nvim_create_autocmd("FileType", {
       local fname = vim.uri_to_fname(uri)
       local pos = { range.start.line + 1, range.start.character }
 
+      if vim.bo.modified then
+        vim.cmd("write")
+      end
       vim.cmd("edit " .. vim.fn.fnameescape(fname))
       vim.api.nvim_win_set_cursor(0, pos)
     end, opts)
