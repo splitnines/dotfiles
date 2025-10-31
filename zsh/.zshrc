@@ -233,9 +233,9 @@ setopt EXTENDED_GLOB
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
-alias l='ls -CF'
+alias l='ls'
 alias la='ls -A'
-alias ll='ls -AlFh'
+alias ll='ls -Alh'
 alias ls='ls --color=auto'
 alias path='echo "$PATH" | tr ":" "\n"'
 alias q='exit'
@@ -243,7 +243,7 @@ alias le='less -X'
 alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark"'
 alias nv='/usr/bin/nvim'
 alias cal='ncal -C'
-alias python='/usr/bin/python3'
+alias python='python3'
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
