@@ -255,6 +255,7 @@ alias p="/usr/bin/ping"
 alias t="/usr/bin/telnet"
 alias rcd="/usr/bin/script -m advanced"
 alias md="mkdir -p"
+alias rs="rsync -avzr"
 
 [ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
 
