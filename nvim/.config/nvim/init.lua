@@ -27,6 +27,7 @@ vim.opt.cursorline = true
 vim.opt.list = false
 vim.opt.inccommand = "split"
 vim.opt.smartindent = true
+vim.opt.hidden = true
 
 vim.schedule(function()
   vim.opt.clipboard = "unnamedplus"
