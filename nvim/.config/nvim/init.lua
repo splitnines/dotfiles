@@ -88,6 +88,10 @@ vim.keymap.set("n", "<leader>O", ":put! _<CR>")
 -- Diagnostics
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist)
 
+-- Scroll through open buffers
+vim.keymap.set("n", "<Tab>", ":bnext<CR>")
+vim.keymap.set("n", "<S-Tab>", ":bprevious<CR>")
+
 -- LSP: Floating References Window
 vim.keymap.set("n", "grr", function()
   vim.lsp.buf.references(nil, {
