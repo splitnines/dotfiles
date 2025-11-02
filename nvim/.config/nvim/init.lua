@@ -92,6 +92,9 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist)
 vim.keymap.set("n", "<Tab>", ":bnext<CR>")
 vim.keymap.set("n", "<S-Tab>", ":bprevious<CR>")
 
+-- Display the neovim banner
+vim.keymap.set("n", "<leader>da", ":Alpha<CR>", { desc = "Show banner" })
+
 -- LSP: Floating References Window
 vim.keymap.set("n", "grr", function()
   vim.lsp.buf.references(nil, {
@@ -795,6 +798,100 @@ require("lazy").setup({
       },
       config = function(_, opts)
         require("render-markdown").setup(opts)
+      end,
+    },
+
+    -- Neovim banner
+    {
+      "goolord/alpha-nvim",
+      event = "VimEnter",
+      config = function()
+        local alpha = require("alpha")
+        local dashboard = require("alpha.themes.dashboard")
+
+        ---------------------------------------------------------------------------
+        -- 🎨 CUSTOM COLORS (OneDark palette tones)
+        ---------------------------------------------------------------------------
+        vim.api.nvim_set_hl(0, "DashboardHeader", { fg = "#E06C75", bold = true }) -- red
+        vim.api.nvim_set_hl(0, "DashboardFooter", { fg = "#61AFEF", italic = true }) -- blue
+
+        -- Buttons base + hover states
+        vim.api.nvim_set_hl(0, "DashboardButton", { fg = "#98C379", bold = true }) -- green
+        vim.api.nvim_set_hl(0, "DashboardButtonShortcut", { fg = "#C678DD" }) -- purple
+        vim.api.nvim_set_hl(0, "DashboardButtonHover", { fg = "#282C34", bg = "#98C379", bold = true })
+
+        ---------------------------------------------------------------------------
+        -- 🧱 DASHBOARD LAYOUT
+        ---------------------------------------------------------------------------
+
+        dashboard.section.header.val = {
+          " '##::: ##:'########::'#######::'##::::'##:'####:'##::::'##: ",
+          "  ###:: ##: ##.....::'##.... ##: ##:::: ##:. ##:: ###::'###: ",
+          "  ####: ##: ##::::::: ##:::: ##: ##:::: ##:: ##:: ####'####: ",
+          "  ## ## ##: ######::: ##:::: ##: ##:::: ##:: ##:: ## ### ##: ",
+          "  ##. ####: ##...:::: ##:::: ##:. ##:: ##::: ##:: ##. #: ##: ",
+          "  ##:. ###: ##::::::: ##:::: ##::. ## ##:::: ##:: ##:.:: ##: ",
+          "  ##::. ##: ########:. #######::::. ###::::'####: ##:::: ##: ",
+          "  ..::::..::........:::.......::::::...:::::....::..:::::..:: ",
+          "",
+          "               ⚡ Welcome to Neovim ⚡               ",
+          "",
+        }
+        dashboard.section.header.opts.hl = "DashboardHeader"
+
+        -- Buttons below the ASCII art
+        dashboard.section.buttons.val = {
+          dashboard.button("e", "  New File", ":ene <BAR> startinsert <CR>"),
+          dashboard.button("f", "󰱼  Find File", ":Telescope find_files<CR>"),
+          dashboard.button("r", "  Recent Files", ":Telescope oldfiles<CR>"),
+          dashboard.button("q", "  Quit", ":qa<CR>"),
+        }
+
+        -- Assign custom highlight groups
+        for _, btn in ipairs(dashboard.section.buttons.val) do
+          btn.opts.hl = "DashboardButton"
+          btn.opts.hl_shortcut = "DashboardButtonShortcut"
+        end
+
+        -- Footer (dynamic date)
+        dashboard.section.footer.val = os.date("  %A, %B %d %Y  •  %H:%M:%S")
+          .. "  •  OneDark • Neovim 0.12-dev • α"
+        dashboard.section.footer.opts.hl = "DashboardFooter"
+
+        ---------------------------------------------------------------------------
+        -- ⚙️ OPTIONAL: Hover effect (visual feedback on selection)
+        ---------------------------------------------------------------------------
+        -- Alpha doesn't natively track "hover" but we can fake it:
+        vim.api.nvim_create_autocmd("CursorMoved", {
+          callback = function()
+            local line = vim.fn.line(".")
+            local buttons = dashboard.section.buttons.val
+            local base_line = 10 -- approximate starting line of buttons (adjust if needed)
+
+            for i, btn in ipairs(buttons) do
+              local btn_line = base_line + i
+              local ns = vim.api.nvim_create_namespace("DashboardHover")
+              vim.api.nvim_buf_clear_namespace(0, ns, btn_line - 1, btn_line)
+              if line == btn_line then
+                vim.api.nvim_buf_add_highlight(0, ns, "DashboardButtonHover", btn_line - 1, 0, -1)
+              end
+            end
+          end,
+        })
+
+        ---------------------------------------------------------------------------
+        -- Layout setup
+        ---------------------------------------------------------------------------
+        dashboard.config.layout = {
+          { type = "padding", val = 2 },
+          dashboard.section.header,
+          { type = "padding", val = 2 },
+          dashboard.section.buttons,
+          { type = "padding", val = 1 },
+          dashboard.section.footer,
+        }
+
+        alpha.setup(dashboard.config)
       end,
     },
   },
