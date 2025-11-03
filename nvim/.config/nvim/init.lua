@@ -846,8 +846,17 @@ require("lazy").setup({
         end
 
         -- Footer (dynamic date)
-        dashboard.section.footer.val = os.date("  %A, %B %d %Y  •  %H:%M:%S")
-          .. "  •  OneDark • Neovim 0.12-dev • α"
+        -- dashboard.section.footer.val = os.date("  %A, %B %d %Y  •  %H:%M:%S")
+        --   .. "  •  OneDark • Neovim 0.12-dev • α"
+        local v = vim.version()
+        local version_str = string.format("Neovim %d.%d.%d", v.major, v.minor, v.patch)
+
+        dashboard.section.footer.val = string.format(
+          "  %s  •  %s  • %s",
+          os.date("%A, %B %d %Y  •  %H:%M:%S"),
+          os.getenv("USER"),
+          version_str
+        )
         dashboard.section.footer.opts.hl = "DashboardFooter"
 
         ---------------------------------------------------------------------------
