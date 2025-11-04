@@ -63,3 +63,7 @@ vim.keymap.set("n", "<leader>sp", function()
     vim.notify("Spell check disabled", vim.log.levels.INFO)
   end
 end, { desc = "Toggle spell checking" })
+
+--
+--
+--

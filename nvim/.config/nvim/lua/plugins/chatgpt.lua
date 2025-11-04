@@ -22,12 +22,19 @@ return {
     chatgpt.setup({
       api_key_cmd = "echo $OPENAI_API_KEY",
       openai_params = {
-        model = "gpt-5",
-        max_tokens = 1024,
+        model = "gpt-4.1-mini",
+        max_tokens = 4096,
+        temperature = 0.7,
       },
       chat = {
         border_left_sign = "🤖",
         welcome_message = "Ask me anything about your code!",
+        -- render markdown in the window
+        window_options = {
+          filetype = "markdown",
+          conceallevel = 2,
+          wrap = true,
+        },
       },
     })
 
