@@ -42,7 +42,17 @@ return {
     map("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
     map("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Buffers" })
     map("n", "\\", function()
-      telescope.extensions.file_browser.file_browser({ path = vim.loop.cwd(), hidden = true })
+      telescope.extensions.file_browser.file_browser({
+        path = vim.loop.cwd(),
+        hidden = true,
+        grouped = true,
+        respect_gitignore = false,
+        previewer = false,
+        display_stat = false,
+        initial_mode = "normal",
+        layout_config = { height = 0.6 },
+        sorting_strategy = "descending",
+      })
     end, { desc = "Telescope File Browser" })
   end,
 }
