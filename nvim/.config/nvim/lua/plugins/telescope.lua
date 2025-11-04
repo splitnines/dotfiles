@@ -1,0 +1,48 @@
+-- ~/dotfiles/nvim/.config/nvim/lua/plugins/telescope.lua
+return {
+  "nvim-telescope/telescope.nvim",
+  branch = "0.1.x",
+  event = "VeryLazy",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    {
+      "nvim-telescope/telescope-fzf-native.nvim",
+      build = "make",
+      cond = function()
+        return vim.fn.executable("make") == 1
+      end,
+    },
+    "nvim-telescope/telescope-ui-select.nvim",
+    { "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
+    "nvim-telescope/telescope-file-browser.nvim",
+  },
+  config = function(_, opts)
+    local telescope = require("telescope")
+    local actions = require("telescope.actions")
+    local themes = require("telescope.themes")
+    telescope.setup({
+      defaults = {
+        mappings = { i = { ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist, ["<Esc>"] = actions.close } },
+        layout_strategy = "flex",
+        layout_config = { prompt_position = "bottom" },
+        sorting_strategy = "descending",
+      },
+      extensions = { ["ui-select"] = themes.get_dropdown() },
+    })
+
+    pcall(telescope.load_extension, "fzf")
+    pcall(telescope.load_extension, "ui-select")
+    telescope.load_extension("file_browser")
+
+    local builtin = require("telescope.builtin")
+    local map = vim.keymap.set
+
+    map("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
+    map("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
+    map("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
+    map("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Buffers" })
+    map("n", "\\", function()
+      telescope.extensions.file_browser.file_browser({ path = vim.loop.cwd(), hidden = true })
+    end, { desc = "Telescope File Browser" })
+  end,
+}
