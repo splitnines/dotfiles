@@ -83,14 +83,15 @@ return {
       vim.api.nvim_create_autocmd("ColorScheme", {
         pattern = "*",
         callback = function()
-          vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
-          vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
-          vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1a1a1a" })
+          vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#141414" })
+          vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#141414" })
+          vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1e1e1e" })
+          vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#3a3a3a", bg = "#1e1e1e" })
         end,
       })
 
-      -- Trigger once on startup (so it applies immediately)
       vim.api.nvim_exec_autocmds("ColorScheme", {})
     end,
+    v,
   },
 }
