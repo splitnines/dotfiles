@@ -16,7 +16,7 @@ return {
     { "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
     "nvim-telescope/telescope-file-browser.nvim",
   },
-  config = function(_, opts)
+  config = function(_)
     local telescope = require("telescope")
     local actions = require("telescope.actions")
     local themes = require("telescope.themes")
@@ -24,7 +24,7 @@ return {
       defaults = {
         mappings = { i = { ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist, ["<Esc>"] = actions.close } },
         layout_strategy = "flex",
-        layout_config = { prompt_position = "bottom" },
+        layout_config = { prompt_position = "bottom", height = 0.7 },
         sorting_strategy = "descending",
       },
       extensions = { ["ui-select"] = themes.get_dropdown() },
@@ -50,7 +50,7 @@ return {
         previewer = false,
         display_stat = false,
         initial_mode = "normal",
-        layout_config = { height = 0.6 },
+        layout_config = { height = 0.7 },
         sorting_strategy = "descending",
       })
     end, { desc = "Telescope File Browser" })
