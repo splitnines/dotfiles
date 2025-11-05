@@ -313,6 +313,7 @@ export FZF_DEFAULT_OPTS="
   --color=border:#3e4451,label:#61afef
 "
 
+# Search command history
 fh() {
   local cmd
   cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' | sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
@@ -327,6 +328,7 @@ fv() {
   [[ -n "$file" ]] && nvim "$file"
 }
 
+# Search cd history
 fcd() {
   local dir
   dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
@@ -334,6 +336,7 @@ fcd() {
   [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
 }
 
+# Search current directory
 fs() {
   local file
   file=$(rg --files-with-matches --no-heading --color=never "$1" 2>/dev/null |
@@ -341,6 +344,15 @@ fs() {
   [[ -n "$file" ]] && nvim "$file"
 }
 
+# Search entire home directory
+fsh() {
+  local file
+  file=$(rg --files-with-matches --no-heading --color=never "$1" "$HOME" 2>/dev/null |
+    fzf --prompt="Search in home → " --exit-0)
+  [[ -n "$file" ]] && nvim "$file"
+}
+
+# Search the whole file system
 fsa() {
   local file
   file=$(find / \
@@ -358,6 +370,7 @@ fsa() {
   [[ -n "$file" ]] && nvim "$file"
 }
 
+# Search and kill processes
 fk() {
   ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
 }
