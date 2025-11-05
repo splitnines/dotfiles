@@ -80,22 +80,53 @@ return {
         dashboard.button("q", "  Quit", ":qa<CR>"),
       }
       alpha.setup(dashboard.config)
+      -- vim.api.nvim_create_autocmd("ColorScheme", {
+      --   pattern = "*",
+      --   callback = function()
+      --     vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
+      --     vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
+      --     vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
+      --     local border_color = "#c8c8c8"
+      --     vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = border_color, bg = "#1e1e1e" })
+      --     vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = border_color, bg = "#1e1e1e" })
+      --     vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = border_color, bg = "#1e1e1e" })
+      --     vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "#1e1e1e" })
+      --   end,
+      -- })
+      --
+      -- vim.api.nvim_exec_autocmds("ColorScheme", {})
+      -- ===========================
+      -- Color Overrides
+      -- ===========================
+      local function set_default_colors()
+        vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
+        vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
+        vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
+        local border_color = "#c8c8c8"
+        vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = border_color, bg = "#1e1e1e" })
+        vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = border_color, bg = "#1e1e1e" })
+        vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = border_color, bg = "#1e1e1e" })
+        vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "#1e1e1e" })
+      end
+
+      local local_colors = vim.fn.stdpath("config") .. "/lua/local_colors.lua"
+
       vim.api.nvim_create_autocmd("ColorScheme", {
         pattern = "*",
         callback = function()
-          vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
-          vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
-          vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
-          -- vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#29323c", bg = "#1e1e1e" })
-          -- vim.api.nvim_set_hl(0, "TelescopeBorder", { fg = border_color, bg = "#1e1e1e" })
-          local border_color = "#c8c8c8"
-          vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = border_color, bg = "#1e1e1e" })
-          vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = border_color, bg = "#1e1e1e" })
-          vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = border_color, bg = "#1e1e1e" })
-          vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "#1e1e1e" })
+          if vim.fn.filereadable(local_colors) == 1 then
+            local ok, err = pcall(dofile, local_colors)
+            if not ok then
+              vim.notify("Error loading local_colors.lua: " .. err, vim.log.levels.ERROR)
+              set_default_colors()
+            end
+          else
+            set_default_colors()
+          end
         end,
       })
 
+      -- Trigger ColorScheme now so the highlights apply immediately
       vim.api.nvim_exec_autocmds("ColorScheme", {})
     end,
   },
