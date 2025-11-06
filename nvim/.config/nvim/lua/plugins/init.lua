@@ -31,7 +31,6 @@ require("lazy").setup({
     require("plugins.indent"),
     require("plugins.telescope"),
     require("plugins.treesitter"),
-    require("plugins.harpoon"),
     require("plugins.lsp"),
     require("plugins.conform"),
     require("plugins.cmp"),
