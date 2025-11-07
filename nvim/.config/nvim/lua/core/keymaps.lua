@@ -64,6 +64,23 @@ vim.keymap.set("n", "<leader>sp", function()
   end
 end, { desc = "Toggle spell checking" })
 
+-- Open LSP references in floating window
+vim.keymap.set("n", "grr", function()
+  local telescope = require("telescope.builtin")
+
+  local show_previewer = vim.o.columns >= 120
+
+  telescope.lsp_references({
+    layout_strategy = "horizontal",
+    layout_config = {
+      width = 0.9,
+      height = 0.8,
+      preview_width = show_previewer and 0.5 or 0,
+      preview_cutoff = 120,
+    },
+    previewer = show_previewer,
+  })
+end, { desc = "LSP References" })
 --
 --
 --

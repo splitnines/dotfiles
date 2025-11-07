@@ -80,21 +80,6 @@ return {
         dashboard.button("q", "  Quit", ":qa<CR>"),
       }
       alpha.setup(dashboard.config)
-      -- vim.api.nvim_create_autocmd("ColorScheme", {
-      --   pattern = "*",
-      --   callback = function()
-      --     vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
-      --     vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
-      --     vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
-      --     local border_color = "#c8c8c8"
-      --     vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = border_color, bg = "#1e1e1e" })
-      --     vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = border_color, bg = "#1e1e1e" })
-      --     vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = border_color, bg = "#1e1e1e" })
-      --     vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "#1e1e1e" })
-      --   end,
-      -- })
-      --
-      -- vim.api.nvim_exec_autocmds("ColorScheme", {})
       -- ===========================
       -- Color Overrides
       -- ===========================
