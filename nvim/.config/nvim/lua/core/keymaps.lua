@@ -65,6 +65,7 @@ vim.keymap.set("n", "<leader>sp", function()
 end, { desc = "Toggle spell checking" })
 
 -- Open LSP references in floating window
+vim.keymap.del("n", "grr")
 vim.keymap.set("n", "grr", function()
   local telescope = require("telescope.builtin")
   local util = vim.lsp.util
