@@ -66,98 +66,37 @@ end, { desc = "Toggle spell checking" })
 
 -- Open LSP references in floating window
 vim.keymap.del("n", "grr")
-
 vim.keymap.set("n", "grr", function()
-  -- cancel any pending operator state (prevents stray 'A')
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
-
-  -- now run your Telescope reference picker (single-client version)
   local telescope = require("telescope.builtin")
   local util = vim.lsp.util
 
-  local clients = vim.lsp.get_clients({ bufnr = 0 })
-  local client
-  for _, c in ipairs(clients) do
-    if c.supports_method("textDocument/references") then
-      client = c
-      break
-    end
-  end
+  local client = vim.lsp.get_clients({ bufnr = 0 })[1]
   if not client then
-    vim.notify("No LSP client supports textDocument/references", vim.log.levels.WARN)
+    vim.notify("No active LSP client found", vim.log.levels.WARN)
     return
   end
 
   local encoding = client.offset_encoding or "utf-16"
   local params = util.make_position_params(0, encoding)
+
   local show_previewer = vim.o.columns >= 120
 
-  client.request("textDocument/references", params, function(err, result)
-    if err then
-      vim.notify("LSP error: " .. err.message, vim.log.levels.ERROR)
-      return
-    end
-    if not result or vim.tbl_isempty(result) then
-      vim.notify("No references found", vim.log.levels.INFO)
-      return
-    end
-
-    require("telescope.pickers")
-      .new({}, {
-        prompt_title = "LSP References",
-        finder = require("telescope.finders").new_table({
-          results = vim.lsp.util.locations_to_items(result, encoding),
-          entry_maker = require("telescope.make_entry").gen_from_lsp_locations(),
-        }),
-        sorter = require("telescope.config").values.generic_sorter({}),
-        previewer = show_previewer and require("telescope.config").values.qflist_previewer({}) or nil,
-        layout_strategy = "horizontal",
-        layout_config = {
-          width = 0.9,
-          height = 0.8,
-          preview_width = show_previewer and 0.5 or 0,
-        },
-      })
-      :find()
-  end, 0)
+  telescope.lsp_references({
+    layout_strategy = "horizontal",
+    layout_config = {
+      width = 0.9,
+      height = 0.8,
+      preview_width = show_previewer and 0.5 or 0,
+      preview_cutoff = 120,
+    },
+    previewer = show_previewer,
+    params = params,
+  })
 end, {
-  desc = "LSP References (Conditional Preview, Single Client)",
+  desc = "LSP References",
   noremap = true,
   silent = true,
 })
-
--- vim.keymap.del("n", "grr")
--- vim.keymap.set("n", "grr", function()
---   local telescope = require("telescope.builtin")
---   local util = vim.lsp.util
---
---   local client = vim.lsp.get_clients({ bufnr = 0 })[1]
---   if not client then
---     vim.notify("No active LSP client found", vim.log.levels.WARN)
---     return
---   end
---
---   local encoding = client.offset_encoding or "utf-16"
---   local params = util.make_position_params(0, encoding)
---
---   local show_previewer = vim.o.columns >= 120
---
---   telescope.lsp_references({
---     layout_strategy = "horizontal",
---     layout_config = {
---       width = 0.9,
---       height = 0.8,
---       preview_width = show_previewer and 0.5 or 0,
---       preview_cutoff = 120,
---     },
---     previewer = show_previewer,
---     params = params,
---   })
--- end, {
---   desc = "LSP References",
---   noremap = true,
---   silent = true,
--- })
 --
 --
 --
