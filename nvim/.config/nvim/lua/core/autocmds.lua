@@ -3,7 +3,7 @@
 -- Autocmds
 -- ===========================
 
--- FileType-specific Settings
+-- FileType-specific settings
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "c", "cpp", "python" },
   callback = function()
@@ -25,7 +25,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Turn off vertical lines at indents for text files
+-- Turn off indent guides for text files
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "markdown", "text" },
   callback = function()
@@ -33,19 +33,22 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Yank highlight
+-- Highlight yanked text
 vim.api.nvim_create_autocmd("TextYankPost", {
-  desc = "Highlight when yanking (copying) text",
+  desc = "Highlight when yanking text",
   group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
   callback = function()
     vim.hl.on_yank()
   end,
 })
 
--- Fix clangd not attaching
+-- ======================================
+-- clangd manual attach
+-- ======================================
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "c", "cpp" },
+  pattern = { "c", "cpp", "h", "hpp" },
   callback = function()
+    -- Don’t spawn multiple clangd instances
     local active = vim.lsp.get_clients({ name = "clangd" })
     if #active == 0 then
       local root = vim.fs.dirname(vim.fs.find({
@@ -56,15 +59,26 @@ vim.api.nvim_create_autocmd("FileType", {
         ".git",
       }, { upward = true })[1] or vim.api.nvim_buf_get_name(0))
 
+      -- Prefer Mason's clangd if installed
+      local mason_clangd = vim.fn.expand("~/.local/share/nvim/mason/bin/clangd")
+      local clangd_path = vim.fn.executable(mason_clangd) == 1 and mason_clangd or "clangd"
+
       vim.lsp.start({
         name = "clangd",
-        cmd = { "clangd", "--background-index", "--clang-tidy" },
+        cmd = {
+          clangd_path,
+          "--background-index",
+          "--clang-tidy",
+          "--suggest-missing-includes",
+          "--completion-style=detailed",
+          "--header-insertion=iwyu",
+        },
         root_dir = root,
       })
     end
 
+    -- Keymap for go to definition
     local opts = { buffer = 0, silent = true, noremap = true }
-
     vim.keymap.set("n", "gd", function()
       local params = vim.lsp.util.make_position_params(0, "utf-16")
       local responses = vim.lsp.buf_request_sync(0, "textDocument/definition", params, 1000)

@@ -39,7 +39,7 @@ return {
 
     cfg("clangd", {
       capabilities = capabilities,
-      cmd = { "clangd", "--background-index", "--clang-tidy", "-std=c2x" },
+      cmd = { "clangd", "--background-index", "--clang-tidy" },
     })
 
     cfg("pyright", { capabilities = capabilities })

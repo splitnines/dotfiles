@@ -49,10 +49,12 @@ return {
         respect_gitignore = false,
         previewer = false,
         display_stat = false,
-        initial_mode = "normal",
+        initial_mode = "insert",
         layout_config = { height = 0.7 },
         sorting_strategy = "descending",
       })
     end, { desc = "Telescope File Browser" })
+    pcall(vim.keymap.del, "n", "grr")
+    map("n", "grr", builtin.lsp_references, { desc = "LSP References" })
   end,
 }

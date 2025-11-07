@@ -1,4 +1,3 @@
--- ~/dotfiles/nvim/.config/nvim/lua/core/keymaps.lua
 -- ===========================
 -- Keymaps
 -- ===========================
@@ -64,39 +63,6 @@ vim.keymap.set("n", "<leader>sp", function()
   end
 end, { desc = "Toggle spell checking" })
 
--- Open LSP references in floating window
-vim.keymap.del("n", "grr")
-vim.keymap.set("n", "grr", function()
-  local telescope = require("telescope.builtin")
-  local util = vim.lsp.util
-
-  local client = vim.lsp.get_clients({ bufnr = 0 })[1]
-  if not client then
-    vim.notify("No active LSP client found", vim.log.levels.WARN)
-    return
-  end
-
-  local encoding = client.offset_encoding or "utf-16"
-  local params = util.make_position_params(0, encoding)
-
-  local show_previewer = vim.o.columns >= 120
-
-  telescope.lsp_references({
-    layout_strategy = "horizontal",
-    layout_config = {
-      width = 0.9,
-      height = 0.8,
-      preview_width = show_previewer and 0.5 or 0,
-      preview_cutoff = 120,
-    },
-    previewer = show_previewer,
-    params = params,
-  })
-end, {
-  desc = "LSP References",
-  noremap = true,
-  silent = true,
-})
 --
 --
 --
