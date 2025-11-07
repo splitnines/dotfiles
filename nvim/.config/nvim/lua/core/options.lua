@@ -42,11 +42,4 @@ vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
 vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
 vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#111111" })
 
-vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = function()
-    vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#61afef", bold = true })
-    vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#56b6c2", bold = true })
-  end,
-})
-
 vim.opt.spellfile = vim.fn.stdpath("config") .. "/spell/en.utf-8.add"
