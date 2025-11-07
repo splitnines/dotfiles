@@ -54,5 +54,6 @@ return {
         sorting_strategy = "descending",
       })
     end, { desc = "Telescope File Browser" })
+    map("n", "grr", builtin.lsp_references, { desc = "References" })
   end,
 }
