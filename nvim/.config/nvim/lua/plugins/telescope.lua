@@ -54,7 +54,6 @@ return {
         sorting_strategy = "descending",
       })
     end, { desc = "Telescope File Browser" })
-    pcall(vim.keymap.del, "n", "grr")
     map("n", "grr", builtin.lsp_references, { desc = "LSP References" })
   end,
 }

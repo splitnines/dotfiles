@@ -46,7 +46,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 -- clangd manual attach
 -- ======================================
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "c", "cpp", "h", "hpp" },
+  pattern = { "c", "cpp" },
   callback = function()
     -- Don’t spawn multiple clangd instances
     local active = vim.lsp.get_clients({ name = "clangd" })
