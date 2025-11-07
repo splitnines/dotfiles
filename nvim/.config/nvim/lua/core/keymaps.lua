@@ -67,6 +67,12 @@ end, { desc = "Toggle spell checking" })
 -- Open LSP references in floating window
 vim.keymap.set("n", "grr", function()
   local telescope = require("telescope.builtin")
+  local util = vim.lsp.util
+
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  local encoding = clients[1] and clients[1].offset_encoding or "utf-16"
+
+  local params = util.make_position_params(0, encoding)
 
   local show_previewer = vim.o.columns >= 120
 
@@ -79,8 +85,9 @@ vim.keymap.set("n", "grr", function()
       preview_cutoff = 120,
     },
     previewer = show_previewer,
+    params = params, -- 👈 pass our explicit position params
   })
-end, { desc = "LSP References" })
+end, { desc = "References" })
 --
 --
 --
