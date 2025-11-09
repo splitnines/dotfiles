@@ -79,13 +79,12 @@ return {
     local builtin = require("telescope.builtin")
     local map = vim.keymap.set
 
-    map("n", "<leader>sf", builtin.find_files, { desc = "[s]earch [f]iles" })
+    map("n", "<leader>sf", builtin.find_files, { desc = "Search files" })
     map("n", "<leader>sg", function()
       require("telescope.builtin").live_grep({
-        grep_open_files = true, -- search only in open buffers
         prompt_title = "Grep Buffers",
       })
-    end, { desc = "[s]earch [g]rep in open buffers" })
+    end, { desc = "Search buffers" })
     map("n", "<leader>sG", function()
       require("telescope.builtin").live_grep({
         cwd = vim.loop.cwd(),
@@ -100,10 +99,10 @@ return {
           }
         end,
       })
-    end, { desc = "[s]earch by [G]rep all files" })
+    end, { desc = "Search all files" })
 
-    map("n", "<leader>sd", builtin.diagnostics, { desc = "[s]earch [d]iagnostics" })
-    map("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Buffers" })
+    map("n", "<leader>sd", builtin.diagnostics, { desc = "Search diagnostics" })
+    map("n", "<leader><leader>", builtin.buffers, { desc = "Current buffers" })
     map("n", "\\", function()
       telescope.extensions.file_browser.file_browser({
         path = vim.loop.cwd(),
@@ -113,11 +112,9 @@ return {
         previewer = true,
         display_stat = false,
         initial_mode = "insert",
-        -- layout_config = { height = 0.7 },
         sorting_strategy = "descending",
       })
-    end, { desc = "Telescope File Browser" })
-
+    end, { desc = "File browser" })
     map("n", "grr", function()
       require("telescope.builtin").lsp_references({
         show_line = true,
@@ -126,7 +123,7 @@ return {
         layout_strategy = "flex",
         sorting_strategy = "descending",
       })
-    end, { desc = "LSP [r]eferences" })
+    end, { desc = "LSP references" })
 
     ----------------------------------------------------------------
     -- enable line numbers in all previews

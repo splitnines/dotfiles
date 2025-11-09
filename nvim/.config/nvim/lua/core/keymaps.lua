@@ -20,20 +20,20 @@ vim.keymap.set("n", "<leader>o", ":put _<CR>")
 vim.keymap.set("n", "<leader>O", ":put! _<CR>")
 
 -- Diagnostics
-vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist)
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Diagnostics" })
 
 -- Buffer scrolling
 vim.keymap.set("n", "<Tab>", ":bnext<CR>")
 vim.keymap.set("n", "<S-Tab>", ":bprevious<CR>")
 
 -- Alpha dashboard
-vim.keymap.set("n", "<leader>da", ":Alpha<CR>", { desc = "Show banner" })
+vim.keymap.set("n", "<leader>mb", ":Alpha<CR>", { desc = "Show banner" })
 
 -- Jump to definition
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
 -- Markdown toggle
-vim.keymap.set("n", "<leader>mk", function()
+vim.keymap.set("n", "<leader>tm", function()
   require("lazy").load({ plugins = { "render-markdown.nvim" } })
   local render = require("render-markdown")
   local buf = vim.api.nvim_get_current_buf()
@@ -50,7 +50,7 @@ vim.keymap.set("n", "<leader>mk", function()
 end, { desc = "Toggle Markdown Render" })
 
 -- Spell check toggle
-vim.keymap.set("n", "<leader>sp", function()
+vim.keymap.set("n", "<leader>ts", function()
   local spell_enabled = vim.opt.spell:get() or vim.opt.spell
   if type(spell_enabled) ~= "boolean" then
     spell_enabled = vim.wo.spell
