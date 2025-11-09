@@ -44,5 +44,12 @@ return {
 
     cfg("pyright", { capabilities = capabilities })
     cfg("bashls", { capabilities = capabilities })
+
+    vim.keymap.set("n", "grr", function()
+      require("telescope.builtin").lsp_references({
+        show_line = true,
+        include_declaration = false,
+      })
+    end, opts)
   end,
 }

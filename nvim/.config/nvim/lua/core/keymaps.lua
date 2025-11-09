@@ -33,6 +33,14 @@ vim.keymap.set("n", "<leader>da", ":Alpha<CR>", { desc = "Show banner" })
 -- Jump to definition
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
+-- References
+vim.keymap.set("n", "grr", function()
+  require("telescope.builtin").lsp_references({
+    show_line = true,
+    include_declaration = false,
+  })
+end, { desc = "References" })
+
 -- Markdown toggle
 vim.keymap.set("n", "<leader>mk", function()
   require("lazy").load({ plugins = { "render-markdown.nvim" } })
