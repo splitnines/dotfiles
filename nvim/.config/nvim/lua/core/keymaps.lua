@@ -16,8 +16,8 @@ vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
 -- Insert line above/below
-vim.keymap.set("n", "<leader>o", ":put _<CR>")
-vim.keymap.set("n", "<leader>O", ":put! _<CR>")
+vim.keymap.set("n", "<leader>o", ":put _<CR>", { desc = "Insert line below" })
+vim.keymap.set("n", "<leader>O", ":put! _<CR>", { desc = "Insert line above" })
 
 -- Diagnostics
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Diagnostics" })

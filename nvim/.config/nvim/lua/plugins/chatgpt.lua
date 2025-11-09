@@ -38,7 +38,7 @@ return {
       },
     })
 
-    vim.keymap.set("n", "<leader>cg", "<cmd>ChatGPT<CR>", { desc = "ChatGPT" })
+    vim.keymap.set("n", "<leader>c", "<cmd>ChatGPT<CR>", { desc = "ChatGPT" })
     vim.keymap.set("v", "<leader>ce", "<cmd>ChatGPTRun explain_code<CR>", { desc = "ChatGPT Explain Code" })
     vim.keymap.set("v", "<leader>cd", "<cmd>ChatGPTRun docstring<CR>", { desc = "ChatGPT Doc String" })
   end,
