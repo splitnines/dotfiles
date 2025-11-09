@@ -22,7 +22,21 @@ return {
     local themes = require("telescope.themes")
     telescope.setup({
       defaults = {
-        mappings = { i = { ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist, ["<Esc>"] = actions.close } },
+        mappings = {
+          i = {
+            ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist,
+            ["<Esc>"] = actions.close,
+            ["<C-Space>"] = function()
+              vim.cmd("stopinsert") -- exit insert mode → normal mode
+            end,
+          },
+          n = {
+            ["<Esc>"] = actions.close, -- ESC closes Telescope
+            ["<C-Space>"] = function()
+              vim.cmd("startinsert") -- C-Space → insert mode
+            end,
+          },
+        },
         layout_strategy = "flex",
         layout_config = { prompt_position = "bottom", height = 0.7 },
         sorting_strategy = "descending",
@@ -38,7 +52,6 @@ return {
     local map = vim.keymap.set
 
     map("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
-    -- map("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
     map("n", "<leader>sg", function()
       require("telescope.builtin").live_grep({
         cwd = vim.loop.cwd(), -- search recursively from the current working directory

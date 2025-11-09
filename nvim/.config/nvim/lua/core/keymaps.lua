@@ -1,7 +1,6 @@
 -- ===========================
 -- Keymaps
 -- ===========================
-vim.keymap.del("n", "grr")
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
@@ -34,6 +33,7 @@ vim.keymap.set("n", "<leader>da", ":Alpha<CR>", { desc = "Show banner" })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
 -- References
+vim.keymap.del("n", "grr")
 vim.keymap.set("n", "grr", function()
   require("telescope.builtin").lsp_references({
     show_line = true,
