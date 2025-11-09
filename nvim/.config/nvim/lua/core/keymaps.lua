@@ -42,7 +42,7 @@ vim.keymap.set("n", "grr", function()
     layout_config = {
       horizontal = {
         preview_width = 0.55,
-        preview_cutoff = 100,
+        preview_cutoff = 120,
       },
       prompt_position = "bottom",
       width = 0.9,
