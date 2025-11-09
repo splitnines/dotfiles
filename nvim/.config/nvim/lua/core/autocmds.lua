@@ -78,46 +78,46 @@ vim.api.nvim_create_autocmd("FileType", {
     end
 
     -- Keymap for go to definition
-    local opts = { buffer = 0, silent = true, noremap = true }
-    vim.keymap.set("n", "gd", function()
-      local params = vim.lsp.util.make_position_params(0, "utf-16")
-      local responses = vim.lsp.buf_request_sync(0, "textDocument/definition", params, 1000)
-      if not responses or vim.tbl_isempty(responses) then
-        vim.notify("No definition found", vim.log.levels.INFO)
-        return
-      end
-
-      local result
-      for _, resp in pairs(responses) do
-        if resp.result and #resp.result > 0 then
-          result = resp.result
-          break
-        end
-      end
-      if not result or vim.tbl_isempty(result) then
-        vim.notify("No definition found", vim.log.levels.INFO)
-        return
-      end
-
-      local target
-      for _, item in ipairs(result) do
-        if not item.uri:match("%.h$") and not item.uri:match("%.hpp$") then
-          target = item
-          break
-        end
-      end
-      target = target or result[1]
-
-      local uri = target.uri or target.targetUri
-      local range = target.range or target.targetSelectionRange
-      local fname = vim.uri_to_fname(uri)
-      local pos = { range.start.line + 1, range.start.character }
-
-      if vim.bo.modified then
-        vim.cmd("write")
-      end
-      vim.cmd("edit " .. vim.fn.fnameescape(fname))
-      vim.api.nvim_win_set_cursor(0, pos)
-    end, opts)
+    --   local opts = { buffer = 0, silent = true, noremap = true }
+    --   vim.keymap.set("n", "gd", function()
+    --     local params = vim.lsp.util.make_position_params(0, "utf-16")
+    --     local responses = vim.lsp.buf_request_sync(0, "textDocument/definition", params, 1000)
+    --     if not responses or vim.tbl_isempty(responses) then
+    --       vim.notify("No definition found", vim.log.levels.INFO)
+    --       return
+    --     end
+    --
+    --     local result
+    --     for _, resp in pairs(responses) do
+    --       if resp.result and #resp.result > 0 then
+    --         result = resp.result
+    --         break
+    --       end
+    --     end
+    --     if not result or vim.tbl_isempty(result) then
+    --       vim.notify("No definition found", vim.log.levels.INFO)
+    --       return
+    --     end
+    --
+    --     local target
+    --     for _, item in ipairs(result) do
+    --       if not item.uri:match("%.h$") and not item.uri:match("%.hpp$") then
+    --         target = item
+    --         break
+    --       end
+    --     end
+    --     target = target or result[1]
+    --
+    --     local uri = target.uri or target.targetUri
+    --     local range = target.range or target.targetSelectionRange
+    --     local fname = vim.uri_to_fname(uri)
+    --     local pos = { range.start.line + 1, range.start.character }
+    --
+    --     if vim.bo.modified then
+    --       vim.cmd("write")
+    --     end
+    --     vim.cmd("edit " .. vim.fn.fnameescape(fname))
+    --     vim.api.nvim_win_set_cursor(0, pos)
+    --   end, opts)
   end,
 })
