@@ -16,6 +16,10 @@ return {
         delete = "<leader>rd", -- Delete surrounding
         change = "<leader>rc", -- Change surrounding
         change_line = false, -- disable change-line mapping
+
+        -- Visual mode
+        visual = "<leader>ra", -- Add surrounding in visual mode
+        visual_line = "<leader>rA", -- Add surrounding around visual line
       },
     })
   end,
