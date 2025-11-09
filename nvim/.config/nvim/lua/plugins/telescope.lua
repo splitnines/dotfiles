@@ -24,7 +24,6 @@ return {
       defaults = {
         mappings = {
           i = {
-            ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist,
             ["<Esc>"] = actions.close,
             ["<C-Space>"] = function()
               vim.cmd("stopinsert")
@@ -53,6 +52,9 @@ return {
       },
       pickers = {
         live_grep = {
+          prompt_title = "Search",
+          results_title = "Results",
+          preview_title = "Preview",
           mappings = {
             i = {
               ["<C-Space>"] = function()
@@ -68,6 +70,9 @@ return {
             },
           },
         },
+        find_files = {
+          preview_title = "Preview",
+        },
       },
       extensions = { ["ui-select"] = themes.get_dropdown() },
     })
@@ -82,14 +87,15 @@ return {
     map("n", "<leader>sf", builtin.find_files, { desc = "Search files" })
     map("n", "<leader>sg", function()
       require("telescope.builtin").live_grep({
-        prompt_title = "Grep Buffers",
+        prompt_title = "Search Buffers",
       })
     end, { desc = "Search buffers" })
     map("n", "<leader>sG", function()
       require("telescope.builtin").live_grep({
         cwd = vim.loop.cwd(),
         hidden = true,
-        prompt_title = "Grep All Files",
+        prompt_title = "Search All Files",
+        preview_title = "Preview",
         additional_args = function(_)
           return {
             "--no-ignore",
@@ -101,7 +107,7 @@ return {
       })
     end, { desc = "Search all files" })
 
-    map("n", "<leader>sd", builtin.diagnostics, { desc = "Search diagnostics" })
+    map("n", "<leader>q", builtin.diagnostics, { desc = "Search diagnostics" })
     map("n", "<leader><leader>", builtin.buffers, { desc = "Current buffers" })
     map("n", "\\", function()
       telescope.extensions.file_browser.file_browser({

@@ -28,7 +28,7 @@ return {
 
     wk.add({
       { "<leader>", group = "Leader", mode = { "n", "v" } },
-      { "<C-w>", group = "Windows", mode = { "n" } },
+      { "<leader>w", group = "Windows", mode = { "n" } },
       { "<leader>c", group = "ChatGPT", mode = { "n", "x" } },
       { "<leader>m", group = "Misc" },
       { "<leader>r", group = "Surround" },
