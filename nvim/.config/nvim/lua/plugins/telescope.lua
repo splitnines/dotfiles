@@ -1,7 +1,8 @@
 -- ~/dotfiles/nvim/.config/nvim/lua/plugins/telescope.lua
 return {
   "nvim-telescope/telescope.nvim",
-  branch = "0.1.x",
+  -- branch = "0.1.x",
+  branch = "master",
   event = "VeryLazy",
   dependencies = {
     "nvim-lua/plenary.nvim",
