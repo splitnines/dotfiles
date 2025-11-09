@@ -38,7 +38,17 @@ return {
           },
         },
         layout_strategy = "flex",
-        layout_config = { prompt_position = "bottom", height = 0.7 },
+        layout_config = {
+          prompt_position = "bottom",
+          height = 0.85,
+          width = 0.85,
+          horizontal = {
+            preview_width = 0.5,
+          },
+          vertical = {
+            preview_height = 0.5,
+          },
+        },
         sorting_strategy = "descending",
       },
       pickers = {
@@ -100,13 +110,23 @@ return {
         hidden = true,
         grouped = true,
         respect_gitignore = false,
-        previewer = false,
+        previewer = true,
         display_stat = false,
         initial_mode = "insert",
-        layout_config = { height = 0.7 },
+        -- layout_config = { height = 0.7 },
         sorting_strategy = "descending",
       })
     end, { desc = "Telescope File Browser" })
+
+    map("n", "grr", function()
+      require("telescope.builtin").lsp_references({
+        show_line = true,
+        include_declaration = false,
+        previewer = true,
+        layout_strategy = "flex",
+        sorting_strategy = "descending",
+      })
+    end, { desc = "LSP [r]eferences" })
 
     ----------------------------------------------------------------
     -- enable line numbers in all previews

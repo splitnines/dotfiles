@@ -32,37 +32,6 @@ vim.keymap.set("n", "<leader>da", ":Alpha<CR>", { desc = "Show banner" })
 -- Jump to definition
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
--- References
-vim.keymap.del("n", "grr")
-vim.keymap.set("n", "grr", function()
-  require("telescope.builtin").lsp_references({
-    show_line = true,
-    include_declaration = false,
-    previewer = true,
-    layout_strategy = "horizontal",
-    layout_config = {
-      horizontal = {
-        preview_width = 0.45,
-        preview_cutoff = 120,
-      },
-      prompt_position = "bottom",
-      width = 0.9,
-      height = 0.8,
-    },
-    attach_mappings = function()
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "TelescopePreviewerLoaded",
-        once = true,
-        callback = function()
-          vim.wo.number = true
-          vim.wo.relativenumber = false
-        end,
-      })
-      return true
-    end,
-  })
-end, { desc = "LSP References" })
-
 -- Markdown toggle
 vim.keymap.set("n", "<leader>mk", function()
   require("lazy").load({ plugins = { "render-markdown.nvim" } })
