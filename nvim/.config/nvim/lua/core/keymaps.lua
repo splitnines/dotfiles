@@ -30,6 +30,9 @@ vim.keymap.set("n", "<S-Tab>", ":bprevious<CR>")
 -- Alpha dashboard
 vim.keymap.set("n", "<leader>da", ":Alpha<CR>", { desc = "Show banner" })
 
+-- Jump to definition
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+
 -- Markdown toggle
 vim.keymap.set("n", "<leader>mk", function()
   require("lazy").load({ plugins = { "render-markdown.nvim" } })
