@@ -35,13 +35,31 @@ vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
 -- References
 vim.keymap.set("n", "grr", function()
-  local params = vim.lsp.util.make_position_params(0, "utf-8")
-  require("telescope.builtin").lsp_references({
+  local builtin = require("telescope.builtin")
+  local util = require("vim.lsp.util")
+
+  ---@type lsp.TextDocumentPositionParams|table
+  local params = util.make_position_params(0, "utf-8")
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  if #clients > 0 and clients[1].offset_encoding then
+    params.positionEncoding = clients[1].offset_encoding
+  end
+
+  builtin.lsp_references({
     show_line = true,
     include_declaration = false,
     params = params,
   })
 end, { desc = "References" })
+
+-- vim.keymap.set("n", "grr", function()
+--   local params = vim.lsp.util.make_position_params(0, "utf-8")
+--   require("telescope.builtin").lsp_references({
+--     show_line = true,
+--     include_declaration = false,
+--     params = params,
+--   })
+-- end, { desc = "References" })
 
 -- Markdown toggle
 vim.keymap.set("n", "<leader>mk", function()
