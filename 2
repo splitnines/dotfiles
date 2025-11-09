@@ -27,13 +27,13 @@ return {
             ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist,
             ["<Esc>"] = actions.close,
             ["<C-Space>"] = function()
-              vim.cmd("stopinsert")
+              vim.cmd("stopinsert") -- exit insert mode → normal mode
             end,
           },
           n = {
-            ["<Esc>"] = actions.close,
+            ["<Esc>"] = actions.close, -- ESC closes Telescope
             ["<C-Space>"] = function()
-              vim.cmd("startinsert")
+              vim.cmd("startinsert") -- C-Space → insert mode
             end,
           },
         },
@@ -73,14 +73,13 @@ return {
     map("n", "<leader>sg", function()
       require("telescope.builtin").live_grep({
         grep_open_files = true, -- search only in open buffers
-        prompt_title = "Grep Buffers",
+        prompt_title = "Live Grep (Open Buffers)",
       })
-    end, { desc = "[s]earch [g]rep in open buffers" })
+    end, { desc = "[S]earch [G]rep in open buffers" })
     map("n", "<leader>sG", function()
       require("telescope.builtin").live_grep({
-        cwd = vim.loop.cwd(),
-        hidden = true,
-        prompt_title = "Grep All Files",
+        cwd = vim.loop.cwd(), -- search recursively from the current working directory
+        hidden = true, -- include hidden files
         additional_args = function(_)
           return {
             "--no-ignore",
