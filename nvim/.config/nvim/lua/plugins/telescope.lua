@@ -41,6 +41,24 @@ return {
         layout_config = { prompt_position = "bottom", height = 0.7 },
         sorting_strategy = "descending",
       },
+      pickers = {
+        live_grep = {
+          mappings = {
+            i = {
+              ["<C-Space>"] = function()
+                vim.cmd("stopinsert")
+              end,
+              ["<Esc>"] = actions.close,
+            },
+            n = {
+              ["<C-Space>"] = function()
+                vim.cmd("startinsert")
+              end,
+              ["<Esc>"] = actions.close,
+            },
+          },
+        },
+      },
       extensions = { ["ui-select"] = themes.get_dropdown() },
     })
 
@@ -58,10 +76,10 @@ return {
         hidden = true, -- include hidden files
         additional_args = function(_)
           return {
-            "--no-ignore", -- include .gitignored files
-            "--hidden", -- include dotfiles
+            "--no-ignore",
+            "--hidden",
             "--glob",
-            "!.git/*", -- exclude .git directory
+            "!.git/*",
           }
         end,
       })
