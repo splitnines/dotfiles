@@ -39,6 +39,10 @@ vim.keymap.set("n", "grr", function()
     show_line = true,
     include_declaration = false,
     layout_strattegy = "vertical",
+    layout_config = {
+      preview_width = 0.55,
+      mirror = false,
+    },
   })
 end, { desc = "References" })
 
