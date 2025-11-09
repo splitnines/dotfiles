@@ -1,7 +1,6 @@
 -- ~/dotfiles/nvim/.config/nvim/lua/plugins/telescope.lua
 return {
   "nvim-telescope/telescope.nvim",
-  -- branch = "0.1.x",
   branch = "master",
   event = "VeryLazy",
   dependencies = {
@@ -55,5 +54,16 @@ return {
         sorting_strategy = "descending",
       })
     end, { desc = "Telescope File Browser" })
+
+    ----------------------------------------------------------------
+    -- enable line numbers in all previews
+    ----------------------------------------------------------------
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "TelescopePreviewerLoaded",
+      callback = function()
+        vim.wo.number = true
+        vim.wo.relativenumber = false
+      end,
+    })
   end,
 }
