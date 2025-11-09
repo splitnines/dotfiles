@@ -38,6 +38,7 @@ vim.keymap.set("n", "grr", function()
   require("telescope.builtin").lsp_references({
     show_line = true,
     include_declaration = false,
+    previewer = true,
     layout_strategy = "horizontal",
     layout_config = {
       horizontal = {
@@ -48,8 +49,19 @@ vim.keymap.set("n", "grr", function()
       width = 0.9,
       height = 0.8,
     },
+    attach_mappings = function()
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TelescopePreviewerLoaded",
+        once = true,
+        callback = function()
+          vim.wo.number = true
+          vim.wo.relativenumber = false
+        end,
+      })
+      return true
+    end,
   })
-end, { desc = "References" })
+end, { desc = "LSP References" })
 
 -- Markdown toggle
 vim.keymap.set("n", "<leader>mk", function()
