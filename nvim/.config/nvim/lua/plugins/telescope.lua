@@ -72,6 +72,7 @@ return {
         },
         find_files = {
           preview_title = "Preview",
+          prompt_title = "Search Files",
         },
       },
       extensions = { ["ui-select"] = themes.get_dropdown() },
