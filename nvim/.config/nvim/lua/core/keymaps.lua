@@ -38,10 +38,15 @@ vim.keymap.set("n", "grr", function()
   require("telescope.builtin").lsp_references({
     show_line = true,
     include_declaration = false,
-    layout_strattegy = "vertical",
+    layout_strategy = "horizontal",
     layout_config = {
-      preview_width = 0.55,
-      mirror = false,
+      horizontal = {
+        preview_width = 0.55,
+        preview_cutoff = 100,
+      },
+      prompt_position = "bottom",
+      width = 0.9,
+      height = 0.8,
     },
   })
 end, { desc = "References" })
