@@ -39,11 +39,26 @@ return {
 
     cfg("clangd", {
       capabilities = capabilities,
-      -- cmd = { "clangd", "--background-index", "--clang-tidy" },
-      cmd = { "clangd", "--clang-tidy" },
+      cmd = { "clangd", "--background-index", "--clang-tidy" },
     })
 
     cfg("pyright", { capabilities = capabilities })
     cfg("bashls", { capabilities = capabilities })
   end,
+  -- Keymaps for LSP-attached buffers
+  vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(ev)
+      local opts = { buffer = ev.buf, silent = true }
+
+      -- Jump to definition
+      vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+
+      -- (Optional) other useful LSP keymaps
+      vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+      vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+      vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+      vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+      vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+    end,
+  }),
 }
