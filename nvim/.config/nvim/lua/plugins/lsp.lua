@@ -45,20 +45,27 @@ return {
     cfg("pyright", { capabilities = capabilities })
     cfg("bashls", { capabilities = capabilities })
 
-    ----------------------------------------------------------------
-    -- LSP keymaps (safe for Neovim 0.10+)
-    ----------------------------------------------------------------
     vim.api.nvim_create_autocmd("LspAttach", {
       callback = function(event)
         local opts = { buffer = event.buf, silent = true, noremap = true }
 
-        vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-        -- Optional: other common LSP bindings
-        vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-        vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-        vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-        vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+        vim.keymap.set("n", "gd", function()
+          vim.lsp.buf_request(0, "textDocument/definition", vim.lsp.util.make_position_params(), function(err, result)
+            if err or not result or vim.tbl_isempty(result) then
+              vim.notify("No definition found", vim.log.levels.WARN)
+              return
+            end
+
+            local target = result[1]
+            for _, r in ipairs(result) do
+              if not string.match(r.uri, "%.h$") and not string.match(r.uri, "%.hpp$") then
+                target = r
+                break
+              end
+            end
+            vim.lsp.util.jump_to_location(target, "utf-8")
+          end)
+        end, opts)
       end,
     })
   end,
