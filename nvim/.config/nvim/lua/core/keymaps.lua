@@ -35,9 +35,11 @@ vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
 -- References
 vim.keymap.set("n", "grr", function()
+  local params = vim.lsp.util.make_position_params(0, "utf-8")
   require("telescope.builtin").lsp_references({
     show_line = true,
     include_declaration = false,
+    params = params,
   })
 end, { desc = "References" })
 
