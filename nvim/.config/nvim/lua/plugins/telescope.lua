@@ -41,13 +41,18 @@ return {
     -- map("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
     map("n", "<leader>sg", function()
       require("telescope.builtin").live_grep({
-        cwd = vim.loop.cwd(), -- search from current working directory
+        cwd = vim.loop.cwd(), -- search recursively from the current working directory
         hidden = true, -- include hidden files
         additional_args = function(_)
-          return { "--no-ignore", "--hidden" } -- include .gitignored files too
+          return {
+            "--no-ignore", -- include .gitignored files
+            "--hidden", -- include dotfiles
+            "--glob",
+            "!.git/*", -- exclude .git directory
+          }
         end,
       })
-    end, { desc = "[S]earch by [G]rep (CWD + subdirs)" })
+    end, { desc = "[S]earch by [G]rep" })
 
     map("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
     map("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Buffers" })
