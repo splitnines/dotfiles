@@ -24,6 +24,9 @@ vim.opt.cursorline = true
 vim.opt.list = false
 vim.opt.inccommand = "split"
 vim.opt.smartindent = true
+-- Use zsh
+vim.opt.shell = "/usr/bin/zsh"
+-- vim.opt.shellcmdflag = "-ic"
 
 vim.schedule(function()
   vim.opt.clipboard = "unnamedplus"
