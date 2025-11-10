@@ -2,7 +2,7 @@
 return {
   "folke/todo-comments.nvim",
   dependencies = { "nvim-lua/plenary.nvim" },
-  event = { "BufReadPost", "BufNewFile" },
+  event = "VeryLazy",
   opts = {
     keywords = {
       NOTE = { icon = "📝", color = "hint", alt = { "INFO" } },
@@ -13,11 +13,8 @@ return {
   },
   config = function(_, opts)
     require("todo-comments").setup(opts)
-    vim.keymap.set("n", "]t", function()
-      require("todo-comments").jump_next()
-    end, { desc = "Next TODO/NOTE" })
-    vim.keymap.set("n", "[t", function()
-      require("todo-comments").jump_prev()
-    end, { desc = "Prev TODO/NOTE" })
+    local todo = require("todo-comments")
+    vim.keymap.set("n", "]t", todo.jump_next, { desc = "Next TODO/NOTE" })
+    vim.keymap.set("n", "[t", todo.jump_prev, { desc = "Prev TODO/NOTE" })
   end,
 }
