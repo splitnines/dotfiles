@@ -48,6 +48,18 @@ vim.keymap.set("n", "<leader>mb", ":Alpha<CR>", { desc = "Show banner" })
 -- Jump to definition
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
+-- Toggle linter
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    if vim.fn.exists(":ToggleLint") == 2 then
+      vim.keymap.set("n", "<leader>tl", ":ToggleLint<CR>", {
+        desc = "Toggle LSP diagnostics",
+        silent = true,
+      })
+    end
+  end,
+})
+
 -- Markdown toggle
 vim.keymap.set("n", "<leader>tm", function()
   require("lazy").load({ plugins = { "render-markdown.nvim" } })
