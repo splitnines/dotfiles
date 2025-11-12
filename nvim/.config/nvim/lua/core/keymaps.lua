@@ -48,6 +48,9 @@ vim.keymap.set("n", "<leader>mb", ":Alpha<CR>", { desc = "Show banner" })
 -- Jump to definition
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
+-- Explore
+vim.keymap.set("n", "<leader>d", "<CMD>Explore<CR>", { desc = " Directory explorer" })
+
 -- Toggle linter
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
@@ -76,6 +79,7 @@ vim.keymap.set("n", "<leader>tm", function()
     vim.notify("Markdown rendering enabled", vim.log.levels.INFO)
   end
 end, { desc = "Toggle Markdown Render" })
+
 -- Make <leader>tm work inside ChatGPT window too
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "chatgpt-input",
@@ -114,7 +118,6 @@ vim.keymap.set("n", "<leader>ts", function()
     vim.notify("Spell check disabled", vim.log.levels.INFO)
   end
 end, { desc = "Toggle spell checking" })
-
 --
 --
 --
