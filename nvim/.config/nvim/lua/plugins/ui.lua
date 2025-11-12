@@ -96,6 +96,9 @@ return {
         -- Search highlights
         vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
         vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#E197EF" })
+
+        vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#c8c8c8", bg = "#1e1e1e" })
+        vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
       end
 
       local local_colors = vim.fn.stdpath("config") .. "/lua/local_colors.lua"
