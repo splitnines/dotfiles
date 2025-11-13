@@ -86,12 +86,12 @@ return {
     local map = vim.keymap.set
 
     map("n", "<leader>sf", builtin.find_files, { desc = "Search files" })
-    map("n", "<leader>sg", function()
+    map("n", "<leader>sb", function()
       require("telescope.builtin").live_grep({
         prompt_title = "Search Buffers",
       })
     end, { desc = "Search buffers" })
-    map("n", "<leader>sG", function()
+    map("n", "<leader>sa", function()
       require("telescope.builtin").live_grep({
         cwd = vim.loop.cwd(),
         hidden = true,
