@@ -99,6 +99,13 @@ return {
 
         vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#c8c8c8", bg = "#1e1e1e" })
         vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
+
+        -- Darken the nvim-cmp popup background
+        vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1e1e2e", fg = "#c0c0c0" })
+        vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#2a2a3a", fg = "#ffffff" })
+        vim.api.nvim_set_hl(0, "PmenuBorder", { bg = "#1e1e2e", fg = "#3b3b4b" })
+        vim.api.nvim_set_hl(0, "CmpDoc", { bg = "#1c1c28" })
+        vim.api.nvim_set_hl(0, "CmpDocBorder", { bg = "#1c1c28", fg = "#3b3b4b" })
       end
 
       local local_colors = vim.fn.stdpath("config") .. "/lua/local_colors.lua"

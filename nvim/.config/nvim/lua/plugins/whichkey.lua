@@ -31,7 +31,6 @@ return {
       { "<leader>w", group = "Windows", mode = { "n" } },
       { "<leader>c", group = "ChatGPT", mode = { "n", "x" } },
       { "<leader>m", group = "Misc" },
-      { "<leader>r", group = "Surround" },
       { "<leader>s", group = "Search" },
       { "<leader>t", group = "Toggle" },
     })

@@ -53,17 +53,6 @@ if [[ -f "$HOME/.dircolors-onedark" ]]; then
 fi
 
 # ===========================
-# OneDark fzf Colors
-# ===========================
-export FZF_DEFAULT_OPTS="
-  --color=fg:#abb2bf,bg:#282c34,hl:#e5c07b
-  --color=fg+:#abb2bf,bg+:#3e4451,hl+:#e5c07b
-  --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
-  --color=border:#3e4451,label:#61afef
-  --border=rounded --margin=1 --padding=1
-"
-
-# ===========================
 # OneDark Color Scheme
 # ===========================
 if [[ -f "$HOME/.config/onedark-colors.sh" ]]; then
@@ -128,6 +117,13 @@ setopt EXTENDED_HISTORY        # Record timestamps
 setopt HIST_EXPIRE_DUPS_FIRST  # Drop oldest duplicates when trimming
 setopt HIST_SAVE_NO_DUPS       # Don’t save duplicate entries
 
+# =========================
+# Push cd history to stack
+# =========================
+setopt AUTO_PUSHD
+setopt PUSHD_SILENT
+setopt PUSHD_IGNORE_DUPS
+
 alias h='fc -li 1'
 
 # Force write to history after each command
@@ -174,7 +170,6 @@ alias gm='git merge'
 # ===========================
 # Tab completion enhancements
 # ===========================
-
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' verbose yes
@@ -278,6 +273,9 @@ zle -N zle-line-init
 function zle-line-finish { echo -ne "\e[2 q"; }
 zle -N zle-line-finish
 
+# =========================
+# SSH agent
+# =========================
 SSH_ENV="$HOME/.ssh/agent_env"
 SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.zsh"
 
@@ -300,15 +298,14 @@ if [[ -f ~/.fzf/shell/completion.zsh ]]; then
 fi
 
 # ===========================
-# OneDark fzf Colors
+# fzf defaults
 # ===========================
 export FZF_DEFAULT_OPTS="
   --height=100%
   --border=rounded
-  --margin=1
+  --margin=1,3
   --padding=1
-  --color=fg:#abb2bf,bg:#282c34,hl:#e5c07b
-  --color=fg+:#abb2bf,bg+:#3e4451,hl+:#e5c07b
+  --color=bg:#141414,bg+:#2b3038,fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
   --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
   --color=border:#3e4451,label:#61afef
 "
@@ -336,23 +333,22 @@ fcd() {
   [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
 }
 
-# Search current directory
-fs() {
+# Search current directory (fuzzy filenames only)
+fsc() {
   local file
-  file=$(rg --files-with-matches --no-heading --color=never "$1" 2>/dev/null |
-    fzf --prompt="Search results → " --exit-0)
+  file=$(fzf --prompt="Search files → " --exit-0)
   [[ -n "$file" ]] && nvim "$file"
 }
 
-# Search entire home directory
+# Search entire home directory (fuzzy)
 fsh() {
   local file
-  file=$(rg --files-with-matches --no-heading --color=never "$1" "$HOME" 2>/dev/null |
-    fzf --prompt="Search in home → " --exit-0)
+  file=$(fdfind . --type f --hidden --exclude .git "$HOME" 2>/dev/null | \
+         fzf --prompt="Search in home → " --exit-0)
   [[ -n "$file" ]] && nvim "$file"
 }
 
-# Search the whole file system
+# Search the whole file system (fuzzy, skips unsafe dirs)
 fsa() {
   local file
   file=$(find / \
@@ -366,7 +362,6 @@ fsa() {
     -path /snap -prune -o \
     -type f -readable -print 2>/dev/null | \
     fzf --prompt='Search all files → ')
-
   [[ -n "$file" ]] && nvim "$file"
 }
 

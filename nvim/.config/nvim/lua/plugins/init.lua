@@ -36,7 +36,6 @@ require("lazy").setup({
     require("plugins.cmp"),
     require("plugins.chatgpt"),
     require("plugins.ui"),
-    require("plugins.surround"),
     require("plugins.smear"),
     require("plugins.markdown"),
   },
