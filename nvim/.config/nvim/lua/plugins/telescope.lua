@@ -22,6 +22,7 @@ return {
     local themes = require("telescope.themes")
     telescope.setup({
       defaults = {
+        initial_mode = "normal",
         mappings = {
           i = {
             ["<Esc>"] = actions.close,
@@ -118,7 +119,7 @@ return {
         respect_gitignore = false,
         previewer = true,
         display_stat = false,
-        initial_mode = "insert",
+        initial_mode = "normal",
         sorting_strategy = "descending",
       })
     end, { desc = "File browser" })
