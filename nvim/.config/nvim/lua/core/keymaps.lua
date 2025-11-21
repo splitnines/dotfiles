@@ -57,6 +57,10 @@ vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 -- Explore
 vim.keymap.set("n", "<leader>d", "<CMD>Explore<CR>", { desc = " Directory explorer" })
 
+-- Center search results
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+
 -- Toggle linter
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
