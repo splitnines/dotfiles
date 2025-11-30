@@ -124,6 +124,8 @@ setopt AUTO_PUSHD
 setopt PUSHD_SILENT
 setopt PUSHD_IGNORE_DUPS
 
+setopt AUTO_REHASH
+
 alias h='fc -li 1'
 
 # Force write to history after each command
