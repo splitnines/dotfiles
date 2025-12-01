@@ -38,5 +38,6 @@ require("lazy").setup({
     require("plugins.ui"),
     require("plugins.smear"),
     require("plugins.markdown"),
+    require("plugins.surround"),
   },
 })
