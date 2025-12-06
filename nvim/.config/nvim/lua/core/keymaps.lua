@@ -4,6 +4,9 @@
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
+-- Remap F1 to esc because my aim sucks
+vim.keymap.set({ "n", "i", "v", "x" }, "<F1>", "<Esc>", { silent = true })
+
 -- Window navigation
 local map_w = vim.keymap.set
 local opts_w = { noremap = true, silent = true }
