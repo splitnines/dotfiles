@@ -190,7 +190,7 @@ setopt MENU_COMPLETE
 # Autocorrection
 # ===========================
 setopt CORRECT
-setopt CORRECT_ALL
+unsetopt CORRECT_ALL
 
 # ===========================
 # Misc settings
