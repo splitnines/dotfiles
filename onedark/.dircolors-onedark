@@ -1,0 +1,91 @@
+# ==========================================
+# OneDark dircolors (256-color compatible)
+# ==========================================
+# Source with: eval "$(dircolors ~/.dircolors-onedark)"
+# This gives ls, fzf, and tab completion the same vibe as your OneDark config.
+
+# Global default colors
+NORMAL 38;5;145        # Regular file text (onedark white)
+FILE 38;5;145
+DIR 38;5;75            # Directories (onedark blue)
+LINK 38;5;180          # Symbolic links (onedark yellow)
+MULTIHARDLINK 38;5;180
+
+# Special files
+FIFO 38;5;73           # Named pipe (onedark cyan)
+SOCK 38;5;73           # Socket (onedark cyan)
+DOOR 38;5;73           # Solaris "door" (onedark cyan)
+BLK 38;5;180;1         # Block device (bold yellow)
+CHR 38;5;180;1         # Character device (bold yellow)
+ORPHAN 38;5;176;1      # Orphan symlink (magenta)
+MISSING 38;5;167;1     # Missing file (red)
+SETUID 38;5;167;1      # Setuid (red)
+SETGID 38;5;167;1      # Setgid (red)
+CAPABILITY 38;5;167;1  # File with Linux capability
+
+# Executables
+EXEC 38;5;114          # Executable file (onedark green)
+*.sh 38;5;114
+*.py 38;5;114
+*.pl 38;5;114
+*.rb 38;5;114
+*.go 38;5;114
+*.c 38;5;114
+*.cpp 38;5;114
+
+# Archives and compressed files
+*.tar 38;5;167
+*.tgz 38;5;167
+*.zip 38;5;167
+*.gz 38;5;167
+*.xz 38;5;167
+*.bz2 38;5;167
+*.7z 38;5;167
+*.rar 38;5;167
+
+# Images and media
+*.jpg 38;5;176
+*.jpeg 38;5;176
+*.png 38;5;176
+*.gif 38;5;176
+*.bmp 38;5;176
+*.svg 38;5;176
+*.mp4 38;5;176
+*.mkv 38;5;176
+*.mov 38;5;176
+*.mp3 38;5;176
+*.wav 38;5;176
+*.flac 38;5;176
+
+# Documents
+*.pdf 38;5;180
+*.doc 38;5;180
+*.docx 38;5;180
+*.xls 38;5;180
+*.xlsx 38;5;180
+*.ppt 38;5;180
+*.pptx 38;5;180
+*.txt 38;5;145
+*.md 38;5;180
+*.log 38;5;73
+
+# Version control
+.git 38;5;240
+.gitignore 38;5;240
+.gitmodules 38;5;240
+
+# Permissions / ownership indicators
+OTHER_WRITABLE 38;5;180
+STICKY_OTHER_WRITABLE 38;5;180;1
+STICKY 38;5;180;1
+
+# Misc
+DOOR 38;5;73
+BLOCK 38;5;180;1
+CHAR 38;5;180;1
+OR 38;5;176
+MI 38;5;167
+CA 38;5;167
+TW 38;5;180
+OW 38;5;180
+ST 38;5;145
