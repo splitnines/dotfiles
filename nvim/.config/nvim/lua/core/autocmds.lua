@@ -96,3 +96,23 @@ vim.api.nvim_create_autocmd("FileType", {
     })
   end,
 })
+
+-- ====================================
+-- Open file links in nvim
+-- ====================================
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function(args)
+    vim.keymap.set("n", "gx", function()
+      local target = vim.fn.expand("<cfile>")
+
+      -- local file → open in nvim
+      if vim.fn.filereadable(target) == 1 then
+        vim.cmd("edit " .. vim.fn.fnameescape(target))
+        return
+      end
+
+      -- otherwise → external opener
+      vim.ui.open(target)
+    end, { buffer = args.buf })
+  end,
+})
