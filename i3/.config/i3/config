@@ -25,12 +25,12 @@ font pango:JetBrains Mono 9
 exec --no-startup-id dex --autostart --environment i3
 
 # Dual-monitor layout: laptop left, HDMI right
-exec --no-startup-id xrandr \
-  --output eDP-1 --mode 1920x1080 --pos 0x0 --primary \
-  --output HDMI-1 --mode 1920x1080 --pos 1920x0
+exec_always --no-startup-id xrandr \
+  --output eDP-1  --mode 1600x900  --pos 0x0     --primary \
+  --output HDMI-1 --mode 1920x1080 --pos 1600x0
 
 # Laptop screen resolution
-exec --no-startup-id xrandr --output eDP-1 --mode 1600x900
+# exec --no-startup-id xrandr --output eDP-1 --mode 1600x900
 
 # Connect BT speakers
 exec --no-startup-id systemctl --user start bluetooth || true
