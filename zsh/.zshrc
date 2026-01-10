@@ -343,8 +343,14 @@ fsc() {
 # Search entire home directory (fuzzy)
 fsh() {
   local file
-  file=$(fdfind . --type f --hidden --exclude .git "$HOME" 2>/dev/null | \
-         fzf --prompt="Search in home → " --exit-0)
+  file=$(fdfind --type f --hidden \
+    --exclude .git \
+    --exclude .cache \
+    --exclude .local \
+    --exclude node_modules \
+    --exclude target \
+    . "$HOME" 2>/dev/null | \
+    fzf --prompt="Search in home → " --exit-0)
   [[ -n "$file" ]] && nvim "$file"
 }
 

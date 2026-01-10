@@ -2,7 +2,7 @@
 return {
   "MeanderingProgrammer/render-markdown.nvim",
   dependencies = { "nvim-treesitter/nvim-treesitter" },
-  lazy = false, -- 👈 ensure it's loaded globally
+  lazy = false,
   opts = {
     anti_conceal = { enabled = false },
     enabled = false,
