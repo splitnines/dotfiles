@@ -159,7 +159,7 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # Polybar display
-exec_always --no-startup-id ~/.config/polybar/launch.sh
+exec_always --no-startup-id ~/.config/local/polybar/launch.sh
 
 # -------------------------
 # OneDark Colors
