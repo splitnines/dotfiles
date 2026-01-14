@@ -4,7 +4,11 @@ include ~/.config/local/i3/config.local
 set $mod Mod1
 
 # Font for window titles.
-font pango:JetBrains Mono 9
+font pango:JetBrains Mono 10
+
+# Set background
+# exec --no-startup-id feh --bg-scale ~/dotfiles/background
+exec --no-startup-id feh --bg-fill ~/dotfiles/background
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
@@ -177,16 +181,12 @@ default_floating_border pixel 2
 
 # Focused window — BLACK title text
 client.focused          $blue     $blue     $black $blue     $blue
-
 # Focused but inactive
 client.focused_inactive $darkgray $darkgray $fg    $darkgray $darkgray
-
 # Unfocused
 client.unfocused        $bg       $bg       $gray  $bg       $bg
-
 # Urgent
 client.urgent           $red      $red      $black $red      $red
-
 # Placeholder
 client.placeholder      $bg       $bg       $fg    $bg       $bg
 
@@ -200,4 +200,5 @@ bindsym Shift+Print exec --no-startup-id flameshot full
 bindsym Alt+Print exec --no-startup-id flameshot gui --current
 
 # Autotiling
-exec_always --no-startup-id /home/rickey/.config/autotiling/autotiling
+exec_always --no-startup-id ~/.config/autotiling/autotiling
+
