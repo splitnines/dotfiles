@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+PIDFILE="$HOME/.cache/autotiling.pid"
+
+if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+    kill "$(cat "$PIDFILE")"
+fi
+
+cd "$HOME/.config/autotiling" || exit 1
+/home/rickey/.config/autotiling/.venv/bin/python autotiling.py &
+
+echo $! > "$PIDFILE"
+
