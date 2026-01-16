@@ -22,6 +22,7 @@ vim.opt.splitbelow = true
 vim.opt.scrolloff = 5
 vim.opt.cursorline = true
 vim.opt.list = true
+vim.g.have_nerd_font = true
 -- vim.opt.listchars:append({ trail = "·", tab = "» " })
 vim.opt.inccommand = "split"
 vim.opt.smartindent = true
