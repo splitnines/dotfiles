@@ -7,7 +7,8 @@ set $mod Mod1
 font pango:JetBrains Mono 10
 
 # Set background
-exec --no-startup-id feh --bg-fill ~/dotfiles/background
+exec_always --no-startup-id xsetroot -solid "#282c34"
+# exec --no-startup-id feh --bg-fill ~/dotfiles/background
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
