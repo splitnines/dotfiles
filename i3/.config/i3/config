@@ -40,7 +40,8 @@ bindsym F3 exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+# bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec alacritty
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -184,15 +185,10 @@ set $black     #000000
 default_border pixel 2
 default_floating_border pixel 2
 
-# Focused window — BLACK title text
 client.focused          $blue     $blue     $black $blue     $blue
-# Focused but inactive
 client.focused_inactive $darkgray $darkgray $fg    $darkgray $darkgray
-# Unfocused
 client.unfocused        $bg       $bg       $gray  $bg       $bg
-# Urgent
 client.urgent           $red      $red      $black $red      $red
-# Placeholder
 client.placeholder      $bg       $bg       $fg    $bg       $bg
 
 # Gaps
