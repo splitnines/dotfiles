@@ -95,3 +95,7 @@ key = "V"
 mods = "Control"
 action = "Paste"
 
+[[keyboard.bindings]]
+key = "Key0"
+mods = "Control"
+action = "ResetFontSize"
