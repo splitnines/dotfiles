@@ -10,7 +10,7 @@ font pango:JetBrains Mono 10
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
 # Set background
-exec --no-startup-id feh --no-fehbg --bg-fill ~/dotfiles/background.png
+exec --nostart-up-id hsetroot -solid "#282c34"
 
 # Start XDG autostart .desktop files using dex
 exec --no-startup-id dex --autostart --environment i3
