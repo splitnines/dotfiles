@@ -6,6 +6,9 @@ set $mod Mod1
 # Font for window titles.
 font pango:JetBrains Mono 10
 
+# Polybar display
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+
 # Set background
 exec --no-startup-id feh --no-fehbg --bg-fill ~/dotfiles/background.png
 
@@ -93,16 +96,16 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+a focus parent
 
 # Define names for default workspaces
-set $ws1 "1"
-set $ws2 "2"
-set $ws3 "3"
-set $ws4 "4"
-set $ws5 "5"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
+set $ws1 "1:one"
+set $ws2 "2:two"
+set $ws3 "3:three"
+set $ws4 "4:four"
+set $ws5 "5:five"
+set $ws6 "6:six"
+set $ws7 "7:seven"
+set $ws8 "8:eight"
+set $ws9 "9:nine"
+set $ws10 "10:ten"
 
 # Switch to workspace
 bindsym $mod+1 workspace number $ws1
@@ -155,9 +158,6 @@ mode "resize" {
         bindsym $mod+r mode "default"
 }
 bindsym $mod+r mode "resize"
-
-# Polybar display
-exec_always --no-startup-id ~/.config/polybar/launch.sh
 
 # OneDark Colors
 set $bg        #282c34
