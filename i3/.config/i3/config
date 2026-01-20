@@ -96,16 +96,26 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+a focus parent
 
 # Define names for default workspaces
-set $ws1 "1:❶ "
-set $ws2 "2:❷"
-set $ws3 "3:❸"
-set $ws4 "4:❹"
-set $ws5 "5:❺"
-set $ws6 "6:❻"
-set $ws7 "7:❼"
-set $ws8 "8:❽"
-set $ws9 "9:❾"
-set $ws10 "10:❿"
+# set $ws1 "1:❶ "
+# set $ws2 "2:❷"
+# set $ws3 "3:❸"
+# set $ws4 "4:❹"
+# set $ws5 "5:❺"
+# set $ws6 "6:❻"
+# set $ws7 "7:❼"
+# set $ws8 "8:❽"
+# set $ws9 "9:❾"
+# set $ws10 "10:❿"
+set $ws1 "1:1"
+set $ws2 "2:2"
+set $ws3 "3:3"
+set $ws4 "4:4"
+set $ws5 "5:5"
+set $ws6 "6:6"
+set $ws7 "7:7"
+set $ws8 "8:8"
+set $ws9 "9:9"
+set $ws10 "10:10"
 
 # Switch to workspace
 bindsym $mod+1 workspace number $ws1
