@@ -515,6 +515,25 @@ __zsh_auto_venv() {
   fi
 }
 
+# Create a PDF file
+function 2pdf1() {
+  local infile="$1"
+  local outfile="$2"
+
+  if [[ -z "$infile" || -z "$outfile" ]]; then
+    print -u2 "usage: 2pdf1 <input-file> <output.pdf>"
+    return 1
+  fi
+
+  sed '1s/^/```c\n/;$s/$/\n```/' "$infile" | \
+    pandoc -o "$outfile" \
+      --highlight-style=pygments \
+      -V monofont="JetBrainsMono Nerd Font Mono" \
+      -V monofontsize=10pt \
+      -V geometry:margin=1in \
+      --pdf-engine=xelatex
+}
+
 # Hook runs every time you cd
 add-zsh-hook chpwd __zsh_auto_venv
 
