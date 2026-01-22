@@ -10,17 +10,16 @@ font pango:JetBrains Mono 10
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
 # Set background
-exec_always --nostart-up-id hsetroot -solid "#282c34"
+exec_always --no-startup-id sh -c 'sleep 0.5; hsetroot -solid "#282c34"'
 
 # Start XDG autostart .desktop files using dex
 exec --no-startup-id dex --autostart --environment i3
 
 # Screen timeout and lock
-exec --no-startup-id xset s 900
+exec_always --no-startup-id sh -c 'sleep 1; xset s 900 0'
 exec --no-startup-id xset dpms 0 0 915
 exec --no-startup-id xset +dpms
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -c 04090e --nofork
-# exec --no-startup-id xss-lock --transfer-sleep-lock --ignore-sleep -- i3lock -c 000000
 
 # NetwoekManager in the tray
 exec --no-startup-id nm-applet
