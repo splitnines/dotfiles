@@ -84,9 +84,13 @@ return {
       -- Color Overrides
       -- ===========================
       local function set_default_colors()
-        vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
-        vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
-        vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
+        -- vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
+        -- vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
+        -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
+        vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "NONE" })
+        vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "ColorColumn", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
         local border_color = "#c8c8c8"
         vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = border_color, bg = "#1e1e1e" })
         vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = border_color, bg = "#1e1e1e" })

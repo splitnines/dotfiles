@@ -43,8 +43,8 @@ vim.diagnostic.config({
 })
 
 -- Visual Tweaks
-vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
-vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
-vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#111111" })
+-- vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
+-- vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
+-- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#111111" })
 
 vim.opt.spellfile = vim.fn.stdpath("config") .. "/spell/en.utf-8.add"
