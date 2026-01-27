@@ -13,6 +13,9 @@ exec_always --no-startup-id ~/.config/polybar/launch.sh
 # exec_always --no-startup-id sh -c 'sleep 0.5; hsetroot -solid "#282c34"'
 exec_always --no-startup-id sh -c 'sleep 0.5; hsetroot -fill ~/dotfiles/bg'
 
+# Run picom on only where nvidia cards are installed
+exec_always --no-startup-id ~/.config/picom/launch.sh
+
 # Start XDG autostart .desktop files using dex
 exec --no-startup-id dex --autostart --environment i3
 
