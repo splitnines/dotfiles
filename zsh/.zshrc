@@ -198,15 +198,18 @@ unsetopt CORRECT_ALL
 DISABLE_AUTO_TITLE="true"
 ENABLE_CORRECTION="true"
 
-# pager settings
+# pager and man page settings
 PAGER="less"
-export LESS_TERMCAP_mb=$'\e[1;31m'      # Start bold red
-export LESS_TERMCAP_md=$'\e[1;32m'      # Start bold green
-export LESS_TERMCAP_me=$'\e[0m'         # End mode
-export LESS_TERMCAP_se=$'\e[0m'         # End standout mode
-export LESS_TERMCAP_so=$'\e[1;44;33m'   # Start standout (yellow text on blue background)
-export LESS_TERMCAP_ue=$'\e[0m'         # End underline
-export LESS_TERMCAP_us=$'\e[1;4;36m'    # Start underline cyan
+export LESS="-R --use-color"
+export MANPAGER="less -R --use-color"
+export MANROFFOPT="-c"
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export LESS_TERMCAP_md=$'\e[38;2;97;175;239m\e[1m'
+export LESS_TERMCAP_mr=$'\e[38;2;198;120;221m'
+export LESS_TERMCAP_us=$'\e[38;2;152;195;121m'
+export LESS_TERMCAP_so=$'\e[48;2;40;44;52m\e[38;2;229;192;123m'
 
 # The one, true editor
 export EDITOR="nvim"
