@@ -87,22 +87,6 @@ return {
         -- vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
         -- vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
         -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
-        local transparent_groups = {
-          "Normal",
-          "NormalNC",
-          "EndOfBuffer",
-          "SignColumn",
-          "MsgArea",
-          "Cmdline",
-          "MsgSeparator",
-          "ModeMsg",
-          "NormalFloat",
-          "FloatBorder",
-        }
-
-        for _, group in ipairs(transparent_groups) do
-          vim.api.nvim_set_hl(0, group, { bg = "NONE" })
-        end
         vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "NONE" })
         vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
         vim.api.nvim_set_hl(0, "ColorColumn", { bg = "NONE" })
