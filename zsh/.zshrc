@@ -308,10 +308,12 @@ export FZF_DEFAULT_OPTS="
   --border=rounded
   --margin=1,3
   --padding=1
-  --color=bg:#141414,bg+:#2b3038,fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
+  --color=fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
   --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
   --color=border:#3e4451,label:#61afef
 "
+#  --color=bg:#141414,bg+:#2b3038,fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
+
 
 # Search command history
 fh() {
