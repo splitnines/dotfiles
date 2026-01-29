@@ -87,6 +87,22 @@ return {
         -- vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
         -- vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
         -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
+        local transparent_groups = {
+          "Normal",
+          "NormalNC",
+          "EndOfBuffer",
+          "SignColumn",
+          "MsgArea",
+          "Cmdline",
+          "MsgSeparator",
+          "ModeMsg",
+          "NormalFloat",
+          "FloatBorder",
+        }
+
+        for _, group in ipairs(transparent_groups) do
+          vim.api.nvim_set_hl(0, group, { bg = "NONE" })
+        end
         vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "NONE" })
         vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
         vim.api.nvim_set_hl(0, "ColorColumn", { bg = "NONE" })
@@ -101,8 +117,8 @@ return {
         vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
         vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#E197EF" })
 
-        vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#c8c8c8", bg = "#1e1e1e" })
-        vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
+        -- vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#c8c8c8", bg = "#1e1e1e" })
+        -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
 
         -- Darken the nvim-cmp popup background
         vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1e1e2e", fg = "#c0c0c0" })
