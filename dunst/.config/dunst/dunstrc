@@ -1,0 +1,10 @@
+[global]
+font = JetBrains Mono 10
+line_height = 2
+padding = 12
+
+[urgency_normal]
+background = "#000000"
+foreground = "#ffffff"
+frame_color = "#ffffff"
+timeout = 5
