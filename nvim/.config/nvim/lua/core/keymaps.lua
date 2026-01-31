@@ -108,27 +108,6 @@ vim.keymap.set("n", "<leader>tm", function()
   end
 end, { desc = "Toggle Markdown Render" })
 
--- Make <leader>tm work inside ChatGPT window too
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "chatgpt-input",
-  callback = function()
-    vim.keymap.set("n", "<leader>tm", function()
-      require("lazy").load({ plugins = { "render-markdown.nvim" } })
-      local render = require("render-markdown")
-      local buf = vim.api.nvim_get_current_buf()
-      local is_enabled = vim.b[buf].markdown_render_enabled
-      if is_enabled then
-        render.disable()
-        vim.b[buf].markdown_render_enabled = false
-        vim.notify("Markdown rendering disabled", vim.log.levels.INFO)
-      else
-        render.enable()
-        vim.b[buf].markdown_render_enabled = true
-        vim.notify("Markdown rendering enabled", vim.log.levels.INFO)
-      end
-    end, { buffer = true, desc = "Toggle Markdown Render" })
-  end,
-})
 
 -- Spell check toggle
 vim.keymap.set("n", "<leader>ts", function()

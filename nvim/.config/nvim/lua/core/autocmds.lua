@@ -79,24 +79,6 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- ===================================
--- WTF with q closing the window in insert mode
--- ===================================
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "chatgpt-input",
-  callback = function()
-    -- Remove ChatGPT.nvim's broken insert-mode mapping
-    pcall(vim.keymap.del, "i", "q", { buffer = true })
-
-    -- Keep `q` as a close key in normal mode only
-    vim.keymap.set("n", "q", "<cmd>close<CR>", {
-      buffer = true,
-      silent = true,
-      desc = "Close ChatGPT window",
-    })
-  end,
-})
-
 -- ====================================
 -- Open file links in nvim
 -- ====================================
