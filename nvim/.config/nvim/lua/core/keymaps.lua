@@ -45,6 +45,49 @@ map_w("n", "<leader>wt", "<C-w>T", vim.tbl_extend("force", opts_w, { desc = "Mov
 map_w("n", "<leader>wn", "<cmd>tabnew<CR>", vim.tbl_extend("force", opts_w, { desc = "Open new tab" }))
 map_w("n", "<leader>wd", "<cmd>tabclose<CR>", vim.tbl_extend("force", opts_w, { desc = "Close current tab" }))
 
+-- gp.nvim
+-- Chat commands
+vim.keymap.set({ "n", "i" }, "<C-g>c", "<cmd>GpChatNew popup<cr>", { desc = "New Chat" })
+vim.keymap.set({ "n", "i" }, "<C-g>t", "<cmd>GpChatToggle popup<cr>", { desc = "Toggle Chat" })
+vim.keymap.set({ "n", "i" }, "<C-g>f", "<cmd>GpChatFinder<cr>", { desc = "Chat Finder" })
+
+vim.keymap.set("v", "<C-g>c", ":<C-u>'<,'>GpChatNew popup<cr>", { desc = "Visual Chat New" })
+vim.keymap.set("v", "<C-g>p", ":<C-u>'<,'>GpChatPaste popup<cr>", { desc = "Visual Chat Paste" })
+vim.keymap.set("v", "<C-g>t", ":<C-u>'<,'>GpChatToggle<cr>", { desc = "Visual Toggle Chat" })
+
+vim.keymap.set({ "n", "i" }, "<C-g><C-x>", "<cmd>GpChatNew split<cr>", { desc = "New Chat split" })
+vim.keymap.set({ "n", "i" }, "<C-g><C-v>", "<cmd>GpChatNew vsplit<cr>", { desc = "New Chat vsplit" })
+
+vim.keymap.set("v", "<C-g><C-x>", ":<C-u>'<,'>GpChatNew split<cr>", { desc = "Visual Chat New split" })
+vim.keymap.set("v", "<C-g><C-v>", ":<C-u>'<,'>GpChatNew vsplit<cr>", { desc = "Visual Chat New vsplit" })
+
+-- Prompt commands
+vim.keymap.set({ "n", "i" }, "<C-g>r", "<cmd>GpRewrite<cr>", { desc = "Inline Rewrite" })
+vim.keymap.set({ "n", "i" }, "<C-g>a", "<cmd>GpAppend<cr>", { desc = "Append (after)" })
+vim.keymap.set({ "n", "i" }, "<C-g>b", "<cmd>GpPrepend<cr>", { desc = "Prepend (before)" })
+
+vim.keymap.set("v", "<C-g>r", ":<C-u>'<,'>GpRewrite<cr>", { desc = "Visual Rewrite" })
+vim.keymap.set("v", "<C-g>a", ":<C-u>'<,'>GpAppend<cr>", { desc = "Visual Append (after)" })
+vim.keymap.set("v", "<C-g>b", ":<C-u>'<,'>GpPrepend<cr>", { desc = "Visual Prepend (before)" })
+vim.keymap.set("v", "<C-g>i", ":<C-u>'<,'>GpImplement<cr>", { desc = "Implement selection" })
+
+vim.keymap.set({ "n", "i" }, "<C-g>gp", "<cmd>GpPopup<cr>", { desc = "Popup" })
+vim.keymap.set({ "n", "i" }, "<C-g>ge", "<cmd>GpEnew<cr>", { desc = "GpEnew" })
+vim.keymap.set({ "n", "i" }, "<C-g>gn", "<cmd>GpNew<cr>", { desc = "GpNew" })
+vim.keymap.set({ "n", "i" }, "<C-g>gv", "<cmd>GpVnew<cr>", { desc = "GpVnew" })
+
+vim.keymap.set("v", "<C-g>gp", ":<C-u>'<,'>GpPopup<cr>", { desc = "Visual Popup" })
+vim.keymap.set("v", "<C-g>ge", ":<C-u>'<,'>GpEnew<cr>", { desc = "Visual GpEnew" })
+vim.keymap.set("v", "<C-g>gn", ":<C-u>'<,'>GpNew<cr>", { desc = "Visual GpNew" })
+vim.keymap.set("v", "<C-g>gv", ":<C-u>'<,'>GpVnew<cr>", { desc = "Visual GpVnew" })
+
+vim.keymap.set({ "n", "i" }, "<C-g>x", "<cmd>GpContext<cr>", { desc = "Toggle Context" })
+vim.keymap.set("v", "<C-g>x", ":<C-u>'<,'>GpContext<cr>", { desc = "Visual Toggle Context" })
+
+vim.keymap.set({ "n", "i", "v", "x" }, "<C-g>s", "<cmd>GpStop<cr>", { desc = "Stop" })
+vim.keymap.set({ "n", "i", "v", "x" }, "<C-g>n", "<cmd>GpNextAgent<cr>", { desc = "Next Agent" })
+vim.keymap.set({ "n", "i", "v", "x" }, "<C-g>l", "<cmd>GpSelectAgent<cr>", { desc = "Select Agent" })
+
 -- Insert mode navigation
 vim.keymap.set("i", "<C-h>", "<Left>")
 vim.keymap.set("i", "<C-j>", "<Down>")
