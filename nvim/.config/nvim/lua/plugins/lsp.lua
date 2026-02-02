@@ -61,5 +61,28 @@ return {
       cmd = { "bash-language-server", "start" },
       capabilities = capabilities,
     })
+
+    -- ruff
+    cfg("ruff", {
+      -- this uses the built-in Ruff native LSP (not ruff-lsp)
+      init_options = {
+        settings = {
+          -- example settings — these come from Astral documentation
+          -- you can customize these values later
+          configuration = nil, -- use workspace config file
+          configurationPreference = "filesystemFirst",
+          lint = {
+            enable = true,
+            select = { "E", "F", "W" }, -- adjust to what rules you want
+          },
+          format = {
+            enable = true,
+          },
+          organizeImports = true,
+        },
+      },
+      capabilities = capabilities,
+    })
+    vim.lsp.enable("ruff")
   end,
 }

@@ -98,3 +98,16 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { buffer = args.buf })
   end,
 })
+
+-- python format on save
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.py",
+  callback = function()
+    vim.lsp.buf.format({
+      async = false,
+      filter = function(client)
+        return client.name == "ruff"
+      end,
+    })
+  end,
+})
