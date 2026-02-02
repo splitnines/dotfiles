@@ -36,7 +36,7 @@ return {
           disable = true
         },
         {
-          name = "Default",
+          name = "ChatGPT",
           chat = true,
           command = true,
           model = { model = "gpt-5-mini" },

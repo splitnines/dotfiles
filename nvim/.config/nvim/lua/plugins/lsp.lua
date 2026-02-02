@@ -52,10 +52,10 @@ return {
       capabilities = capabilities,
     })
 
-    cfg("pyright", {
-      cmd = { "pyright-langserver", "--stdio" },
-      capabilities = capabilities,
-    })
+    -- cfg("pyright", {
+    --   cmd = { "pyright-langserver", "--stdio" },
+    --   capabilities = capabilities,
+    -- })
 
     cfg("bashls", {
       cmd = { "bash-language-server", "start" },

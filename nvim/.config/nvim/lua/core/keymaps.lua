@@ -49,7 +49,7 @@ map_w("n", "<leader>wd", "<cmd>tabclose<CR>", vim.tbl_extend("force", opts_w, { 
 -- Chat commands
 vim.keymap.set({ "n", "i" }, "<C-g>c", "<cmd>GpChatNew popup<cr>", { desc = "New Chat" })
 vim.keymap.set({ "n", "i" }, "<C-g>t", "<cmd>GpChatToggle popup<cr>", { desc = "Toggle Chat" })
-vim.keymap.set({ "n", "i" }, "<C-g>f", "<cmd>GpChatFinder<cr>", { desc = "Chat Finder" })
+vim.keymap.set({ "n", "i" }, "<C-g>f", "<cmd>GpChatFinder popup<cr>", { desc = "Chat Finder" })
 
 vim.keymap.set("v", "<C-g>c", ":<C-u>'<,'>GpChatNew popup<cr>", { desc = "Visual Chat New" })
 vim.keymap.set("v", "<C-g>p", ":<C-u>'<,'>GpChatPaste popup<cr>", { desc = "Visual Chat Paste" })
