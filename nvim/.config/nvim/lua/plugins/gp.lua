@@ -61,6 +61,15 @@ return {
           style = "popup",
         },
         {
+          name = "Linux",
+          chat = true,
+          command = true,
+          model = { model = "gpt-5-mini" },
+          system_prompt =
+          "You are a linux expert assigned to help with all things related to linux servers, desktops, applications and scripting.",
+          style = "popup",
+        },
+        {
           name = "GPT-5.2",
           chat = true,
           command = true,
