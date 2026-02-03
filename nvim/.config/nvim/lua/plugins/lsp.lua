@@ -64,16 +64,14 @@ return {
 
     -- ruff
     cfg("ruff", {
-      -- this uses the built-in Ruff native LSP (not ruff-lsp)
       init_options = {
         settings = {
-          -- example settings — these come from Astral documentation
-          -- you can customize these values later
-          configuration = nil, -- use workspace config file
-          configurationPreference = "filesystemFirst",
+          lineLength = 79,
+          configuration = nil,
+          configurationPreference = "editorFirst",
           lint = {
             enable = true,
-            select = { "E", "F", "W" }, -- adjust to what rules you want
+            select = { "E", "F", "W" },
           },
           format = {
             enable = true,
@@ -84,5 +82,23 @@ return {
       capabilities = capabilities,
     })
     vim.lsp.enable("ruff")
+
+    -- ty
+    vim.lsp.config('ty', {
+      settings = {
+        ty = {
+          inlayHints = {
+            variableTypes = true,
+          },
+          disableLanguageServices = false,
+          configuration = {
+            rules = {
+              ["unresolved-reference"] = "warn"
+            }
+          }
+        }
+      }
+    })
+    vim.lsp.enable('ty')
   end,
 }
