@@ -8,7 +8,7 @@ return {
   config = function()
     require("gp").setup({
       providers = {
-        azure = {
+        CiscoAzure = {
           endpoint = "https://chat-ai.cisco.com",
           api_version = "2024-08-01-preview",
 
@@ -102,7 +102,7 @@ return {
         {
           name = "CiscoAzureChat",
           chat = true,
-          provider = "azure",
+          provider = "CiscoAzure",
           model = {
             -- Must match what Cisco expects; this is NOT validated by Azure
             model = "gpt-4o", -- or whatever api_params["model"] was
