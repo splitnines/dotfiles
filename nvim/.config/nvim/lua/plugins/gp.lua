@@ -7,8 +7,21 @@ return {
   },
   config = function()
     require("gp").setup({
-      openai_api_key = vim.env.OPENAI_API_KEY,
+      providers = {
+        azure = {
+          endpoint = "https://chat-ai.cisco.com",
+          api_version = "2024-08-01-preview",
 
+          -- This is the Cisco OAuth token
+          api_key = os.getenv("CISCO_OAUTH_TOKEN"),
+
+          -- Explicit headers (gp.nvim will still send api-key)
+          headers = {
+            ["Accept"] = "*/*",
+          },
+        },
+      },
+      openai_api_key = vim.env.OPENAI_API_KEY,
 
       agents = {
         {
@@ -84,6 +97,22 @@ return {
           model = { model = "gpt-5-nano" },
           system_prompt = "You are a helpful assistant.",
           style = "popup",
+        },
+        {
+          name = "CiscoAzureChat",
+          chat = true,
+          provider = "azure",
+          model = {
+            -- Must match what Cisco expects; this is NOT validated by Azure
+            model = "gpt-4o", -- or whatever api_params["model"] was
+          },
+          system_prompt = "You are a helpful assistant",
+
+          -- Mirrors: user=f'{{"appkey": "{api_key}"}}'
+          user = string.format(
+            '{"appkey":"%s"}',
+            os.getenv("OPENAI_API_KEY")
+          ),
         },
       },
     })
