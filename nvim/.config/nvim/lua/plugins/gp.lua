@@ -106,7 +106,7 @@ return {
           provider = "CiscoAzure",
           model = {
             -- Must match what Cisco expects; this is NOT validated by Azure
-            model = "gpt-4o", -- or whatever api_params["model"] was
+            deployment = "gpt-4o", -- or whatever api_params["model"] was
           },
           system_prompt = "You are a helpful assistant",
 
