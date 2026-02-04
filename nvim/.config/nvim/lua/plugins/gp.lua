@@ -7,7 +7,6 @@ return {
   },
   config = function()
     require("gp").setup({
-      secrets = false,
       providers = {
         CiscoAzure = {
           endpoint = "https://chat-ai.cisco.com",
@@ -15,7 +14,8 @@ return {
 
           -- This is the Cisco OAuth token
           -- api_key = os.getenv("CISCO_OAUTH_TOKEN"),
-          api_key_cmd = "printf '%s' \"$CISCO_OAUTH_TOKEN\"",
+          api_key = vim.env.CISCO_OAUTH_TOKEN,
+          secret = vim.env.OPENAI_API_KEY,
 
           -- Explicit headers (gp.nvim will still send api-key)
           headers = {
