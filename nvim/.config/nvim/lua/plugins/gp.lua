@@ -13,7 +13,8 @@ return {
           api_version = "2024-08-01-preview",
 
           -- This is the Cisco OAuth token
-          api_key = os.getenv("CISCO_OAUTH_TOKEN"),
+          -- api_key = os.getenv("CISCO_OAUTH_TOKEN"),
+          api_key_cmd = "printf '%s' \"$CISCO_OAUTH_TOKEN\"",
 
           -- Explicit headers (gp.nvim will still send api-key)
           headers = {
