@@ -7,6 +7,7 @@ return {
   },
   config = function()
     require("gp").setup({
+      secrets = false,
       providers = {
         CiscoAzure = {
           endpoint = "https://chat-ai.cisco.com",
