@@ -4,9 +4,6 @@
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
--- Remap F1 to esc because my aim sucks
-vim.keymap.set({ "n", "i", "v", "x" }, "<F1>", "<Esc>", { silent = true })
-
 -- Disable page up and page down because I hit them too much by mistake
 vim.keymap.set("n", "<Esc>[5~", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Esc>[6~", "<Nop>", { noremap = true, silent = true })
@@ -103,7 +100,7 @@ vim.keymap.set("n", "<leader>o", ":put _<CR>", { desc = "Insert line below" })
 vim.keymap.set("n", "<leader>O", ":put! _<CR>", { desc = "Insert line above" })
 
 -- Diagnostics
--- vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Diagnostics" })
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Diagnostics" })
 
 -- Buffer scrolling
 vim.keymap.set("n", "<Tab>", ":bnext<CR>")

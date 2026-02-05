@@ -109,7 +109,7 @@ return {
       })
     end, { desc = "Search all files" })
 
-    map("n", "<leader>q", builtin.diagnostics, { desc = "Search diagnostics" })
+    -- map("n", "<leader>q", builtin.diagnostics, { desc = "Search diagnostics" })
     map("n", "<leader><leader>", builtin.buffers, { desc = "Current buffers" })
     map("n", "\\", function()
       telescope.extensions.file_browser.file_browser({
