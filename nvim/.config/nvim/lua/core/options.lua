@@ -36,10 +36,10 @@ end)
 
 -- Diagnostics
 vim.diagnostic.config({
-  virtual_text = true,
-  signs = true,
-  update_in_insert = false,
+  virtual_text = false,
   underline = true,
+  signs = true,
+  update_in_insert = true,
 })
 
 vim.opt.spellfile = vim.fn.stdpath("config") .. "/spell/en.utf-8.add"
