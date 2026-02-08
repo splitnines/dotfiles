@@ -41,5 +41,12 @@ vim.diagnostic.config({
   signs = true,
   update_in_insert = true,
 })
+vim.o.updatetime = 250
+
+vim.api.nvim_create_autocmd("CursorHold", {
+  callback = function()
+    vim.diagnostic.open_float(nil, { focus = false })
+  end,
+})
 
 vim.opt.spellfile = vim.fn.stdpath("config") .. "/spell/en.utf-8.add"
