@@ -113,3 +113,11 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     })
   end,
 })
+
+-- Testing transparent bg
+vim.cmd [[
+highlight Normal guibg=none
+highlight NonText guibg=none
+highlight Normal ctermbg=none
+highlight NonText ctermbg=none
+]]
