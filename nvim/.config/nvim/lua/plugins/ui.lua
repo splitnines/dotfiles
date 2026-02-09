@@ -1,13 +1,24 @@
 -- ~/dotfiles/nvim/.config/nvim/lua/plugins/ui.lua
 return {
   -- Colorscheme
+  -- {
+  --   "joshdick/onedark.vim",
+  --   priority = 1000,
+  --   transparent = true,
+  --   init = function()
+  --     vim.cmd.colorscheme("onedark")
+  --     vim.cmd.hi("Comment gui=none")
+  --   end,
+  -- },
   {
-    "joshdick/onedark.vim",
+    "navarasu/onedark.nvim",
     priority = 1000,
-    transparent = true,
-    init = function()
-      vim.cmd.colorscheme("onedark")
-      vim.cmd.hi("Comment gui=none")
+    config = function()
+      require("onedark").setup({
+        style = "dark",
+        transparent = true,
+      })
+      require("onedark").load()
     end,
   },
 
@@ -114,10 +125,12 @@ return {
 
         vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
         vim.api.nvim_set_hl(0, "ColorColumn", { bg = "NONE" })
-        vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
+        -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1e1e1e" })
 
         local border_color = "#c8c8c8"
-        vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "NONE" })
+        -- vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "NONE" })
+        vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "#1e1e1e" })
 
         vim.api.nvim_set_hl(0, "TelescopePromptBorder", {
           fg = border_color,
