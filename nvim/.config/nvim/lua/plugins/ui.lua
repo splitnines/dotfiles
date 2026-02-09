@@ -84,35 +84,68 @@ return {
       -- ===========================
       -- Color Overrides
       -- ===========================
+      -- local function set_default_colors()
+      --   vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "NONE", ctermbg = "NONE", guibg = "NONE" })
+      --   vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
+      --   vim.api.nvim_set_hl(0, "ColorColumn", { bg = "NONE" })
+      --   vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
+      --   local border_color = "#c8c8c8"
+      --   vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "NONE" })
+      --   vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = border_color, bg = "#1e1e1e" })
+      --   vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = border_color, bg = "#1e1e1e" })
+      --   vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = border_color, bg = "#1e1e1e" })
+      --
+      --   -- Search highlights
+      --   vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
+      --   vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#E197EF" })
+      --
+      --   -- Darken the nvim-cmp popup background
+      --   vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1e1e2e", fg = "#c0c0c0" })
+      --   vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#2a2a3a", fg = "#ffffff" })
+      --   vim.api.nvim_set_hl(0, "PmenuBorder", { bg = "#1e1e2e", fg = "#3b3b4b" })
+      --   vim.api.nvim_set_hl(0, "CmpDoc", { bg = "#1c1c28" })
+      --   vim.api.nvim_set_hl(0, "CmpDocBorder", { bg = "#1c1c28", fg = "#3b3b4b" })
+      -- end
       local function set_default_colors()
-        -- vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
-        -- vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
-        -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
-        vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "NONE", ctermbg = "NONE" })
+        vim.api.nvim_set_hl(0, "Normal", {
+          fg = "#ffffff",
+          bg = "NONE",
+        })
+
         vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
         vim.api.nvim_set_hl(0, "ColorColumn", { bg = "NONE" })
         vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
+
         local border_color = "#c8c8c8"
-        vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = border_color, bg = "#1e1e1e" })
-        vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = border_color, bg = "#1e1e1e" })
-        vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = border_color, bg = "#1e1e1e" })
-        -- vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "#1e1e1e" })
         vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "NONE" })
 
-        -- Search highlights
+        vim.api.nvim_set_hl(0, "TelescopePromptBorder", {
+          fg = border_color,
+          bg = "#1e1e1e",
+        })
+        vim.api.nvim_set_hl(0, "TelescopeResultsBorder", {
+          fg = border_color,
+          bg = "#1e1e1e",
+        })
+        vim.api.nvim_set_hl(0, "TelescopePreviewBorder", {
+          fg = border_color,
+          bg = "#1e1e1e",
+        })
+
         vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
         vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#E197EF" })
 
-        -- vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#c8c8c8", bg = "#1e1e1e" })
-        -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
-
-        -- Darken the nvim-cmp popup background
         vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1e1e2e", fg = "#c0c0c0" })
         vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#2a2a3a", fg = "#ffffff" })
         vim.api.nvim_set_hl(0, "PmenuBorder", { bg = "#1e1e2e", fg = "#3b3b4b" })
+
         vim.api.nvim_set_hl(0, "CmpDoc", { bg = "#1c1c28" })
-        vim.api.nvim_set_hl(0, "CmpDocBorder", { bg = "#1c1c28", fg = "#3b3b4b" })
+        vim.api.nvim_set_hl(0, "CmpDocBorder", {
+          bg = "#1c1c28",
+          fg = "#3b3b4b",
+        })
       end
+
 
       local local_colors = vim.fn.stdpath("config") .. "/lua/local_colors.lua"
 
