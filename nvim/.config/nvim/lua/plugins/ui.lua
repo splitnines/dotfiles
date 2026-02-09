@@ -10,6 +10,18 @@ return {
   --     vim.cmd.hi("Comment gui=none")
   --   end,
   -- },
+  -- {
+  --   "navarasu/onedark.nvim",
+  --   priority = 1000,
+  --   config = function()
+  --     require("onedark").setup({
+  --       style = "dark",
+  --       transparent = true,
+  --     })
+  --     require("onedark").load()
+  --   end,
+  -- },
+
   {
     "navarasu/onedark.nvim",
     priority = 1000,
@@ -19,9 +31,19 @@ return {
         transparent = true,
       })
       require("onedark").load()
+
+      -- Force transparency AFTER all highlights settle
+      vim.schedule(function()
+        vim.api.nvim_set_hl(0, "Normal", {})
+        vim.api.nvim_set_hl(0, "NormalNC", {})
+        -- vim.api.nvim_set_hl(0, "NormalFloat", {})
+        vim.api.nvim_set_hl(0, "SignColumn", {})
+        vim.api.nvim_set_hl(0, "EndOfBuffer", {})
+        vim.api.nvim_set_hl(0, "MsgArea", {})
+        -- vim.api.nvim_set_hl(0, "FloatBorder", {})
+      end)
     end,
   },
-
   -- Statusline
   {
     "nvim-lualine/lualine.nvim",
