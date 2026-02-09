@@ -4,6 +4,7 @@ return {
   {
     "joshdick/onedark.vim",
     priority = 1000,
+    transparent = true,
     init = function()
       vim.cmd.colorscheme("onedark")
       vim.cmd.hi("Comment gui=none")
@@ -95,7 +96,8 @@ return {
         vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = border_color, bg = "#1e1e1e" })
         vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = border_color, bg = "#1e1e1e" })
         vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = border_color, bg = "#1e1e1e" })
-        vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "#1e1e1e" })
+        -- vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "#1e1e1e" })
+        vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "NONE" })
 
         -- Search highlights
         vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
