@@ -88,7 +88,7 @@ return {
         -- vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#0a0a0a" })
         -- vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "#0a0a0a" })
         -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#141414" })
-        vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "NONE" })
+        vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "NONE", ctermbg = "NONE" })
         vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
         vim.api.nvim_set_hl(0, "ColorColumn", { bg = "NONE" })
         vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
