@@ -1,27 +1,9 @@
 -- ~/dotfiles/nvim/.config/nvim/lua/plugins/ui.lua
 return {
-  -- Colorscheme
-  -- {
-  --   "joshdick/onedark.vim",
-  --   priority = 1000,
-  --   transparent = true,
-  --   init = function()
-  --     vim.cmd.colorscheme("onedark")
-  --     vim.cmd.hi("Comment gui=none")
-  --   end,
-  -- },
-  -- {
-  --   "navarasu/onedark.nvim",
-  --   priority = 1000,
-  --   config = function()
-  --     require("onedark").setup({
-  --       style = "dark",
-  --       transparent = true,
-  --     })
-  --     require("onedark").load()
-  --   end,
-  -- },
 
+  ---------------------------------------------------------------------------
+  -- Colorscheme + global UI control
+  ---------------------------------------------------------------------------
   {
     "navarasu/onedark.nvim",
     priority = 1000,
@@ -32,19 +14,109 @@ return {
       })
       require("onedark").load()
 
-      -- Force transparency AFTER all highlights settle
-      vim.schedule(function()
-        vim.api.nvim_set_hl(0, "Normal", {})
-        vim.api.nvim_set_hl(0, "NormalNC", {})
-        -- vim.api.nvim_set_hl(0, "NormalFloat", {})
-        vim.api.nvim_set_hl(0, "SignColumn", {})
-        vim.api.nvim_set_hl(0, "EndOfBuffer", {})
-        vim.api.nvim_set_hl(0, "MsgArea", {})
-        -- vim.api.nvim_set_hl(0, "FloatBorder", {})
-      end)
+      -- Disable blending so borders are not alpha-erased
+      vim.o.winblend = 0
+      vim.o.pumblend = 0
+
+      local function set_ui()
+        -- Main editor stays transparent
+        vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "MsgArea", { bg = "NONE" })
+
+        -- Floating windows MUST have contrast
+        vim.api.nvim_set_hl(0, "NormalFloat", {
+          bg = "#1e1e1e", -- this is the key fix
+        })
+
+        vim.api.nvim_set_hl(0, "FloatBorder", {
+          fg = "#5c6370",
+          bg = "#1e1e1e",
+        })
+
+        -- Telescope
+        vim.api.nvim_set_hl(0, "TelescopeNormal", { link = "NormalFloat" })
+        vim.api.nvim_set_hl(0, "TelescopeBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "TelescopePromptBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { link = "FloatBorder" })
+
+        -- Completion / popups
+        vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1e1e1e" })
+        vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#2a2a3a", fg = "#ffffff" })
+        vim.api.nvim_set_hl(0, "PmenuBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "CmpDoc", { bg = "#1e1e1e" })
+        vim.api.nvim_set_hl(0, "CmpDocBorder", { link = "FloatBorder" })
+
+        -- Search
+        vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
+        vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#E197EF" })
+      end
+
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        callback = set_ui,
+      })
+
+      vim.schedule(set_ui)
     end,
   },
+
+  ---------------------------------------------------------------------------
+  -- Lazy.nvim
+  ---------------------------------------------------------------------------
+  {
+    "folke/lazy.nvim",
+    opts = {
+      ui = {
+        border = "rounded",
+      },
+    },
+  },
+
+  ---------------------------------------------------------------------------
+  -- Mason.nvim
+  ---------------------------------------------------------------------------
+  {
+    "williamboman/mason.nvim",
+    opts = {
+      ui = {
+        border = "rounded",
+      },
+    },
+  },
+
+  ---------------------------------------------------------------------------
+  -- Which-key.nvim
+  ---------------------------------------------------------------------------
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      window = {
+        border = "rounded",
+        winblend = 0,
+      },
+    },
+  },
+
+  ---------------------------------------------------------------------------
+  -- Telescope
+  ---------------------------------------------------------------------------
+  {
+    "nvim-telescope/telescope.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      defaults = {
+        border = true,
+      },
+    },
+  },
+
+  ---------------------------------------------------------------------------
   -- Statusline
+  ---------------------------------------------------------------------------
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -53,154 +125,44 @@ return {
         options = {
           icons_enabled = true,
           theme = "auto",
-          component_separators = { left = "▏", right = "▕" },
-          section_separators = { left = "", right = "" },
           globalstatus = true,
         },
-        sections = {
-          lualine_a = { "mode" },
-          lualine_b = { "branch", "diff", "diagnostics" },
-          lualine_c = { { "filename", path = 2 } },
-          lualine_x = { "encoding", "fileformat", "filetype" },
-          lualine_y = {
-            function()
-              return vim.api.nvim_buf_line_count(0)
-            end,
-          },
-          lualine_z = { "location" },
-        },
       })
     end,
   },
 
+  ---------------------------------------------------------------------------
   -- Dashboard
-  {
-    "goolord/alpha-nvim",
-    event = "VimEnter",
-    config = function()
-      local alpha = require("alpha")
-      local dashboard = require("alpha.themes.dashboard")
-      vim.api.nvim_set_hl(0, "DashboardHeader", { fg = "#E06C75", bold = true })
-      vim.api.nvim_set_hl(0, "DashboardFooter", { fg = "#61AFEF", italic = true })
-      vim.api.nvim_set_hl(0, "DashboardButton", { fg = "#98C379", bold = true })
-      vim.api.nvim_set_hl(0, "DashboardButtonShortcut", { fg = "#C678DD" })
-      vim.api.nvim_set_hl(0, "DashboardButtonHover", { fg = "#282C34", bg = "#98C379", bold = true })
-      dashboard.section.header.val = {
-        " '##::: ##:'########::'#######::'##::::'##:'####:'##::::'##: ",
-        "  ###:: ##: ##.....::'##.... ##: ##:::: ##:. ##:: ###::'###: ",
-        "  ####: ##: ##::::::: ##:::: ##: ##:::: ##:: ##:: ####'####: ",
-        "  ## ## ##: ######::: ##:::: ##: ##:::: ##:: ##:: ## ### ##: ",
-        "  ##. ####: ##...:::: ##:::: ##:. ##:: ##::: ##:: ##. #: ##: ",
-        "  ##:. ###: ##::::::: ##:::: ##::. ## ##:::: ##:: ##:.:: ##: ",
-        "  ##::. ##: ########:. #######::::. ###::::'####: ##:::: ##: ",
-        "  ..::::..::........:::.......::::::...:::::....::..:::::..:: ",
-        "",
-        "               ⚡ Welcome to Neovim ⚡               ",
-        "",
-      }
-      local v = vim.version()
-      local version_str = string.format("Neovim %d.%d.%d", v.major, v.minor, v.patch)
-      dashboard.section.footer.val = string.format(
-        "  %s  •  %s  • %s",
-        os.date("%A, %B %d %Y  •  %H:%M:%S"),
-        os.getenv("USER"),
-        version_str
-      )
-      dashboard.section.footer.opts.hl = "DashboardFooter"
-      dashboard.section.buttons.val = {
-        dashboard.button("e", "  New File", ":ene <BAR> startinsert <CR>"),
-        dashboard.button("f", "󰱼  Find File", ":Telescope find_files<CR>"),
-        dashboard.button("r", "  Recent Files", ":Telescope oldfiles<CR>"),
-        dashboard.button("q", "  Quit", ":qa<CR>"),
-      }
-      alpha.setup(dashboard.config)
-      -- ===========================
-      -- Color Overrides
-      -- ===========================
-      -- local function set_default_colors()
-      --   vim.api.nvim_set_hl(0, "Normal", { fg = "#ffffff", bg = "NONE", ctermbg = "NONE", guibg = "NONE" })
-      --   vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
-      --   vim.api.nvim_set_hl(0, "ColorColumn", { bg = "NONE" })
-      --   vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
-      --   local border_color = "#c8c8c8"
-      --   vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "NONE" })
-      --   vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = border_color, bg = "#1e1e1e" })
-      --   vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = border_color, bg = "#1e1e1e" })
-      --   vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = border_color, bg = "#1e1e1e" })
-      --
-      --   -- Search highlights
-      --   vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
-      --   vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#E197EF" })
-      --
-      --   -- Darken the nvim-cmp popup background
-      --   vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1e1e2e", fg = "#c0c0c0" })
-      --   vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#2a2a3a", fg = "#ffffff" })
-      --   vim.api.nvim_set_hl(0, "PmenuBorder", { bg = "#1e1e2e", fg = "#3b3b4b" })
-      --   vim.api.nvim_set_hl(0, "CmpDoc", { bg = "#1c1c28" })
-      --   vim.api.nvim_set_hl(0, "CmpDocBorder", { bg = "#1c1c28", fg = "#3b3b4b" })
-      -- end
-      local function set_default_colors()
-        vim.api.nvim_set_hl(0, "Normal", {
-          fg = "#ffffff",
-          bg = "NONE",
-        })
-
-        vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE" })
-        vim.api.nvim_set_hl(0, "ColorColumn", { bg = "NONE" })
-        -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
-        vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1e1e1e" })
-
-        local border_color = "#c8c8c8"
-        -- vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "NONE" })
-        vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_color, bg = "#1e1e1e" })
-
-        vim.api.nvim_set_hl(0, "TelescopePromptBorder", {
-          fg = border_color,
-          bg = "#1e1e1e",
-        })
-        vim.api.nvim_set_hl(0, "TelescopeResultsBorder", {
-          fg = border_color,
-          bg = "#1e1e1e",
-        })
-        vim.api.nvim_set_hl(0, "TelescopePreviewBorder", {
-          fg = border_color,
-          bg = "#1e1e1e",
-        })
-
-        vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
-        vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#E197EF" })
-
-        vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1e1e2e", fg = "#c0c0c0" })
-        vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#2a2a3a", fg = "#ffffff" })
-        vim.api.nvim_set_hl(0, "PmenuBorder", { bg = "#1e1e2e", fg = "#3b3b4b" })
-
-        vim.api.nvim_set_hl(0, "CmpDoc", { bg = "#1c1c28" })
-        vim.api.nvim_set_hl(0, "CmpDocBorder", {
-          bg = "#1c1c28",
-          fg = "#3b3b4b",
-        })
-      end
-
-
-      local local_colors = vim.fn.stdpath("config") .. "/lua/local_colors.lua"
-
-      vim.api.nvim_create_autocmd("ColorScheme", {
-        pattern = "*",
-        callback = function()
-          if vim.fn.filereadable(local_colors) == 1 then
-            local ok, err = pcall(dofile, local_colors)
-            if not ok then
-              vim.notify("Error loading local_colors.lua: " .. err, vim.log.levels.ERROR)
-              set_default_colors()
-            end
-          else
-            set_default_colors()
-          end
-        end,
-      })
-
-      -- Trigger ColorScheme now so the highlights apply immediately
-      vim.api.nvim_exec_autocmds("ColorScheme", {})
-    end,
-  },
+  ---------------------------------------------------------------------------
+  --   {
+  --     "goolord/alpha-nvim",
+  --     event = "VimEnter",
+  --     config = function()
+  --       local dashboard = require("alpha.themes.dashboard")
+  --
+  --       vim.api.nvim_set_hl(0, "DashboardHeader", { fg = "#E06C75", bold = true })
+  --
+  --       dashboard.section.header.val = vim.split([[
+  --  '##::: ##:'########::'#######::'##::::'##:'####:'##::::'##:
+  --   ###:: ##: ##.....::'##.... ##: ##:::: ##:. ##:: ###::'###:
+  --   ####: ##: ##::::::: ##:::: ##: ##:::: ##:: ##:: ####'####:
+  --   ## ## ##: ######::: ##:::: ##: ##:::: ##:: ##:: ## ### ##:
+  --   ##. ####: ##...:::: ##:::: ##:. ##:: ##::: ##:: ##. #: ##:
+  --   ##:. ###: ##::::::: ##:::: ##::. ## ##:::: ##:: ##:.:: ##:
+  --   ##::. ##: ########:. #######::::. ###::::'####: ##:::: ##:
+  --   ..::::..::........:::.......::::::...:::::....::..:::::..::
+  --
+  --                ⚡ Welcome to Neovim ⚡
+  -- ]], "\n")
+  --
+  --       dashboard.section.buttons.val = {
+  --         dashboard.button("e", "  New File", ":ene <BAR> startinsert <CR>"),
+  --         dashboard.button("f", "󰱼  Find File", ":Telescope find_files<CR>"),
+  --         dashboard.button("r", "  Recent Files", ":Telescope oldfiles<CR>"),
+  --         dashboard.button("q", "  Quit", ":qa<CR>"),
+  --       }
+  --
+  --       require("alpha").setup(dashboard.config)
+  --     end,
+  --   },
 }
