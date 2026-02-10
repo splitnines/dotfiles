@@ -1,8 +1,4 @@
 -- ~/dotfiles/nvim/.config/nvim/lua/plugins/init.lua
--- ===========================
--- lazy.nvim setup and plugin specs
--- ===========================
-
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 local uv = vim.uv or vim.loop
 if not uv.fs_stat(lazypath) then

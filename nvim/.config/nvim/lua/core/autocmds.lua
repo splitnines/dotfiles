@@ -1,7 +1,4 @@
 -- ~/dotfiles/nvim/.config/nvim/lua/core/autocmds.lua
--- ===========================
--- Autocmds
--- ===========================
 
 -- FileType-specific settings
 vim.api.nvim_create_autocmd("FileType", {
@@ -48,7 +45,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "c", "cpp" },
   callback = function()
-    -- Don’t spawn multiple clangd instances
     local active = vim.lsp.get_clients({ name = "clangd" })
     if #active == 0 then
       local root = vim.fs.dirname(vim.fs.find({
@@ -59,7 +55,6 @@ vim.api.nvim_create_autocmd("FileType", {
         ".git",
       }, { upward = true })[1] or vim.api.nvim_buf_get_name(0))
 
-      -- Prefer Mason's clangd if installed
       local mason_clangd = vim.fn.expand("~/.local/share/nvim/mason/bin/clangd")
       local clangd_path = vim.fn.executable(mason_clangd) == 1 and mason_clangd or "clangd"
 
@@ -87,13 +82,11 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", "gx", function()
       local target = vim.fn.expand("<cfile>")
 
-      -- local file → open in nvim
       if vim.fn.filereadable(target) == 1 then
         vim.cmd("edit " .. vim.fn.fnameescape(target))
         return
       end
 
-      -- otherwise → external opener
       vim.ui.open(target)
     end, { buffer = args.buf })
   end,

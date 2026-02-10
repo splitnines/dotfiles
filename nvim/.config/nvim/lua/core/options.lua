@@ -1,7 +1,4 @@
 -- ~/dotfiles/nvim/.config/nvim/lua/core/options.lua
--- ===========================
--- Basic Settings
--- ===========================
 _G.uv = vim.uv or vim.loop
 
 vim.g.mapleader = " "
@@ -23,18 +20,14 @@ vim.opt.scrolloff = 5
 vim.opt.cursorline = true
 vim.opt.list = true
 vim.g.have_nerd_font = true
--- vim.opt.listchars:append({ trail = "·", tab = "» " })
 vim.opt.inccommand = "split"
 vim.opt.smartindent = true
--- Use zsh
 vim.opt.shell = "/usr/bin/zsh"
--- vim.opt.shellcmdflag = "-ic"
 
 vim.schedule(function()
   vim.opt.clipboard = "unnamedplus"
 end)
 
--- Diagnostics
 vim.diagnostic.config({
   virtual_text = false,
   underline = true,

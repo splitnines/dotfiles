@@ -1,6 +1,6 @@
 -- ~/dotfiles/nvim/.config/nvim/lua/plugins/lsp.lua
 return {
-  "neovim/nvim-lspconfig", -- still needed for Mason integrations and defaults
+  "neovim/nvim-lspconfig",
   dependencies = {
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
