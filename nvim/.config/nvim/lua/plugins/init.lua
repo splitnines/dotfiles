@@ -39,5 +39,6 @@ require("lazy").setup({
     require("plugins.markdown"),
     require("plugins.surround"),
     require("plugins.gp"),
+    require("plugins.undotree")
   },
 })
