@@ -19,6 +19,9 @@ exec_always --no-startup-id ~/.config/picom/launch.sh
 # Start XDG autostart .desktop files using dex
 exec --no-startup-id dex --autostart --environment i3
 
+# Start the clipboard manager
+exec --no-startup-id parcellite
+
 # Screen timeout and lock
 exec_always --no-startup-id sh -c 'sleep 1; xset s 900 0'
 exec --no-startup-id xset dpms 0 0 915
