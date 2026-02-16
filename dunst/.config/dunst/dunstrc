@@ -2,6 +2,8 @@
 font = JetBrains Mono 10
 line_height = 2
 padding = 12
+history_length = 20
+sticky_history = yes
 
 [urgency_normal]
 background = "#000000"
