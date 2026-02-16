@@ -539,8 +539,16 @@ function 2pdf1() {
       --pdf-engine=xelatex
 }
 
+# copy command output to clipboard
+ccb() {
+  xclip -selection clipboard
+}
+
 # Hook runs every time you cd
 add-zsh-hook chpwd __zsh_auto_venv
 
 # Run once at shell startup too
 __zsh_auto_venv
+
+# opencode
+export PATH=/home/rickey/.opencode/bin:$PATH
