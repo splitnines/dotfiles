@@ -1,4 +1,4 @@
-# ZSH config
+
 
 # ===========================
 # Path
@@ -537,6 +537,15 @@ function 2pdf1() {
       -V monofontsize=10pt \
       -V geometry:margin=1in \
       --pdf-engine=xelatex
+}
+
+# Overlay keyboard input
+sk() {
+  if pgrep -x screenkey >/dev/null 2&>1; then
+    pkill -x screenkey > /dev/null 2&>1
+  else
+    screenkey -g 1920x640+1600-700 -s small -t 1.5 > /dev/null 2&>1 &
+  fi
 }
 
 # copy command output to clipboard
