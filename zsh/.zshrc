@@ -521,22 +521,51 @@ __zsh_auto_venv() {
 }
 
 # Create a PDF file
-function 2pdf1() {
+function 2pdf() {
   local infile="$1"
   local outfile="$2"
 
   if [[ -z "$infile" || -z "$outfile" ]]; then
-    print -u2 "usage: 2pdf1 <input-file> <output.pdf>"
+    print -u2 "usage: 2pdf1 <input-file.md> <output.pdf>"
     return 1
   fi
 
-  sed '1s/^/```c\n/;$s/$/\n```/' "$infile" | \
-    pandoc -o "$outfile" \
-      --highlight-style=pygments \
-      -V monofont="JetBrainsMono Nerd Font Mono" \
-      -V monofontsize=10pt \
-      -V geometry:margin=1in \
-      --pdf-engine=xelatex
+  local header
+  header="$(mktemp /tmp/pandoc-header.XXXXXX.tex)" || return 1
+
+  cat >"$header" <<'TEX'
+% Better breaks for URLs in normal text
+\usepackage{xurl}
+\usepackage{hyperref}
+\hypersetup{breaklinks=true}
+
+% Wrap long lines inside code blocks
+\usepackage{listings}
+\lstset{
+  breaklines=true,
+  breakatwhitespace=false,
+  columns=fullflexible,
+  keepspaces=true
+}
+
+% Reduce “overfull hbox” in general prose
+\usepackage{microtype}
+\setlength{\emergencystretch}{3em}
+\sloppy
+TEX
+
+  pandoc "$infile" -o "$outfile" \
+    --pdf-engine=xelatex \
+    --listings \
+    --include-in-header="$header" \
+    -V mainfont="JetBrainsMono Nerd Font" \
+    -V monofont="JetBrainsMono Nerd Font Mono" \
+    -V fontsize=10pt \
+    -V geometry:margin=1in
+
+  local rc=$?
+  rm -f -- "$header"
+  return $rc
 }
 
 # Overlay keyboard input
