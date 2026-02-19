@@ -520,61 +520,163 @@ __zsh_auto_venv() {
   fi
 }
 
-# Create a PDF file
-function 2pdf() {
-  local infile="$1"
-  local outfile="$2"
-
-  if [[ -z "$infile" || -z "$outfile" ]]; then
-    print -u2 "usage: 2pdf1 <input-file.md> <output.pdf>"
+# Markdown to PDF
+md2pdf() {
+  local in="$1"
+  local out="${2:-${1:r}.pdf}"
+  if [[ -z "$in" ]]; then
+    echo "Usage: md2pdf <input.md> [output.pdf]"
     return 1
   fi
-
-  local header
-  header="$(mktemp /tmp/pandoc-header.XXXXXX.tex)" || return 1
-
-  cat >"$header" <<'TEX'
-% Better breaks for URLs in normal text
-\usepackage{xurl}
-\usepackage{hyperref}
-\hypersetup{breaklinks=true}
-
-% Wrap long lines inside code blocks
-\usepackage{listings}
-\lstset{
-  breaklines=true,
-  breakatwhitespace=false,
-  columns=fullflexible,
-  keepspaces=true
-}
-
-% Reduce “overfull hbox” in general prose
-\usepackage{microtype}
-\setlength{\emergencystretch}{3em}
-\sloppy
-TEX
-
-  pandoc "$infile" -o "$outfile" \
+  if [[ ! -f "$in" ]]; then
+    echo "Error: file not found: $in"
+    return 1
+  fi
+  pandoc "$in" -o "$out" \
+    --from=gfm \
     --pdf-engine=xelatex \
-    --listings \
-    --include-in-header="$header" \
+    -V geometry:margin=1in \
     -V mainfont="JetBrainsMono Nerd Font" \
-    -V monofont="JetBrainsMono Nerd Font Mono" \
-    -V fontsize=10pt \
-    -V geometry:margin=1in
-
+    -V monofont="JetBrainsMono Nerd Font" \
+    -H <(cat <<'LATEX'
+\usepackage{xurl}
+\usepackage{fvextra}
+\setlength{\emergencystretch}{3em}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+  breaklines,
+  breakanywhere,
+  breaksymbolleft={},
+  breaksymbolright={},
+  commandchars=\\\{\}
+}
+\RecustomVerbatimEnvironment{Verbatim}{Verbatim}{
+  breaklines,
+  breakanywhere,
+  breaksymbolleft={},
+  breaksymbolright={}
+}
+LATEX
+)
   local rc=$?
-  rm -f -- "$header"
+  if [[ $rc -eq 0 ]]; then
+    echo "Created: $out"
+  fi
   return $rc
 }
 
-# Overlay keyboard input
-sk() {
-  if pgrep -x screenkey >/dev/null 2&>1; then
-    pkill -x screenkey > /dev/null 2&>1
-  else
-    screenkey -g 1920x640+1600-700 -s small -t 1.5 > /dev/null 2&>1 &
+# Text to PDF
+txt2pdf() {
+  local in="$1"
+  local out="${2:-${1:r}.pdf}"
+  local width="${3:-80}"   # optional wrap width
+  if [[ -z "$in" ]]; then
+    echo "Usage: txt2pdf <input.txt> [output.pdf] [wrap_width]"
+    return 1
   fi
+  if [[ ! -f "$in" ]]; then
+    echo "Error: file not found: $in"
+    return 1
+  fi
+  {
+    print -r -- '~~~~'
+    fold -w "$width" -- "$in"
+    print -r -- '~~~~'
+  } | pandoc -f markdown -o "$out" \
+    --pdf-engine=xelatex \
+    -V geometry:margin=1in \
+    -V mainfont="JetBrainsMono Nerd Font" \
+    -V monofont="JetBrainsMono Nerd Font" \
+    -V fontsize=9pt \
+    -H <(cat <<'LATEX'
+\usepackage{xurl}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+  breaksymbolleft={},
+  breaksymbolright={},
+  commandchars=\\\{\}
+}
+\RecustomVerbatimEnvironment{Verbatim}{Verbatim}{
+  breaksymbolleft={},
+  breaksymbolright={}
+}
+LATEX
+)
+  local rc=$?
+  if [[ $rc -eq 0 ]]; then
+    echo "Created: $out (wrap width: $width)"
+  fi
+  return $rc
+}
+
+# Code to PDF
+code2pdf() {
+  local in="$1"
+  local out="${2:-${1:t:r}.pdf}"
+  local lang="$3"
+  if [[ -z "$in" ]]; then
+    echo "Usage: code2pdf <input_file> [output.pdf] [language]"
+    return 1
+  fi
+  if [[ ! -f "$in" ]]; then
+    echo "Error: file not found: $in"
+    return 1
+  fi
+  if [[ -z "$lang" ]]; then
+    case "${in:e:l}" in
+      py) lang="python" ;;
+      js) lang="javascript" ;;
+      ts) lang="typescript" ;;
+      jsx) lang="jsx" ;;
+      tsx) lang="tsx" ;;
+      sh|zsh|bash) lang="bash" ;;
+      json) lang="json" ;;
+      yml|yaml) lang="yaml" ;;
+      toml) lang="toml" ;;
+      md) lang="markdown" ;;
+      html) lang="html" ;;
+      css) lang="css" ;;
+      sql) lang="sql" ;;
+      go) lang="go" ;;
+      rs) lang="rust" ;;
+      c) lang="c" ;;
+      h) lang="c" ;;
+      cpp|cc|cxx|hpp|hh|hxx) lang="cpp" ;;
+      java) lang="java" ;;
+      rb) lang="ruby" ;;
+      php) lang="php" ;;
+      xml) lang="xml" ;;
+      *) lang="text" ;;
+    esac
+  fi
+  {
+    print -r -- '```'"$lang"
+    cat -- "$in"
+    print -r -- '```'
+  } | pandoc -f gfm -o "$out" \
+    --pdf-engine=xelatex \
+    --highlight-style=tango \
+    -V geometry:margin=1in \
+    -V mainfont="JetBrainsMono Nerd Font" \
+    -V monofont="JetBrainsMono Nerd Font" \
+    -V fontsize=10pt \
+    -H <(cat <<'LATEX'
+\usepackage{xurl}
+\usepackage{fvextra}
+\setlength{\emergencystretch}{3em}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+  breaklines,
+  breakanywhere,
+  breaksymbolleft={},
+  breaksymbolright={},
+  commandchars=\\\{\}
+}
+LATEX
+)
+  local rc=$?
+  if [[ $rc -eq 0 ]]; then
+    echo "Created: $out (language: $lang)"
+  fi
+  return $rc
 }
 
 # copy command output to clipboard
