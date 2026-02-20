@@ -28,7 +28,8 @@ return {
 
         -- Floating windows MUST have contrast
         vim.api.nvim_set_hl(0, "NormalFloat", {
-          bg = "#1e1e1e", -- this is the key fix
+          -- bg = "#1e1e1e", -- this is the key fix
+          bg = "NONE", -- this is the key fix
         })
 
         vim.api.nvim_set_hl(0, "FloatBorder", {
@@ -36,23 +37,68 @@ return {
           bg = "#1e1e1e",
         })
 
+        -- ==============================
+        -- Unified popup + border theme
+        -- ==============================
+        local popup_bg = "NONE"
+        local border_fg = "#5c6370"
+        local sel_bg = "#2a2a3a"
+        local sel_fg = "#ffffff"
+        -- Global float foundation (used by many plugins + LSP hovers)
+        vim.api.nvim_set_hl(0, "NormalFloat", { bg = popup_bg })
+        vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_fg, bg = popup_bg })
+        vim.api.nvim_set_hl(0, "FloatTitle", { fg = border_fg, bg = popup_bg })
+        -- Built-in popup menu / completion
+        vim.api.nvim_set_hl(0, "Pmenu", { bg = popup_bg })
+        vim.api.nvim_set_hl(0, "PmenuSel", { bg = sel_bg, fg = sel_fg })
+        vim.api.nvim_set_hl(0, "PmenuBorder", { link = "FloatBorder" })
+        -- nvim-cmp docs
+        vim.api.nvim_set_hl(0, "CmpDoc", { bg = popup_bg })
+        vim.api.nvim_set_hl(0, "CmpDocBorder", { link = "FloatBorder" })
         -- Telescope
         vim.api.nvim_set_hl(0, "TelescopeNormal", { link = "NormalFloat" })
         vim.api.nvim_set_hl(0, "TelescopeBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "TelescopePromptNormal", { link = "NormalFloat" })
         vim.api.nvim_set_hl(0, "TelescopePromptBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "TelescopeResultsNormal", { link = "NormalFloat" })
         vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "TelescopePreviewNormal", { link = "NormalFloat" })
         vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "TelescopeTitle", { link = "FloatTitle" })
+        -- Lazy.nvim
+        vim.api.nvim_set_hl(0, "LazyNormal", { link = "NormalFloat" })
+        vim.api.nvim_set_hl(0, "LazyBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "LazyBackdrop", { bg = "NONE" })
+        -- Mason.nvim
+        vim.api.nvim_set_hl(0, "MasonNormal", { link = "NormalFloat" })
+        vim.api.nvim_set_hl(0, "MasonBorder", { link = "FloatBorder" })
+        -- Which-key (new + old group names for compatibility)
+        vim.api.nvim_set_hl(0, "WhichKeyNormal", { link = "NormalFloat" })
+        vim.api.nvim_set_hl(0, "WhichKeyBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "WhichKeyFloat", { link = "NormalFloat" })
 
-        -- Completion / popups
-        vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1e1e1e" })
-        vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#2a2a3a", fg = "#ffffff" })
-        vim.api.nvim_set_hl(0, "PmenuBorder", { link = "FloatBorder" })
-        vim.api.nvim_set_hl(0, "CmpDoc", { bg = "#1e1e1e" })
-        vim.api.nvim_set_hl(0, "CmpDocBorder", { link = "FloatBorder" })
-
-        -- Search
-        vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
-        vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#E197EF" })
+        -- Telescope
+        -- vim.api.nvim_set_hl(0, "TelescopeNormal", { link = "NormalFloat" })
+        -- vim.api.nvim_set_hl(0, "TelescopeBorder", { link = "FloatBorder" })
+        -- vim.api.nvim_set_hl(0, "TelescopePromptBorder", { link = "FloatBorder" })
+        -- vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { link = "FloatBorder" })
+        -- vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { link = "FloatBorder" })
+        --
+        -- -- Completion / popups
+        -- vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1e1e1e" })
+        -- vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#2a2a3a", fg = "#ffffff" })
+        -- vim.api.nvim_set_hl(0, "PmenuBorder", { link = "FloatBorder" })
+        -- vim.api.nvim_set_hl(0, "CmpDoc", { bg = "#1e1e1e" })
+        -- vim.api.nvim_set_hl(0, "CmpDocBorder", { link = "FloatBorder" })
+        --
+        -- -- Search
+        -- vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
+        -- vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#E197EF" })
+        --
+        -- -- Lazy.nvim window + border
+        -- vim.api.nvim_set_hl(0, "LazyNormal", { link = "NormalFloat" })
+        -- vim.api.nvim_set_hl(0, "LazyBorder", { link = "FloatBorder" })
+        -- vim.api.nvim_set_hl(0, "LazyBackdrop", { bg = "NONE" })
       end
 
       vim.api.nvim_create_autocmd("ColorScheme", {

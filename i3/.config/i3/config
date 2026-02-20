@@ -54,7 +54,6 @@ exec --no-startup-id clipman store
 floating_modifier $mod
 
 # Start a terminal
-# bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Return exec alacritty
 
 # Kill focused window
@@ -216,4 +215,3 @@ bindsym Alt+Print exec --no-startup-id flameshot gui --current
 
 # Autotiling
 exec_always --no-startup-id ~/.config/autotiling/autotiling
-
