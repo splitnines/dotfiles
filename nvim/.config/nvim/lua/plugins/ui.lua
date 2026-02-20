@@ -117,52 +117,47 @@ return {
   ---------------------------------------------------------------------------
   -- Statusline
   ---------------------------------------------------------------------------
+  -- {
+  --   "nvim-lualine/lualine.nvim",
+  --   dependencies = { "nvim-tree/nvim-web-devicons" },
+  --   config = function()
+  --     require("lualine").setup({
+  --       options = {
+  --         icons_enabled = true,
+  --         theme = "auto",
+  --         globalstatus = true,
+  --       },
+  --     })
+  --   end,
+  -- },
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      require("lualine").setup({
+      local ok, lualine = pcall(require, "lualine")
+      if not ok then
+        return
+      end
+
+      local cfg = lualine.get_config() or {}
+      local sections = cfg.sections or {}
+
+      sections = vim.tbl_extend("force", sections, {
+        lualine_y = {
+          function()
+            return string.format("%d", vim.api.nvim_buf_line_count(0))
+          end,
+        },
+      })
+
+      lualine.setup({
         options = {
           icons_enabled = true,
           theme = "auto",
           globalstatus = true,
         },
+        sections = sections,
       })
     end,
-  },
-
-  ---------------------------------------------------------------------------
-  -- Dashboard
-  ---------------------------------------------------------------------------
-  --   {
-  --     "goolord/alpha-nvim",
-  --     event = "VimEnter",
-  --     config = function()
-  --       local dashboard = require("alpha.themes.dashboard")
-  --
-  --       vim.api.nvim_set_hl(0, "DashboardHeader", { fg = "#E06C75", bold = true })
-  --
-  --       dashboard.section.header.val = vim.split([[
-  --  '##::: ##:'########::'#######::'##::::'##:'####:'##::::'##:
-  --   ###:: ##: ##.....::'##.... ##: ##:::: ##:. ##:: ###::'###:
-  --   ####: ##: ##::::::: ##:::: ##: ##:::: ##:: ##:: ####'####:
-  --   ## ## ##: ######::: ##:::: ##: ##:::: ##:: ##:: ## ### ##:
-  --   ##. ####: ##...:::: ##:::: ##:. ##:: ##::: ##:: ##. #: ##:
-  --   ##:. ###: ##::::::: ##:::: ##::. ## ##:::: ##:: ##:.:: ##:
-  --   ##::. ##: ########:. #######::::. ###::::'####: ##:::: ##:
-  --   ..::::..::........:::.......::::::...:::::....::..:::::..::
-  --
-  --                ⚡ Welcome to Neovim ⚡
-  -- ]], "\n")
-  --
-  --       dashboard.section.buttons.val = {
-  --         dashboard.button("e", "  New File", ":ene <BAR> startinsert <CR>"),
-  --         dashboard.button("f", "󰱼  Find File", ":Telescope find_files<CR>"),
-  --         dashboard.button("r", "  Recent Files", ":Telescope oldfiles<CR>"),
-  --         dashboard.button("q", "  Quit", ":qa<CR>"),
-  --       }
-  --
-  --       require("alpha").setup(dashboard.config)
-  --     end,
-  --   },
+  }
 }
