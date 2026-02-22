@@ -23,6 +23,7 @@ vim.g.have_nerd_font = true
 vim.opt.inccommand = "split"
 vim.opt.smartindent = true
 vim.opt.shell = "/usr/bin/zsh"
+vim.opt.autoread = true
 
 vim.schedule(function()
   vim.opt.clipboard = "unnamedplus"
