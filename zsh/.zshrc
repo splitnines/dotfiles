@@ -12,6 +12,7 @@ path=(
   /sbin
   /bin
   /snap/bin
+  /usr/local/go/bin
 )
 [[ -d "$HOME/.local/bin" ]] && path=("$HOME/.local/bin" $path)
 [[ -d "$HOME/bin" ]] && path=("$HOME/bin" $path)
