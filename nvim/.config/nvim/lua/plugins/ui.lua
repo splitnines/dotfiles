@@ -76,29 +76,6 @@ return {
         vim.api.nvim_set_hl(0, "WhichKeyNormal", { link = "NormalFloat" })
         vim.api.nvim_set_hl(0, "WhichKeyBorder", { link = "FloatBorder" })
         vim.api.nvim_set_hl(0, "WhichKeyFloat", { link = "NormalFloat" })
-
-        -- Telescope
-        -- vim.api.nvim_set_hl(0, "TelescopeNormal", { link = "NormalFloat" })
-        -- vim.api.nvim_set_hl(0, "TelescopeBorder", { link = "FloatBorder" })
-        -- vim.api.nvim_set_hl(0, "TelescopePromptBorder", { link = "FloatBorder" })
-        -- vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { link = "FloatBorder" })
-        -- vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { link = "FloatBorder" })
-        --
-        -- -- Completion / popups
-        -- vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1e1e1e" })
-        -- vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#2a2a3a", fg = "#ffffff" })
-        -- vim.api.nvim_set_hl(0, "PmenuBorder", { link = "FloatBorder" })
-        -- vim.api.nvim_set_hl(0, "CmpDoc", { bg = "#1e1e1e" })
-        -- vim.api.nvim_set_hl(0, "CmpDocBorder", { link = "FloatBorder" })
-        --
-        -- -- Search
-        -- vim.api.nvim_set_hl(0, "Search", { fg = "#000000", bg = "#E197EF" })
-        -- vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#E197EF" })
-        --
-        -- -- Lazy.nvim window + border
-        -- vim.api.nvim_set_hl(0, "LazyNormal", { link = "NormalFloat" })
-        -- vim.api.nvim_set_hl(0, "LazyBorder", { link = "FloatBorder" })
-        -- vim.api.nvim_set_hl(0, "LazyBackdrop", { bg = "NONE" })
       end
 
       vim.api.nvim_create_autocmd("ColorScheme", {
@@ -163,19 +140,6 @@ return {
   ---------------------------------------------------------------------------
   -- Statusline
   ---------------------------------------------------------------------------
-  -- {
-  --   "nvim-lualine/lualine.nvim",
-  --   dependencies = { "nvim-tree/nvim-web-devicons" },
-  --   config = function()
-  --     require("lualine").setup({
-  --       options = {
-  --         icons_enabled = true,
-  --         theme = "auto",
-  --         globalstatus = true,
-  --       },
-  --     })
-  --   end,
-  -- },
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -198,9 +162,11 @@ return {
 
       lualine.setup({
         options = {
-          icons_enabled = true,
-          theme = "auto",
-          globalstatus = true,
+          icons_enabled        = true,
+          theme                = "auto",
+          globalstatus         = true,
+          component_separators = { left = "", right = "" },
+          section_separators   = { left = "", right = "" },
         },
         sections = sections,
       })
