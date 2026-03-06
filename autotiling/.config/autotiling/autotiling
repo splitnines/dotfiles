@@ -1,13 +1,27 @@
 #!/usr/bin/env bash
 
+mkdir -p "$HOME/.cache"
 PIDFILE="$HOME/.cache/autotiling.pid"
 
-if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
-    kill "$(cat "$PIDFILE")"
+if [ -f "$PIDFILE" ]; then
+    OLD_PID="$(cat "$PIDFILE")"
+    if [ -n "$OLD_PID" ] && kill -0 "$OLD_PID" 2>/dev/null; then
+        kill "$OLD_PID"
+    fi
 fi
 
 cd "$HOME/.config/autotiling" || exit 1
-/home/rickey/.config/autotiling/.venv/bin/python autotiling.py &
+
+PYTHON_BIN="$HOME/.config/autotiling/.venv/bin/python"
+if [ ! -x "$PYTHON_BIN" ]; then
+    PYTHON_BIN="$(command -v python3 || command -v python)"
+fi
+
+if [ -z "$PYTHON_BIN" ]; then
+    echo "Error: python3/python not found in PATH" >&2
+    exit 1
+fi
+
+"$PYTHON_BIN" autotiling.py &
 
 echo $! > "$PIDFILE"
-

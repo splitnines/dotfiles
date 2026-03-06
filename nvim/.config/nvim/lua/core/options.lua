@@ -22,7 +22,12 @@ vim.opt.list = false
 vim.g.have_nerd_font = true
 vim.opt.inccommand = "split"
 vim.opt.smartindent = true
-vim.opt.shell = "/usr/bin/zsh"
+local zsh_path = vim.fn.exepath("zsh")
+if zsh_path ~= "" then
+  vim.opt.shell = zsh_path
+elseif vim.env.SHELL and vim.env.SHELL ~= "" then
+  vim.opt.shell = vim.env.SHELL
+end
 vim.opt.autoread = true
 
 vim.schedule(function()

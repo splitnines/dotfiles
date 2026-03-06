@@ -701,4 +701,4 @@ add-zsh-hook chpwd __zsh_auto_venv
 __zsh_auto_venv
 
 # opencode
-export PATH=/home/rickey/.opencode/bin:$PATH
+[[ -d "$HOME/.opencode/bin" ]] && path=("$HOME/.opencode/bin" $path)

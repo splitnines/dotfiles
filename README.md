@@ -131,11 +131,17 @@ The `autotiling` package uses:
 - `uv`
 - Python package `i3ipc>=2.2.1`
 
-The launcher script currently runs:
+After stowing, create the autotiling venv from the checked-in lockfile:
 
-- `~/.config/autotiling/.venv/bin/python autotiling.py`
+```bash
+cd ~/.config/autotiling
+uv sync --frozen
+```
 
-If your username/path differs, update that script accordingly.
+The launcher script:
+
+- prefers `~/.config/autotiling/.venv/bin/python`
+- falls back to `python3`/`python` from `PATH` if the venv is missing
 
 ## Neovim dependencies and toolchain
 
@@ -191,8 +197,22 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 
 ## Post-install checklist
 
-- Set default shell to zsh (if needed): `chsh -s /usr/bin/zsh`
-- Ensure `~/.config/local/i3/config.local` exists (i3 includes it)
+- Set default shell to zsh (if needed): `chsh -s "$(command -v zsh)"`
+- Ensure `~/.config/local/i3/config.local` exists (i3 includes it):
+
+```bash
+mkdir -p ~/.config/local/i3
+touch ~/.config/local/i3/config.local
+```
+
+- Install tmux TPM plugin manager:
+
+```bash
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
+- Open tmux and run `prefix + I` (prefix is `C-b`) to install tmux plugins
+- Open Neovim once and run `:Lazy sync` and `:Mason` if tools are missing
 - Ensure wallpaper path `~/dotfiles/bg` exists
 - Install JetBrainsMono Nerd Font
 - Export secrets in `~/.myenv` or shell env:
@@ -218,7 +238,7 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   - OneDark-ish palette, transparent dark background, Nerd Font, vi mode toggle,
     paste/reset font keybinds.
 - `tmux/.tmux.conf`
-  - Prefix on `C-a`, vi key mode, mouse support, custom statusline,
+  - Prefix on `C-b`, vi key mode, mouse support, custom statusline,
     pane/session management, clipboard copy via `xsel`, popup terminal session.
 
 ### Window manager and desktop UI
@@ -297,7 +317,8 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   - listens to i3/sway events and switches split orientation based on
     focused window dimensions; supports output/workspace filters and ratios.
 - `autotiling/.config/autotiling/autotiling`
-  - launch wrapper with PID tracking/restart behavior.
+  - launch wrapper with PID tracking/restart behavior and portable Python
+    resolution (`$HOME` paths + `python3`/`python` fallback).
 - `autotiling/.config/autotiling/pyproject.toml`
   - project metadata and dependency declaration (`i3ipc`).
 - `autotiling/.config/autotiling/uv.lock`
@@ -318,4 +339,4 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 
 - This setup assumes Linux desktop components (i3/polybar/picom/etc).
 - Some scripts assume standard GNU userland tools are available.
-- Some paths are user-specific (notably autotiling launcher).
+- `opencode` is added to `PATH` only if `$HOME/.opencode/bin` exists.
