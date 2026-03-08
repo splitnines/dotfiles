@@ -9,9 +9,9 @@ return {
     },
     formatters = {
       stylua = { prepend_args = { "--indent-type", "Spaces", "--indent-width", "2" } },
-    },
-    autopep8 = {
-      prepend_args = { "--style", "{based_on_style: pep8, colunm_limit: 79}" },
+      autopep8 = {
+        prepend_args = { "--style", "{based_on_style: pep8, column_limit: 79}" },
+      },
     },
     format_on_save = function(bufnr)
       local disable = { c = true, cpp = true }

@@ -1,7 +1,24 @@
 -- .config/nvim/lua/plugins/gp.lua
 return {
   "robitx/gp.nvim",
-  lazy = false,
+  cmd = {
+    "GpAppend",
+    "GpChatFinder",
+    "GpChatNew",
+    "GpChatPaste",
+    "GpChatToggle",
+    "GpContext",
+    "GpEnew",
+    "GpImplement",
+    "GpNew",
+    "GpNextAgent",
+    "GpPopup",
+    "GpPrepend",
+    "GpRewrite",
+    "GpSelectAgent",
+    "GpStop",
+    "GpVnew",
+  },
   dependencies = {
     "MunifTanjim/nui.nvim",
   },
@@ -28,27 +45,27 @@ return {
       agents = {
         {
           name = "CodeGPT-o3-mini",
-          disable = true
+          disable = true,
         },
         {
           name = "CodeGPT4o-mini",
-          disable = true
+          disable = true,
         },
         {
           name = "CodeGPT4o",
-          disable = true
+          disable = true,
         },
         {
           name = "ChatGPT4o",
-          disable = true
+          disable = true,
         },
         {
           name = "ChatGPT-o3-mini",
-          disable = true
+          disable = true,
         },
         {
           name = "ChatGPT4o-mini",
-          disable = true
+          disable = true,
         },
         {
           name = "ChatGPT",
@@ -72,7 +89,7 @@ return {
           command = true,
           model = { model = "gpt-5-mini" },
           system_prompt =
-          "You are a senoir network engineer assistant with a vast knowledge of Cisco IOS-XE routers and switches, network RFC and IEEE standards.",
+            "You are a senoir network engineer assistant with a vast knowledge of Cisco IOS-XE routers and switches, network RFC and IEEE standards.",
           style = "popup",
         },
         {

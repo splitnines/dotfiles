@@ -17,7 +17,6 @@ require("lazy").setup({
   spec = {
     { "tpope/vim-sleuth" },
     { "folke/neodev.nvim",              opts = {} },
-    { "lukas-reineke/virt-column.nvim", opts = {} },
 
     require("plugins.todo-comments"),
     require("plugins.gitsigns"),
@@ -35,6 +34,6 @@ require("lazy").setup({
     require("plugins.markdown"),
     require("plugins.surround"),
     require("plugins.gp"),
-    require("plugins.undotree")
+    require("plugins.undotree"),
   },
 })

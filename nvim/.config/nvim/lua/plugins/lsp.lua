@@ -4,13 +4,16 @@ return {
   dependencies = {
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
-    "WhoIsSethDaniel/mason-tool-installer.nvim",
     { "j-hui/fidget.nvim", opts = {} },
     "hrsh7th/cmp-nvim-lsp",
     "L3MON4D3/LuaSnip",
   },
   config = function()
-    require("mason").setup()
+    require("mason").setup({
+      ui = {
+        border = "rounded",
+      },
+    })
     require("mason-lspconfig").setup({
       ensure_installed = { "lua_ls", "clangd", "bashls" },
     })
@@ -46,6 +49,7 @@ return {
         },
       },
     })
+    vim.lsp.enable("lua_ls")
 
     cfg("clangd", {
       cmd = { "clangd", "--background-index", "--clang-tidy" },
@@ -56,6 +60,7 @@ return {
       cmd = { "bash-language-server", "start" },
       capabilities = capabilities,
     })
+    vim.lsp.enable("bashls")
 
     -- ruff
     cfg("ruff", {
@@ -79,7 +84,7 @@ return {
     vim.lsp.enable("ruff")
 
     -- ty
-    vim.lsp.config('ty', {
+    vim.lsp.config("ty", {
       settings = {
         ty = {
           inlayHints = {
@@ -88,12 +93,12 @@ return {
           disableLanguageServices = false,
           configuration = {
             rules = {
-              ["unresolved-reference"] = "warn"
-            }
-          }
-        }
-      }
+              ["unresolved-reference"] = "warn",
+            },
+          },
+        },
+      },
     })
-    vim.lsp.enable('ty')
+    vim.lsp.enable("ty")
   end,
 }

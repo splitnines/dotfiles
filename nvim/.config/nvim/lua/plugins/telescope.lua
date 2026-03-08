@@ -16,7 +16,7 @@ return {
     { "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
     "nvim-telescope/telescope-file-browser.nvim",
   },
-  config = function(_)
+  config = function()
     local telescope = require("telescope")
     local actions = require("telescope.actions")
     local themes = require("telescope.themes")
@@ -76,7 +76,12 @@ return {
           prompt_title = "Search Files",
         },
       },
-      extensions = { ["ui-select"] = themes.get_dropdown() },
+      extensions = {
+        ["ui-select"] = themes.get_dropdown(),
+        file_browser = {
+          use_ui_input = false,
+        },
+      },
     })
 
     pcall(telescope.load_extension, "fzf")

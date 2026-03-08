@@ -109,15 +109,9 @@ vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
 -- Toggle linter
-vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    if vim.fn.exists(":ToggleLint") == 2 then
-      vim.keymap.set("n", "<leader>tl", ":ToggleLint<CR>", {
-        desc = "Toggle LSP diagnostics",
-        silent = true,
-      })
-    end
-  end,
+vim.keymap.set("n", "<leader>tl", "<cmd>ToggleLint<CR>", {
+  desc = "Toggle LSP diagnostics",
+  silent = true,
 })
 
 -- Markdown toggle

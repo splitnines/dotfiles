@@ -6,6 +6,12 @@ return {
     local wk = require("which-key")
     wk.setup({
       plugins = { spelling = true },
+      win = {
+        border = "rounded",
+        wo = {
+          winblend = 0,
+        },
+      },
       replace = { ["<leader>"] = "SPC", ["<space>"] = "SPC" },
       icons = {
         mappings = vim.g.have_nerd_font,
