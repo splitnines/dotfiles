@@ -2,7 +2,7 @@
 Type=Application
 Name=Ranger File Manager
 Comment=Launch Ranger in Alacritty
-Exec=rfm
+Exec=/home/rickey/.local/bin/rfm
 Icon=utilities-terminal
 Terminal=false
 Categories=System;FileManager;
