@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+exec alacritty -e /usr/bin/ranger "$@"

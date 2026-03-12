@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Ranger File Manager
+Comment=Launch Ranger in Alacritty
+Exec=rfm
+Icon=utilities-terminal
+Terminal=false
+Categories=System;FileManager;
