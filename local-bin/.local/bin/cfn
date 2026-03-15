@@ -1,0 +1,14 @@
+#!/usr/bin//env bash
+
+for f in *; do
+    new=${f//[[:space:]\"\'\(\)\[\]\{\}\&\!\,\?\:\/\<\>]/-}
+
+    while [[ $new == *--* ]]; do
+        new=${new//--/-}
+    done
+
+    new=${new##-}
+    new=${new%%-}
+
+    [ "$f" = "$new" ] || mv -- "$f" "$new"
+done
