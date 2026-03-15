@@ -3,6 +3,8 @@ include ~/.config/local/i3/config.local
 
 set $mod Mod1
 
+mouse_warping output
+
 # Font for window titles.
 font pango:JetBrains Mono 10
 
