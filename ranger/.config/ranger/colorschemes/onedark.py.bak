@@ -1,0 +1,141 @@
+from ranger.gui.colorscheme import ColorScheme
+from ranger.gui.color import *
+
+BLACK = 16
+RED = 203
+GREEN = 114
+YELLOW = 180
+BLUE = 75
+MAGENTA = 176
+CYAN = 73
+WHITE = 188
+GRAY = 242
+DARK_GRAY = 239
+
+
+class Scheme(ColorScheme):
+    progress_bar_color = BLUE
+
+    def use(self, context):
+        fg = WHITE
+        bg = BLACK
+        attr = normal
+
+        if context.reset:
+            return (fg, bg, attr)
+
+        if context.in_browser:
+            if context.selected:
+                attr |= bold
+                fg = BLACK
+                bg = BLUE
+            elif context.empty or context.error:
+                fg = RED
+                bg = BLACK
+            elif context.border:
+                fg = DARK_GRAY
+                bg = BLACK
+            elif context.media:
+                fg = MAGENTA
+                bg = BLACK
+            elif context.container:
+                fg = CYAN
+                bg = BLACK
+            elif context.directory:
+                fg = BLUE
+                bg = BLACK
+                attr |= bold
+            elif context.executable and not context.directory:
+                fg = GREEN
+                bg = BLACK
+                attr |= bold
+            elif context.socket:
+                fg = MAGENTA
+                bg = BLACK
+                attr |= bold
+            elif context.fifo or context.device:
+                fg = YELLOW
+                bg = BLACK
+            elif context.link:
+                fg = CYAN if context.good else RED
+                bg = BLACK
+            elif context.tag_marker:
+                fg = YELLOW
+                bg = BLACK
+                attr |= bold
+            elif context.cut or context.copied:
+                fg = BLACK
+                bg = DARK_GRAY
+            elif context.main_column:
+                fg = WHITE
+                bg = BLACK
+            else:
+                fg = WHITE
+                bg = BLACK
+
+            if context.marked:
+                fg = YELLOW
+                bg = BLACK
+                attr |= bold
+
+        elif context.in_titlebar:
+            bg = BLACK
+            if context.hostname:
+                fg = RED if context.bad else GREEN
+            elif context.directory:
+                fg = BLUE
+                attr |= bold
+            elif context.tab:
+                if context.good:
+                    fg = BLACK
+                    bg = BLUE
+                else:
+                    fg = GRAY
+                    bg = BLACK
+            elif context.link:
+                fg = CYAN
+            else:
+                fg = WHITE
+
+        elif context.in_statusbar:
+            bg = BLACK
+            if context.permissions:
+                if context.good:
+                    fg = GREEN
+                elif context.bad:
+                    fg = RED
+            elif context.marked:
+                fg = YELLOW
+                attr |= bold
+            elif context.frozen:
+                fg = CYAN
+                attr |= bold
+            elif context.message:
+                fg = WHITE
+            elif context.loaded:
+                fg = BLUE
+            else:
+                fg = WHITE
+
+        elif context.in_taskview:
+            bg = BLACK
+            if context.title:
+                fg = BLUE
+                attr |= bold
+            elif context.selected:
+                fg = BLACK
+                bg = BLUE
+
+        if context.text and context.highlight:
+            fg = YELLOW
+            attr |= bold
+
+        if context.badinfo:
+            fg = RED
+            bg = BLACK
+
+        if context.inactive_pane:
+            fg = GRAY
+            bg = BLACK
+
+        return (fg, bg, attr)
