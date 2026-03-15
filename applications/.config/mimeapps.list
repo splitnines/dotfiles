@@ -1,5 +1,16 @@
 [Default Applications]
-inode/directory=rfm.desktop
+inode/directory=rfm.desktop;
+text/html=chromium_chromium.desktop;
+x-scheme-handler/http=chromium_chromium.desktop;
+x-scheme-handler/https=chromium_chromium.desktop;
+x-scheme-handler/about=chromium_chromium.desktop;
+x-scheme-handler/unknown=chromium_chromium.desktop;
+application/pdf=org.gnome.Evince.desktop;
+image/jpeg=feh.desktop;
+image/png=feh.desktop;
 
 [Added Associations]
 inode/directory=rfm.desktop;
+application/pdf=org.gnome.Evince.desktop;
+image/jpeg=feh.desktop;
+image/png=feh.desktop;
