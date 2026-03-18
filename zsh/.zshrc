@@ -255,6 +255,7 @@ alias t="/usr/bin/telnet"
 alias rcd="/usr/bin/script -m advanced"
 alias md="mkdir -p"
 alias rs="rsync -avzr"
+alias feh='feh --image-bg black'
 
 [ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
 
