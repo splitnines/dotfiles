@@ -1,2 +1,6 @@
 nvim/.config/nvim/init.lua.bak
 autotiling/.config/autotiling/.venv/
+
+# Python cache
+__pycache__/
+*.pyc
