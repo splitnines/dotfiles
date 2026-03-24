@@ -256,6 +256,10 @@ alias rcd="/usr/bin/script -m advanced"
 alias md="mkdir -p"
 alias rs="rsync -avzr"
 alias feh='feh --image-bg black'
+alias bt='bluetoothctl'
+alias btl='bluetoothctl devices'
+alias btc='bluetoothctl connect'
+alias btd='bluetoothctl disconnect'
 
 [ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
 
