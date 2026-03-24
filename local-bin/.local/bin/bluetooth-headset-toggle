@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# ~/.local/bin/bluetooth-headset-toggle
+
+set -euo pipefail
+
+target_mac="50:5E:5C:07:3C:D3"
+
+require_cmd() {
+	local cmd
+	for cmd in "$@"; do
+		command -v "$cmd" >/dev/null 2>&1 || {
+			printf 'error: required command not found: %s\n' "$cmd" >&2
+			exit 1
+		}
+	done
+}
+
+bt_cmd() {
+	timeout 10s bluetoothctl "$@"
+}
+
+disconnect_connected_devices() {
+	local line
+	local mac
+
+	while IFS= read -r line; do
+		mac="${line#Device }"
+		mac="${mac%% *}"
+
+		if [ -n "$mac" ] && [ "$mac" != "$target_mac" ]; then
+			bt_cmd disconnect "$mac" >/dev/null 2>&1 || true
+		fi
+	done < <(bt_cmd devices Connected 2>/dev/null || true)
+}
+
+main() {
+	require_cmd bluetoothctl timeout
+
+	# Make sure bluetooth is powered on.
+	bt_cmd power on >/dev/null
+
+	# Disconnect any currently connected bluetooth devices first.
+	disconnect_connected_devices
+
+	# Brief pause so bluez finishes state changes cleanly.
+	sleep 1
+
+	# Connect target headset.
+	if ! bt_cmd connect "$target_mac"; then
+		printf 'error: failed to connect headset %s\n' "$target_mac" >&2
+		exit 1
+	fi
+}
+
+main "$@"
