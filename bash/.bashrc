@@ -1,132 +1,63 @@
-# Edit this file to introduce tasks to be run by cron.
-# 
-# Each task to run has to be defined through a single line
-# indicating with different fields when the task will be run
-# and what command to run for the task
-# 
-# To define the time you can provide concrete values for
-# minute (m), hour (h), day of month (dom), month (mon),
-# and day of week (dow) or use '*' in these fields (for 'any').
-# 
-# Notice that tasks will be started based on the cron's system
-# daemon's notion of time and timezones.
-# 
-# Output of the crontab jobs (including errors) is sent through
-# email to the user the crontab file belongs to (unless redirected).
-# 
-# For example, you can run a backup of all your user accounts
-# at 5 a.m every week with:
-# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
-# 
-# For more information see the manual pages of crontab(5) and cron(8)
-# 
-# m h  dom mon dow   command
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
-
-# use vi key bindings
 set -o vi
 
-# If not running interactively, don't do anything
 case $- in
     *i*) ;;
-      *) return;;
+    *) return ;;
 esac
 
-# don't put duplicate lines or lines starting with space in the history.
-# See bash(1) for more options
 HISTCONTROL=ignoreboth
-
-# append to the history file, don't overwrite it
-shopt -s histappend
-
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
 
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
+shopt -s histappend
 shopt -s checkwinsize
 
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-#shopt -s globstar
-
-# make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# set variable identifying the chroot you work in (used in the prompt below)
-# if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-#     debian_chroot=$(cat /etc/debian_chroot)
-# fi
-
-# set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color|*-256color|screen) color_prompt=yes;;
+    xterm-color|*-256color|screen) color_prompt=yes ;;
 esac
 
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+NEWLINE_BEFORE_PROMPT=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-        # We have color support; assume it's compliant with Ecma-48
-        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-        # a case would tend to support setf rather than setaf.)
         color_prompt=yes
     else
         color_prompt=
     fi
 fi
 
-# The following block is surrounded by two delimiters.
-# These delimiters must not be modified. Thanks.
-PROMPT_ALTERNATIVE=twoline
-NEWLINE_BEFORE_PROMPT=yes
+__git_prompt_info() {
+    local branch
+
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+    branch=$(git branch --show-current 2>/dev/null) || return 0
+    [ -n "$branch" ] || return 0
+
+    printf ' \001\033[0;31m\002%s\001\033[0m\002' "$branch"
+
+    git update-index -q --refresh >/dev/null 2>&1
+    if ! git diff --quiet --ignore-submodules --cached 2>/dev/null || \
+       ! git diff --quiet --ignore-submodules 2>/dev/null; then
+        printf ' \001\033[38;5;208m\002!\001\033[0m\002'
+    fi
+}
 
 if [ "$color_prompt" = yes ]; then
-    # override default virtualenv indicator in prompt
     VIRTUAL_ENV_DISABLE_PROMPT=1
 
     prompt_color='\[\033[;90m\]'
     info_color='\[\033[1;34m\]'
-    prompt_symbol=@
-    # prompt_symbol=💀
+    prompt_symbol='@'
     dollar='$'
 
     if [ "$EUID" -eq 0 ]; then
-        # Change prompt colors for root user
         prompt_color='\[\033[;94m\]'
         info_color='\[\033[1;31m\]'
     fi
 
-        __git_prompt_info() {
-        local branch
-    
-        git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
-        branch=$(git branch --show-current 2>/dev/null) || return 0
-        [ -n "$branch" ] || return 0
-    
-        printf ' \001\033[0;31m\002%s\001\033[0m\002' "$branch"
-    
-        git update-index -q --refresh >/dev/null 2>&1
-        if ! git diff --quiet --ignore-submodules --cached 2>/dev/null || \
-           ! git diff --quiet --ignore-submodules 2>/dev/null; then
-            printf ' \001\033[38;5;208m\002!\001\033[0m\002'
-        fi
-    }
-
-    case "$PROMPT_ALTERNATIVE" in
-        twoline)
-            PS1=$prompt_color'\n${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(basename "$VIRTUAL_ENV")'$prompt_color')}['$info_color'\u'$prompt_symbol'\h'$prompt_color']-['$info_color'\w'$prompt_color']$(__git_prompt_info)\n'$info_color''$dollar'\[\033[0m\] ' ;;
-        oneline)
-            PS1='${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV)) }${debian_chroot:+($debian_chroot)}'$info_color'\u@\h\[\033[00m\]:'$prompt_color'\[\033[01m\]['$info_color'\w'$prompt_color']$(git branch --show-current 2>/dev/null | sed "s/.*/\[\033[0;32m\][\[\033[0;31m\]&\[\033[0m\]\[\033[0;32m\]]\[\033[0m\]/")\$' ;;
-        backtrack)
-            PS1='${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV)) }${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\]:['$info_color'\w'$prompt_color']$(git branch --show-current 2>/dev/null | sed "s/.*/\[\033[0;32m\][\[\033[0;31m\]&\[\033[0m\]\[\033[0;32m\]]\[\033[0m\]/")\$ ' ;;
-    esac
+    PS1=$prompt_color'\n${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(basename "$VIRTUAL_ENV")'$prompt_color')}['$info_color'\u'$prompt_symbol'\h'$prompt_color']-['$info_color'\w'$prompt_color']$(__git_prompt_info)\n'$info_color''$dollar'\[\033[0m\] '
 
     unset prompt_color
     unset info_color
@@ -135,72 +66,47 @@ if [ "$color_prompt" = yes ]; then
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
-unset color_prompt force_color_prompt
 
-# If this is an xterm set the title to user@host:dir
+unset color_prompt
+unset force_color_prompt
+unset NEWLINE_BEFORE_PROMPT
+
 case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
+    xterm*|rxvt*)
+        PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+        ;;
 esac
 
-# enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
-
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
 
-# colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-# some more ls aliases
 alias ll='ls -alFh'
 alias la='ls -A'
 alias l='ls -CF'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+[ -f ~/.bash_aliases ] && . ~/.bash_aliases
+[ -f ~/.django_envs ] && . ~/.django_envs
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
-# Add Django environment variables
-if [ -f ~/.django_envs ]; then
-    . ~/.django_envs
-fi
-
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
 fi
 
-# fixes firefox on remote desktop
-export XAUTHORITY=$HOME/.Xauthority
+export XAUTHORITY="$HOME/.Xauthority"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
-# Set colors for man pages
 export LESS_TERMCAP_mb=$'\e[1;31m'
 export LESS_TERMCAP_md=$'\e[1;32m'
 export LESS_TERMCAP_me=$'\e[0m'
@@ -209,10 +115,6 @@ export LESS_TERMCAP_so=$'\e[1;44;33m'
 export LESS_TERMCAP_ue=$'\e[0m'
 export LESS_TERMCAP_us=$'\e[1;4;36m'
 
-# Add to path
 export PATH="$HOME/.local/bin:$PATH"
 
-# Add custom env variables
-if [ -f "$HOME/.myenv" ]; then
-    source "$HOME/.myenv"
-fi
+[ -f "$HOME/.myenv" ] && . "$HOME/.myenv"
