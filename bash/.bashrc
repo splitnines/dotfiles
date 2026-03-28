@@ -76,6 +76,7 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
 [ -f ~/.bash_aliases ] && . ~/.bash_aliases
+[ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
 
 # ===========================
 # OneDark Color Scheme
