@@ -433,3 +433,12 @@ _weather() {
       ;;
   esac
 }
+
+# Screenkey
+sk() {
+  if pgrep -x screenkey > /dev/null; then
+    pkill -x screenkey
+  else
+    screenkey -g '1920x300+1600+0' -s large >/dev/null 2>&1 &
+  fi
+}
