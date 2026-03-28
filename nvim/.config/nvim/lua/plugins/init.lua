@@ -35,5 +35,6 @@ require("lazy").setup({
     require("plugins.surround"),
     require("plugins.gp"),
     require("plugins.undotree"),
+    require("plugins.cisco"),
   },
 })
