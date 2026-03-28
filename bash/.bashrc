@@ -276,3 +276,160 @@ export LESS_TERMCAP_ue=$'\e[0m'
 export LESS_TERMCAP_md=$'\e[38;2;97;175;239m'
 
 PROMPT_COMMAND="__auto_venv;__set_prompt${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+
+# =========================
+# SSH agent
+# =========================
+SSH_ENV="$HOME/.ssh/agent_env"
+SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.zsh"
+
+if [[ -x "$SSH_BOOTSTRAP" ]]; then
+    # Run the bootstrap script to ensure the agent is started/reused
+    "$SSH_BOOTSTRAP"
+    # Then load its environment variables into this shell
+    [[ -f "$SSH_ENV" ]] && source "$SSH_ENV" >/dev/null
+fi
+
+# ===========================
+# fzf integration and functiions
+# ===========================
+if [[ -f ~/.fzf/shell/key-bindings.bash ]]; then
+  source ~/.fzf/shell/key-bindings.bash
+fi
+
+if [[ -f ~/.fzf/shell/completion.bash ]]; then
+  source ~/.fzf/shell/completion.bash
+fi
+
+# ===========================
+# fzf defaults
+# ===========================
+export FZF_DEFAULT_OPTS="
+  --height=100%
+  --border=rounded
+  --margin=1,3
+  --padding=1
+  --color=fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
+  --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
+  --color=border:#3e4451,label:#61afef
+"
+#  --color=bg:#141414,bg+:#2b3038,fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
+
+
+# Search command history
+fh() {
+  local cmd
+  cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' | sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
+  eval "$cmd"
+}
+
+fv() {
+  local file
+  file=$(find . -type f | fzf \
+    --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
+    --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0)
+  [[ -n "$file" ]] && nvim "$file"
+}
+
+# Search cd history
+fcd() {
+  local dir
+  dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
+  [[ -z "$dir" ]] && return
+  [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
+}
+
+# Search current directory (fuzzy filenames only)
+fsc() {
+  local file
+  file=$(fzf --prompt="Search files → " --exit-0)
+  [[ -n "$file" ]] && nvim "$file"
+}
+
+# Search entire home directory (fuzzy)
+fsh() {
+  local file
+  file=$(fdfind --type f --hidden \
+    --exclude .git \
+    --exclude .cache \
+    --exclude .local \
+    --exclude node_modules \
+    --exclude target \
+    . "$HOME" 2>/dev/null | \
+    fzf --prompt="Search in home → " --exit-0)
+  [[ -n "$file" ]] && nvim "$file"
+}
+
+# Search the whole file system (fuzzy, skips unsafe dirs)
+fsa() {
+  local file
+  file=$(find / \
+    -path /proc -prune -o \
+    -path /sys -prune -o \
+    -path /dev -prune -o \
+    -path /run -prune -o \
+    -path /tmp -prune -o \
+    -path /var/lib -prune -o \
+    -path /var/run -prune -o \
+    -path /snap -prune -o \
+    -type f -readable -print 2>/dev/null | \
+    fzf --prompt='Search all files → ')
+  [[ -n "$file" ]] && nvim "$file"
+}
+
+# Search and kill processes
+fk() {
+  ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
+}
+
+# ===========================
+# Weather
+# ===========================
+typeset -ga WEATHER_CITIES
+WEATHER_CITIES_FILE="$HOME/.config/zsh/weather_cities.zsh"
+[[ -f $WEATHER_CITIES_FILE ]] && source "$WEATHER_CITIES_FILE"
+
+weather() {
+  local city="$1"
+  local state="$2"
+  local country="${3:-usa}"
+
+  if [[ -z "$city" ]]; then
+    echo "usage: weather <city> [state] [country]"
+    return 1
+  fi
+
+  city="${city// /+}"
+  state=${state// /+}
+
+  curl "http://wttr.in/${city}${state:+,+$state}+${country}?u"
+}
+
+_weather() {
+  local -a states countries
+
+  states=(
+    al ak az ar ca co ct de fl ga hi id il in ia ks ky
+    la me md ma mi mn ms mo mt ne nv nh nj nm ny nc
+    nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy
+  )
+
+  countries=(usa)
+
+  _arguments -C \
+    '1:city:->city' \
+    '2:state:->state' \
+    '3:country:->country'
+
+  case $state in
+    city)
+      compadd -Q -a WEATHER_CITIES
+      ;;
+    state)
+      compadd -a states
+      ;;
+    country)
+      compadd -a countries
+      ;;
+  esac
+}
