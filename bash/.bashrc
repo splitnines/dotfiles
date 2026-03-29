@@ -67,15 +67,15 @@ if [ -x /usr/bin/dircolors ]; then
     fi
 fi
 
-alias ls='ls --color=auto'
-alias l='ls'
-alias la='ls -A'
-alias ll='ls -Alh'
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+# alias ls='ls --color=auto'
+# alias l='ls'
+# alias la='ls -A'
+# alias ll='ls -Alh'
+# alias grep='grep --color=auto'
+# alias fgrep='fgrep --color=auto'
+# alias egrep='egrep --color=auto'
 
-[ -f ~/.bash_aliases ] && . ~/.bash_aliases
+# [ -f ~/.bash_aliases ] && . ~/.bash_aliases
 [ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
 
 # ===========================
@@ -244,17 +244,17 @@ if [ -f "$HOME/.fzf/shell/completion.bash" ]; then
 fi
 
 # Git aliases
-alias g='git'
-alias ga='git add .'
-alias gb='git branch'
-alias gc='git commit'
-alias gcm='git commit -m'
-alias gco='git checkout'
-alias gd='git diff | nvim -'
-alias pull='git pull'
-alias push='git push'
-alias gs='git status'
-alias gm='git merge'
+# alias g='git'
+# alias ga='git add .'
+# alias gb='git branch'
+# alias gc='git commit'
+# alias gcm='git commit -m'
+# alias gco='git checkout'
+# alias gd='git diff | nvim -'
+# alias pull='git pull'
+# alias push='git push'
+# alias gs='git status'
+# alias gm='git merge'
 
 if command -v git >/dev/null 2>&1; then
     if [ -f /usr/share/bash-completion/completions/git ]; then
@@ -443,3 +443,47 @@ sk() {
     screenkey -g '1920x300+1600+0' -s large >/dev/null 2>&1 &
   fi
 }
+
+# =====================
+# Aliases
+# =====================
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
+alias bt=bluetoothctl
+alias btc='bluetoothctl connect'
+alias btd='bluetoothctl disconnect'
+alias btl='bluetoothctl devices'
+alias cal='ncal -C'
+alias egrep='egrep --color=auto'
+alias feh='feh --image-bg black'
+alias fgrep='fgrep --color=auto'
+alias g=git
+alias ga='git add .'
+alias gb='git branch'
+alias gc='git commit'
+alias gcm='git commit -m'
+alias gco='git checkout'
+alias gd='git diff | nvim -'
+alias gm='git merge'
+alias grep='grep --color=auto'
+alias gs='git status'
+alias h='history'
+alias ls='ls --color=auto'
+alias l=ls
+alias la='ls -A'
+alias le='less -X'
+alias ll='ls -Alh'
+alias md='mkdir -p'
+alias nv=/usr/bin/nvim
+alias path='echo "$PATH" | tr ":" "\n"'
+alias pull='git pull'
+alias push='git push'
+alias python=python3
+alias q=exit
+alias rcd='/usr/bin/script -m advanced'
+alias rs='rsync -avzr'
+alias ta='/usr/bin/tmux attach -t'
+alias tl='/usr/bin/tmux ls'
+alias which-command=whence
