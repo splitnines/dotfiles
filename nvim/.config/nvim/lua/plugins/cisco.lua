@@ -1,6 +1,5 @@
 return {
   {
-    "momota/cisco.vim",
-    ft = "cisco",
+    "splitnines/cisco.nvim"
   }
 }
