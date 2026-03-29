@@ -67,15 +67,6 @@ if [ -x /usr/bin/dircolors ]; then
     fi
 fi
 
-# alias ls='ls --color=auto'
-# alias l='ls'
-# alias la='ls -A'
-# alias ll='ls -Alh'
-# alias grep='grep --color=auto'
-# alias fgrep='fgrep --color=auto'
-# alias egrep='egrep --color=auto'
-
-# [ -f ~/.bash_aliases ] && . ~/.bash_aliases
 [ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
 
 # ===========================
@@ -242,19 +233,6 @@ fi
 if [ -f "$HOME/.fzf/shell/completion.bash" ]; then
     . "$HOME/.fzf/shell/completion.bash"
 fi
-
-# Git aliases
-# alias g='git'
-# alias ga='git add .'
-# alias gb='git branch'
-# alias gc='git commit'
-# alias gcm='git commit -m'
-# alias gco='git checkout'
-# alias gd='git diff | nvim -'
-# alias pull='git pull'
-# alias push='git push'
-# alias gs='git status'
-# alias gm='git merge'
 
 if command -v git >/dev/null 2>&1; then
     if [ -f /usr/share/bash-completion/completions/git ]; then
