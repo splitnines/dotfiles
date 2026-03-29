@@ -19,37 +19,28 @@ bt_cmd() {
     timeout 10s bluetoothctl "$@"
 }
 
-disconnect_connected_devices() {
-    local line
-    local mac
-
-    while IFS= read -r line; do
-        mac="${line#Device }"
-        mac="${mac%% *}"
-
-        if [ -n "$mac" ]; then
-            bt_cmd disconnect "$mac" || true
-        fi
-    done < <(bt_cmd devices Connected 2>/dev/null || true)
-}
-
 main() {
-    local mac
-
-    require_cmd bluetoothctl timeout
+    require_cmd bluetoothctl timeout notify-send
     bt_cmd power on >/dev/null
     sleep 1
 
     bt_status=$(bt_cmd devices Connected)
     if [ -n "$bt_status" ]; then
-        disconnect_connected_devices
+        ! bt_cmd disconnect && {
+            printf 'error: failed to disconnect from bluetooth devices\n' >&2 &&
+            notify-send -t 5000 "Error: Failed to disconnect from bluetooth devices" &&
+            exit 1
+        }
+        notify-send -t 5000 "Disconnected from bluetooth devices"
         exit 0
     fi
 
     if ! bt_cmd connect "$target_mac"; then
         printf 'error: failed to connect headset %s\n' "$target_mac" >&2
+        notify-send "Error: Failed to connect to bluetooth device: $target_mac"
         exit 1
     fi
+    notify-send "Connect to bluetooth device: $target_mac"
 }
 
 main "$@"
