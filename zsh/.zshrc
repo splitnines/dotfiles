@@ -258,6 +258,7 @@ alias rs="rsync -avzr"
 alias feh='feh --image-bg black'
 alias bt='bluetoothctl'
 alias btl='bluetoothctl devices'
+alias btC='bluetoothctl devices Connected'
 alias btc='bluetoothctl connect'
 alias btd='bluetoothctl disconnect'
 
