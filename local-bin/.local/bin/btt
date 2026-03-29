@@ -37,17 +37,14 @@ main() {
     local mac
 
     require_cmd bluetoothctl timeout
+    bt_cmd power on >/dev/null
+    sleep 1
 
     bt_status=$(bt_cmd devices Connected)
     if [ -n "$bt_status" ]; then
         disconnect_connected_devices
         exit 0
     fi
-
-        
-    bt_cmd power on >/dev/null
-    # disconnect_connected_devices
-    sleep 1
 
     if ! bt_cmd connect "$target_mac"; then
         printf 'error: failed to connect headset %s\n' "$target_mac" >&2
