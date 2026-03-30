@@ -19,28 +19,33 @@ bt_cmd() {
     timeout 10s bluetoothctl "$@"
 }
 
+error() {
+    local msg="$1"
+    local date_time=$(date '+%b %d  %T.%3N')
+    printf '%s: %s\n' "$date_time" "$msg" >&2
+    notify-send -t 5000 -u critical "$date_time: $msg"
+    exit 1
+}
+
 main() {
     require_cmd bluetoothctl timeout notify-send
-    bt_cmd power on >/dev/null
-    sleep 1
+    bt_cmd power on >/dev/null || {
+        error "%BLUETOOTH-3-ERROR: failed to power on bluetooth."
+    }
 
     bt_status=$(bt_cmd devices Connected)
     if [ -n "$bt_status" ]; then
-        ! bt_cmd disconnect && {
-            printf 'error: failed to disconnect from bluetooth devices\n' >&2 &&
-            notify-send -t 5000 "Error: Failed to disconnect from bluetooth devices" &&
-            exit 1
+        bt_cmd disconnect || {
+            error "%BLUETOOTH-3-ERROR: failed to disconnect from bluetooth devices."
         }
         notify-send -t 5000 "Disconnected from bluetooth devices"
         exit 0
     fi
 
     if ! bt_cmd connect "$target_mac"; then
-        printf 'error: failed to connect headset %s\n' "$target_mac" >&2
-        notify-send "Error: Failed to connect to bluetooth device: $target_mac"
-        exit 1
+        error "%BLUETOOTH-3-ERROR: failed to connect to bluetooth device $target_mac."
     fi
-    notify-send "Connect to bluetooth device: $target_mac"
+    notify-send "Connected to bluetooth device: $target_mac"
 }
 
 main "$@"
