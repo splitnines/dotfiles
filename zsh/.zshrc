@@ -353,7 +353,10 @@ fsc() {
 }
 
 # Search entire home directory (fuzzy)
-! command -v fdfind && alias fdfind=fd
+fdfind_status=$(command -v fdfind)
+if [ -n "$fdfind_status" ]; then
+  alias fdfind=fd
+fi
 fsh() {
   local file
   file=$(fdfind --type f --hidden \
