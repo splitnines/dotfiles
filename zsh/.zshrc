@@ -125,7 +125,7 @@ setopt AUTO_PUSHD
 setopt PUSHD_SILENT
 setopt PUSHD_IGNORE_DUPS
 
-alias h='fc -li 1'
+alias h='fc -l 1'
 
 # Force write to history after each command
 autoload -Uz add-zsh-hook
@@ -268,6 +268,7 @@ case $TERM in
   xterm*|tmux*|screen*) print -Pn "\e]0;%n@%m\a" ;;
 esac
 
+# Load any local env vars
 [ -f "$HOME/.myenv" ] && source "$HOME/.myenv"
 
 # ===========================

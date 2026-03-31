@@ -62,7 +62,6 @@ print_onedark_colors() {
   echo
   echo "  ${E_BLACK}BLACK${E_RESET}          ${E_BRIGHT_BLACK}BRIGHT_BLACK${E_RESET}"
   echo "  ${E_GRAY}GRAY${E_RESET}            ${E_WHITE}WHITE${E_RESET}"
-  echo
   echo "  ${E_RED}RED${E_RESET}              ${E_GREEN}GREEN${E_RESET}"
   echo "  ${E_YELLOW}YELLOW${E_RESET}          ${E_BLUE}BLUE${E_RESET}"
   echo "  ${E_MAGENTA}MAGENTA${E_RESET}        ${E_CYAN}CYAN${E_RESET}"
