@@ -354,13 +354,9 @@ fsc() {
 }
 
 # Search entire home directory (fuzzy)
-fdfind_status=$(command -v fdfind)
-if [ -n "$fdfind_status" ]; then
-  alias fdfind=fd
-fi
 fsh() {
   local file
-  file=$(fdfind --type f --hidden \
+  file=$(fd --type f --hidden \
     --exclude .git \
     --exclude .cache \
     --exclude .local \
