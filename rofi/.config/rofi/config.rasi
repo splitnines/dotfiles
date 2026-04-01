@@ -2,6 +2,7 @@ configuration {
     show-icons:      false;
     display-drun:    "";
     disable-history: false;
+    modes: [ "run", "drun", "window"];
 }
 
 * {
