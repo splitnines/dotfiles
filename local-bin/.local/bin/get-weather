@@ -2,11 +2,4 @@
 set -euo pipefail
 
 url='https://radar.weather.gov/ridge/standard/KDAX_loop.gif'
-
-nohup bash -c '
-  curl -fsSL \
-    -H "Cache-Control: no-cache, no-store" \
-    -H "Pragma: no-cache" \
-    "'"$url"'" | mpv --loop-file=inf -
-' >/dev/null 2>&1 &
-
+curl -sL "$url" | mpv --loop-file=inf - >/dev/null 2>&1 &
