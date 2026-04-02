@@ -688,7 +688,7 @@ LATEX
 }
 
 # copy command output to clipboard
-ccb() {
+y() {
   xclip -selection clipboard
 }
 
