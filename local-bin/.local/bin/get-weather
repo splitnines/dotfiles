@@ -2,4 +2,7 @@
 set -euo pipefail
 
 url='https://radar.weather.gov/ridge/standard/KDAX_loop.gif'
+# url='https://s.w-x.co/staticmaps/wu/wu/radsum1200_cur/usbfl/animate.png'
+# url='https://cdn.star.nesdis.noaa.gov/GOES19/ABI/CONUS/GEOCOLOR/GOES19-CONUS-GEOCOLOR-625x375.gif'
+# url='https://radar.weather.gov/ridge/standard/CONUS-LARGE_loop.gif'
 curl -sL "$url" | mpv --loop-file=inf - >/dev/null 2>&1 &
