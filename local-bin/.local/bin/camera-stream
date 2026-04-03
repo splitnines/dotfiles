@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-screen_w="$(xrandr | awk '/\*/ {print $1; exit}' | cut -d'x' -f1)"
-screen_h="$(xrandr | awk '/\*/ {print $1; exit}' | cut -d'x' -f2)"
+# screen_w="$(xrandr | awk '/\*/ {print $1; exit}' | cut -d'x' -f1)"
+# screen_h="$(xrandr | awk '/\*/ {print $1; exit}' | cut -d'x' -f2)"
+screen_w="$(xrandr | awk '/HDMI/ {print $3; exit}' | cut -d'x' -f1)"
+screen_h="$(xrandr | awk '/HDMI/ {print $3; exit}' | cut -d'x' -f2 | cut -d'+' -f1)"
 
 win_w=$((screen_w / 9))
 win_h=$((screen_h / 9))
