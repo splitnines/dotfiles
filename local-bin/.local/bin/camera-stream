@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# start the camera stream
+ffplay -loglevel -8 \
+	-f v4l2 \
+	-framerate 30 \
+	-vf hflip \
+	-x 210 -y 120 \
+	-i /dev/video0 >/dev/null 2>&1 &
