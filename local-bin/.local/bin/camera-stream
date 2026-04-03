@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
+screen_w="$(xrandr | awk '/\*/ {print $1; exit}' | cut -d'x' -f1)"
+screen_h="$(xrandr | awk '/\*/ {print $1; exit}' | cut -d'x' -f2)"
+
+win_w=$((screen_w / 9))
+win_h=$((screen_h / 9))
+
 # start the camera stream
 ffplay -loglevel -8 \
 	-f v4l2 \
 	-framerate 30 \
 	-vf hflip \
-	-x 210 -y 120 \
+	-x "$win_w" -y "$win_h" \
 	-i /dev/video0 >/dev/null 2>&1 &
