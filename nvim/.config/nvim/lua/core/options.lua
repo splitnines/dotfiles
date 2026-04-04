@@ -50,16 +50,16 @@ vim.api.nvim_create_autocmd("CursorHold", {
 
 vim.opt.spellfile = vim.fn.stdpath("config") .. "/spell/en.utf-8.add"
 
-if has_osc52 then
-  vim.g.clipboard = {
-    name = 'OSC 52',
-    copy = {
-      ['+'] = osc52.copy('+'),
-      ['*'] = osc52.copy('*'),
-    },
-    paste = {
-      ['+'] = osc52.paste('+'),
-      ['*'] = osc52.paste('*'),
-    },
-  }
-end
+-- if has_osc52 then
+--   vim.g.clipboard = {
+--     name = 'OSC 52',
+--     copy = {
+--       ['+'] = osc52.copy('+'),
+--       ['*'] = osc52.copy('*'),
+--     },
+--     paste = {
+--       ['+'] = osc52.paste('+'),
+--       ['*'] = osc52.paste('*'),
+--     },
+--   }
+-- end
