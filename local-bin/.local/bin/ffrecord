@@ -11,14 +11,48 @@ notify() {
     notify-send "$1" "$2"
 }
 
+extract_geometry() {
+    line="$(
+    	xrandr --listmonitors |
+    	awk '
+    		NR == 1 {
+    			count = $2
+    			next
+    		}
+    		count >= 2 && $1 ~ /^1:/ { print; exit }
+    		count < 2  && $1 ~ /^0:/ { print; exit }
+    	'
+    )"
+    
+    if [[ -z "${line}" ]]; then
+    	printf 'failed to determine monitor geometry\n' >&2
+    	exit 1
+    fi
+    
+    geometry="$(awk '{ print $3 }' <<<"$line")"
+    
+    if [[ ! $geometry =~ ^([0-9]+)/[0-9]+x([0-9]+)/[0-9]+\+([0-9]+)\+([0-9]+)$ ]]; then
+    	printf 'failed to parse geometry: %s\n' "$geometry" >&2
+    	exit 1
+    fi
+    
+    width="${BASH_REMATCH[1]}"
+    height="${BASH_REMATCH[2]}"
+    x="${BASH_REMATCH[3]}"
+    y="${BASH_REMATCH[4]}"
+
+}
+
 start_recording() {
     local output
     output="${record_dir}/video-$(date '+%Y-%m-%d_%H_%M_%S').mp4"
+    extract_geometry
 
     nohup ffmpeg \
-        -s 1920x1080 \
+        -s "${width}"x"${height}" \
+	-framerate 30 \
         -f x11grab \
-        -i :0.0+1920,0 \
+        -i :0.0+"${x}",0 \
         -f alsa \
         -i default \
         -c:v libx264 \

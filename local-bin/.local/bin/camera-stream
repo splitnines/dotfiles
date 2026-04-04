@@ -1,17 +1,49 @@
 #!/usr/bin/env bash
 
-# screen_w="$(xrandr | awk '/\*/ {print $1; exit}' | cut -d'x' -f1)"
-# screen_h="$(xrandr | awk '/\*/ {print $1; exit}' | cut -d'x' -f2)"
-screen_w="$(xrandr | awk '/HDMI/ {print $3; exit}' | cut -d'x' -f1)"
-screen_h="$(xrandr | awk '/HDMI/ {print $3; exit}' | cut -d'x' -f2 | cut -d'+' -f1)"
+extract_geometry() {
+	line="$(
+		xrandr --listmonitors |
+		awk '
+			NR == 1 {
+				count = $2
+				next
+			}
+			count >= 2 && $1 ~ /^1:/ { print; exit }
+			count < 2  && $1 ~ /^0:/ { print; exit }
+		'
+	)"
+	
+	if [[ -z "${line}" ]]; then
+		printf 'failed to determine monitor geometry\n' >&2
+		exit 1
+	fi
+	
+	geometry="$(awk '{ print $3 }' <<<"$line")"
+	
+	if [[ ! $geometry =~ ^([0-9]+)/[0-9]+x([0-9]+)/[0-9]+\+([0-9]+)\+([0-9]+)$ ]]; then
+		printf 'failed to parse geometry: %s\n' "$geometry" >&2
+		exit 1
+	fi
+	
+	width="${BASH_REMATCH[1]}"
+	height="${BASH_REMATCH[2]}"
+	x="${BASH_REMATCH[3]}"
+	y="${BASH_REMATCH[4]}"
+}
 
-win_w=$((screen_w / 9))
-win_h=$((screen_h / 9))
+extract_geometry
+win_w=$((width / 10))
+win_h=$((height / 10))
 
 # start the camera stream
 ffplay -loglevel -8 \
 	-f v4l2 \
+	-input_format mjpeg \
 	-framerate 30 \
+	-video_size 420x180 \
+	-fflags nobuffer \
+	-flags low_delay \
+	-framedrop \
+	-fast \
 	-vf hflip \
-	-x "$win_w" -y "$win_h" \
 	-i /dev/video0 >/dev/null 2>&1 &
