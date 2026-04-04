@@ -163,10 +163,11 @@ alias gc='git commit'
 alias gcm='git commit -m'
 alias gco='git checkout'
 alias gd='git diff | nvim -'
+alias gf='git fetch'
+alias gm='git merge'
+alias gs='git status'
 alias pull='git pull'
 alias push='git push'
-alias gs='git status'
-alias gm='git merge'
 
 # ===========================
 # Tab completion enhancements
