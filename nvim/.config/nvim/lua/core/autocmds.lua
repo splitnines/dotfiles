@@ -2,7 +2,7 @@
 
 -- FileType-specific settings
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "c", "cpp", "python", "bash" },
+  pattern = { "c", "cpp", "python", "sh" },
   callback = function()
     vim.opt_local.colorcolumn = "79"
     vim.opt_local.shiftwidth = 4
