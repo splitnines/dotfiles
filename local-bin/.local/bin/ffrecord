@@ -15,12 +15,12 @@ extract_geometry() {
     line="$(
     	xrandr --listmonitors |
     	awk '
-    		NR == 1 {
-    			count = $2
-    			next
-    		}
-    		count >= 2 && $1 ~ /^1:/ { print; exit }
-    		count < 2  && $1 ~ /^0:/ { print; exit }
+    	    NR == 1 {
+    	    	count = $2
+    	    	next
+    	    }
+    	    count >= 2 && $1 ~ /^1:/ { print; exit }
+    	    count < 2  && $1 ~ /^0:/ { print; exit }
     	'
     )"
     
