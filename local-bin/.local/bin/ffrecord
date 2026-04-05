@@ -48,7 +48,10 @@ start_recording() {
     output="${record_dir}/video-$(date '+%Y-%m-%d_%H_%M_%S').mp4"
     extract_geometry
 
-    audio_filter="highpass=f=80,afftdn,agate=threshold=0.02:ratio=8:attack=20:release=250,acompressor=threshold=-18dB:ratio=3:attack=5:release=80,alimiter=limit=0.85"
+    audio_filter="highpass=f=80,afftdn,"
+    audio_filter+="agate=threshold=0.02:ratio=8:attack=20:release=250,"
+    audio_filter+="acompressor=threshold=-18dB:ratio=3:attack=5:release=80,"
+    audio_filter+="alimiter=limit=0.85"
 
     nohup ffmpeg \
         -s "${width}"x"${height}" \
