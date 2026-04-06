@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-word=${1:-$(xclip -o -selection primary 2>/dev/null || wl-paste 2>/dev/null)}
+word=${1:-$(xclip -o -selection clipboard 2>/dev/null || wl-paste 2>/dev/null)}
 
 # Check for empty word or special characters
 [[ -z "$word" || "$word" =~ [\/] ]] && notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid input." && exit 0
@@ -13,9 +13,10 @@ query=$(curl -s --connect-timeout 5 --max-time 10 "https://api.dictionaryapi.dev
 # Check for invalid word response
 [[ "$query" == *"No Definitions Found"* ]] && notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid word." && exit 0
 
-# Show only first 3 definitions
-def=$(echo "$query" | jq -r '[.[].meanings[] | {pos: .partOfSpeech, def: .definitions[].definition}] | .[:3].[] | "\n\(.pos). \(.def)"')
+# Show first 3 definitions
+# def=$(echo "$query" | jq -r '[.[].meanings[] | {pos: .partOfSpeech, def: .definitions[].definition}] | .[:3].[] | "\n\(.pos). \(.def)"')
 
-# Requires a notification daemon to be installed
-# notify-send -h string:bgcolor:#000000 -t 60000 "$word -" "$def"
+# All definations, no limit
+def=$(echo "$query" | jq -r '[.[].meanings[] | {pos: .partOfSpeech, def: .definitions[].definition}] | .[] | "\n\(.pos). \(.def)"')
+
 notify-send -t 60000 "$word -" "$def"
