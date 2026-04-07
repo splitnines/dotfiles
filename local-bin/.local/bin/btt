@@ -5,26 +5,25 @@ set -euo pipefail
 
 target_mac="50:5E:5C:07:3C:D3"
 
-require_cmd() {
-    local cmd
-    for cmd in "$@"; do
-        command -v "$cmd" >/dev/null 2>&1 || {
-            printf 'error: required command not found: %s\n' "$cmd" >&2
-            exit 1
-        }
-    done
-}
-
-bt_cmd() {
-    timeout 10s bluetoothctl "$@"
-}
-
 error() {
     local msg="$1"
     local date_time=$(date '+%b %d  %T.%3N')
     printf '%s: %s\n' "$date_time" "$msg" >&2
     notify-send -t 5000 -u critical "$date_time: $msg"
     exit 1
+}
+
+require_cmd() {
+    local cmd
+    for cmd in "$@"; do
+        command -v "$cmd" >/dev/null 2>&1 || {
+            error "%COMMAND-3-ERROR: required command not found: $cmd"
+        }
+    done
+}
+
+bt_cmd() {
+    timeout 10s bluetoothctl "$@"
 }
 
 main() {
