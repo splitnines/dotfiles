@@ -1,7 +1,7 @@
 from ranger.colorschemes.default import Default
 from ranger.gui.color import bold
 
-BLACK = 0
+BLACK = default
 WHITE = 188
 GRAY = 242
 BLUE = 75
