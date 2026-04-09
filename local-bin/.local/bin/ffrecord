@@ -49,9 +49,9 @@ start_recording() {
     extract_geometry
 
     audio_filter="highpass=f=80,afftdn,"
-    audio_filter+="agate=threshold=0.02:ratio=8:attack=20:release=250,"
+    # audio_filter+="agate=threshold=0.02:ratio=8:attack=20:release=80,"
     audio_filter+="acompressor=threshold=-18dB:ratio=3:attack=5:release=80,"
-    audio_filter+="volume=3.5,alimiter=limit=0.85"
+    audio_filter+="volume=5.0,alimiter=limit=0.85"
 
     nohup ffmpeg \
         -s "${width}"x"${height}" \
