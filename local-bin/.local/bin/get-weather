@@ -9,13 +9,14 @@ url_national='https://radar.weather.gov/ridge/standard/CONUS-LARGE_loop.gif'
 url="$url_local"
 
 case "${1-}" in
-	-n|--national)
+	n)
 		url="$url_national"
 		;;
 	"")
 		;;
 	*)
-		printf 'error: unknown option: %s\n' "${1-}" >&2
+		printf 'get-weather: unknown option: %s\n' "${1-}" >&2
+		notify-send -t 5000 -u critical "get-weather: unknown option ${1-}"
 		exit 1
 		;;
 esac
