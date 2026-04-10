@@ -694,13 +694,13 @@ y() {
 }
 
 # Screenkey
-sk() {
-  if pgrep -x screenkey > /dev/null; then
-    pkill -x screenkey
-  else
-    screenkey >/dev/null 2>&1 &
-  fi
-}
+# sk() {
+#   if pgrep -x screenkey > /dev/null; then
+#     pkill -x screenkey
+#   else
+#     screenkey >/dev/null 2>&1 &
+#   fi
+# }
 
 # Hook runs every time you cd
 add-zsh-hook chpwd __zsh_auto_venv

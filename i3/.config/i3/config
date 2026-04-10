@@ -60,6 +60,9 @@ for_window [class="ffplay"] floating enable, resize set 230 130
 # Start deskop recording
 bindsym $mod+Shift+F5 exec --no-startup-id ~/.local/bin/ffrecord
 
+# Toggle screenkey
+bindsym $mod+z exec --no-startup-id ~/.local/bin/sk
+
 # Clipboard manager
 exec --no-startup-id clipman store
 
