@@ -70,8 +70,8 @@ exec --no-startup-id clipman store
 floating_modifier $mod
 
 # Start a terminal
-bindsym $mod+Return exec alacritty
-bindsym $mod+Shift+Return exec st
+bindsym $mod+Shift+Return exec alacritty
+bindsym $mod+Return exec st
 
 # Kill focused window
 bindsym $mod+Shift+q kill

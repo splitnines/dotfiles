@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-exec alacritty -e /usr/bin/ranger "$@"
+# exec alacritty -e /usr/bin/ranger "$@"
+exec st -e /usr/bin/ranger "$@"
