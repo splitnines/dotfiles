@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+txt2pdf() {
+    local in out width rc header_file
+
+    in="$1"
+    width="${3:-80}"
+
+    if [[ -z "$in" ]]; then
+        echo "Usage: txt2pdf.sh <input.txt> [output.pdf] [wrap_width]" >&2
+        return 1
+    fi
+
+    if [[ ! -f "$in" ]]; then
+        echo "Error: file not found: $in" >&2
+        return 1
+    fi
+
+    if [[ -n "$2" ]]; then
+        out="$2"
+    else
+        out="${in%.*}.pdf"
+        if [[ "$out" == "$in" ]]; then
+            out="${in}.pdf"
+        fi
+    fi
+
+    header_file="$(mktemp)"
+    cat > "$header_file" <<'LATEX'
+\usepackage{xurl}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+  breaksymbolleft={},
+  breaksymbolright={},
+  commandchars=\\\{\}
+}
+\RecustomVerbatimEnvironment{Verbatim}{Verbatim}{
+  breaksymbolleft={},
+  breaksymbolright={}
+}
+LATEX
+
+    {
+        printf '~~~~\n'
+        fold -w "$width" -- "$in"
+        printf '~~~~\n'
+    } | pandoc -f markdown -o "$out" \
+        --pdf-engine=xelatex \
+        -V geometry:margin=1in \
+        -V mainfont="JetBrainsMono Nerd Font" \
+        -V monofont="JetBrainsMono Nerd Font" \
+        -V fontsize=10pt \
+        -H "$header_file"
+
+    rc=$?
+    rm -f "$header_file"
+
+    if [[ $rc -eq 0 ]]; then
+        echo "Created: $out"
+    fi
+
+    return $rc
+}
+
+txt2pdf "$@"

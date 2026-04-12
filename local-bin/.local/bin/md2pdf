@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  echo "Usage: $(basename "$0") <input.md> [output.pdf]" >&2
+  exit 1
+}
+
+[[ $# -ge 1 && $# -le 2 ]] || usage
+
+in="$1"
+out="${2:-}"
+
+[[ -f "$in" ]] || { echo "Error: file not found: $in" >&2; exit 1; }
+
+indir="$(cd "$(dirname "$in")" && pwd)"
+infile="$(basename "$in")"
+
+if [[ -n "$out" ]]; then
+  if [[ "$out" = */* ]]; then
+    outdir="$(cd "$(dirname "$out")" && pwd)"
+    outfile="$(basename "$out")"
+    outpath="$outdir/$outfile"
+  else
+    outpath="$PWD/$out"
+  fi
+else
+  outfile="${infile%.md}.pdf"
+  outpath="$indir/$outfile"
+fi
+
+tmp_header="$(mktemp)"
+trap 'rm -f "$tmp_header"' EXIT
+
+cat > "$tmp_header" <<'LATEX'
+\usepackage{xurl}
+\usepackage{fvextra}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{everypage}
+
+\AddEverypageHook{
+  \begin{tikzpicture}[remember picture,overlay]
+    \draw[line width=1.5pt]
+      ([xshift=0.5in,yshift=-0.5in]current page.north west)
+      rectangle
+      ([xshift=-0.5in,yshift=0.5in]current page.south east);
+  \end{tikzpicture}
+}
+
+\setlength{\emergencystretch}{3em}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+  breaklines,
+  breakanywhere,
+  breaksymbolleft={},
+  breaksymbolright={},
+  commandchars=\\\{\}
+}
+\RecustomVerbatimEnvironment{Verbatim}{Verbatim}{
+  breaklines,
+  breakanywhere,
+  breaksymbolleft={},
+  breaksymbolright={}
+}
+LATEX
+
+(
+  cd "$indir"
+  pandoc "$infile" -o "$outpath" \
+    --from=markdown+raw_tex \
+    --pdf-engine=xelatex \
+    -V geometry:margin=1in \
+    -V mainfont="JetBrainsMono Nerd Font" \
+    -V monofont="JetBrainsMono Nerd Font" \
+    -H "$tmp_header"
+)
+
+echo "Created: $outpath"

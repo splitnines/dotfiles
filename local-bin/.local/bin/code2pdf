@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+
+code2pdf() {
+    local in out lang ext rc header_file base arg2 arg3
+
+    in="$1"
+    arg2="$2"
+    arg3="$3"
+
+    if [[ -z "$in" ]]; then
+        echo "Usage: code2pdf.sh <input_file> [output.pdf] [language]" >&2
+        return 1
+    fi
+
+    if [[ ! -f "$in" ]]; then
+        echo "Error: file not found: $in" >&2
+        return 1
+    fi
+
+    case "$#" in
+        1)
+            out=""
+            lang=""
+            ;;
+        2)
+            if [[ "$arg2" == *.pdf ]]; then
+                out="$arg2"
+                lang=""
+            else
+                out=""
+                lang="$arg2"
+            fi
+            ;;
+        *)
+            out="$arg2"
+            lang="$arg3"
+            ;;
+    esac
+
+    if [[ -z "$out" ]]; then
+        base="$(basename -- "$in")"
+        out="${base%.*}.pdf"
+        if [[ "$out" == "$base" ]]; then
+            out="${base}.pdf"
+        fi
+    fi
+
+    ext=""
+    if [[ "$in" == *.* ]]; then
+        ext="${in##*.}"
+        ext="${ext,,}"
+    fi
+
+    if [[ -z "$lang" ]]; then
+        case "$ext" in
+            py) lang="python" ;;
+            js) lang="javascript" ;;
+            ts) lang="typescript" ;;
+            jsx) lang="jsx" ;;
+            tsx) lang="tsx" ;;
+            sh|zsh|bash) lang="bash" ;;
+            json) lang="json" ;;
+            yml|yaml) lang="yaml" ;;
+            toml) lang="toml" ;;
+            md) lang="markdown" ;;
+            html) lang="html" ;;
+            css) lang="css" ;;
+            sql) lang="sql" ;;
+            go) lang="go" ;;
+            rs) lang="rust" ;;
+            c) lang="c" ;;
+            h) lang="c" ;;
+            cpp|cc|cxx|hpp|hh|hxx) lang="cpp" ;;
+            java) lang="java" ;;
+            rb) lang="ruby" ;;
+            php) lang="php" ;;
+            xml) lang="xml" ;;
+            "") lang="text" ;;
+            *) lang="text" ;;
+        esac
+    fi
+
+    header_file="$(mktemp)"
+    cat > "$header_file" <<'LATEX'
+\usepackage{xurl}
+\usepackage{fvextra}
+\setlength{\emergencystretch}{3em}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+  breaklines,
+  breakanywhere,
+  breaksymbolleft={},
+  breaksymbolright={},
+  commandchars=\\\{\}
+}
+LATEX
+
+    {
+        printf '```%s\n' "$lang"
+        cat -- "$in"
+        printf '```\n'
+    } | pandoc -f gfm -o "$out" \
+        --pdf-engine=xelatex \
+        --highlight-style=tango \
+        -V geometry:margin=1in \
+        -V mainfont="JetBrainsMono Nerd Font" \
+        -V monofont="JetBrainsMono Nerd Font" \
+        -V fontsize=10pt \
+        -H "$header_file"
+
+    rc=$?
+    rm -f "$header_file"
+
+    if [[ $rc -eq 0 ]]; then
+        echo "Created: $out (language: $lang)"
+    fi
+
+    return $rc
+}
+
+code2pdf "$@"
