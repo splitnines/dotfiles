@@ -262,6 +262,7 @@ alias btl='bluetoothctl devices'
 alias btC='bluetoothctl devices Connected'
 alias btc='bluetoothctl connect'
 alias btd='bluetoothctl disconnect'
+alias micc='arecord -f cd -vv -D default /dev/null'
 
 [ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
 
