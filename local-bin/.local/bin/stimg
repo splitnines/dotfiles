@@ -1,0 +1,160 @@
+#!/usr/bin/env python3
+
+import array
+import base64
+import fcntl
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import termios
+
+
+def emit(tty, seq: str) -> None:
+    if "TMUX" in os.environ:
+        tty.write("\033Ptmux;")
+        tty.write(seq.replace("\033", "\033\033"))
+        tty.write("\033\\")
+    else:
+        tty.write(seq)
+    tty.flush()
+
+
+def get_terminal_cell_size() -> tuple[int, int]:
+    with open("/dev/tty", "rb", buffering=0) as tty:
+        buf = array.array("H", [0, 0, 0, 0])
+        fcntl.ioctl(tty.fileno(), termios.TIOCGWINSZ, buf, True)
+        rows, cols, xpix, ypix = buf[0], buf[1], buf[2], buf[3]
+
+    if rows <= 0 or cols <= 0:
+        raise RuntimeError("could not determine terminal size")
+
+    if xpix > 0 and ypix > 0:
+        cell_w = max(1, xpix // cols)
+        cell_h = max(1, ypix // rows)
+        return cell_w, cell_h
+
+    return 8, 16
+
+
+def get_pane_size_cells() -> tuple[int, int]:
+    if "TMUX" in os.environ:
+        out = subprocess.check_output(
+            [
+                "tmux",
+                "display-message",
+                "-p",
+                "-t",
+                os.environ.get("TMUX_PANE", ""),
+                "#{pane_width} #{pane_height}",
+            ],
+            text=True,
+        ).strip()
+        cols_s, rows_s = out.split()
+        cols = int(cols_s)
+        rows = int(rows_s)
+        if cols > 0 and rows > 0:
+            return cols, rows
+
+    size = shutil.get_terminal_size(fallback=(80, 24))
+    return size.columns, size.lines
+
+
+def get_image_size_pixels(path: str) -> tuple[int, int]:
+    magick = shutil.which("magick")
+    if magick:
+        cmd = [magick, "identify", "-format", "%w %h", path]
+    else:
+        identify = shutil.which("identify")
+        if not identify:
+            raise RuntimeError("ImageMagick is required")
+        cmd = [identify, "-format", "%w %h", path]
+
+    out = subprocess.check_output(cmd, text=True).strip()
+    w_s, h_s = out.split()
+    return int(w_s), int(h_s)
+
+
+def resize_image_to_fit(src: str, max_w: int, max_h: int) -> tuple[str, int]:
+    src_w, src_h = get_image_size_pixels(src)
+    scale = min(max_w / src_w, max_h / src_h, 1.0)
+
+    out_w = max(1, int(src_w * scale))
+    out_h = max(1, int(src_h * scale))
+
+    if out_w == src_w and out_h == src_h:
+        return src, out_h
+
+    magick = shutil.which("magick")
+    if magick:
+        cmd = [magick, src, "-resize", f"{out_w}x{out_h}!"]
+    else:
+        convert = shutil.which("convert")
+        if not convert:
+            raise RuntimeError("ImageMagick is required")
+        cmd = [convert, src, "-resize", f"{out_w}x{out_h}!"]
+
+    tmp = tempfile.NamedTemporaryFile(
+        prefix="stimg-", suffix=".png", delete=False
+    )
+    tmp.close()
+    cmd.append(tmp.name)
+    subprocess.check_call(cmd)
+    return tmp.name, out_h
+
+
+def send_image(tty, path: str) -> None:
+    chunk_size = 3072
+    with open(path, "rb") as f:
+        data = base64.standard_b64encode(f.read()).decode("ascii")
+
+    for i in range(0, len(data), chunk_size):
+        chunk = data[i : i + chunk_size]
+        more = 1 if i + chunk_size < len(data) else 0
+        emit(tty, f"\033_Ga=T,f=100,m={more};{chunk}\033\\")
+
+
+def main() -> int:
+    if len(sys.argv) != 2:
+        print(f"usage: {sys.argv[0]} IMAGE", file=sys.stderr)
+        return 1
+
+    src = os.path.abspath(os.path.expanduser(sys.argv[1]))
+    if not os.path.isfile(src):
+        print(f"error: file not found: {src}", file=sys.stderr)
+        return 1
+
+    pane_cols, pane_rows = get_pane_size_cells()
+    cell_w, cell_h = get_terminal_cell_size()
+
+    max_w = pane_cols * cell_w
+    max_h = max(1, pane_rows - 1) * cell_h
+
+    tmp_path = None
+    try:
+        send_path, final_h = resize_image_to_fit(src, max_w, max_h)
+        if send_path != src:
+            tmp_path = send_path
+
+        image_rows = max(1, (final_h + cell_h - 1) // cell_h)
+
+        with open("/dev/tty", "w", buffering=1) as tty:
+            tty.write("\033[2J")
+            tty.write("\033[H")
+            tty.flush()
+
+            send_image(tty, send_path)
+
+            tty.write(f"\033[{image_rows + 1};1H")
+            tty.flush()
+
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
