@@ -535,6 +535,12 @@ y() {
   xclip -selection clipboard
 }
 
+# Run fastfetch of neofetch
+ff() {
+  command -v fastfetch >/dev/null 2>&1 && fastfetch
+  command -v neofetch >/dev/null 2>&1 && neofetch
+}
+
 # Hook runs every time you cd
 add-zsh-hook chpwd __zsh_auto_venv
 
