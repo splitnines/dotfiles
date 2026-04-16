@@ -1,0 +1,38 @@
+# ---------- basic behavior ----------
+set selection-clipboard clipboard
+set adjust-open width
+set page-h-padding 1
+set page-v-padding 1
+
+# ---------- one-dark style ----------
+set default-bg            "#0a0a0a"
+set default-fg            "#abb2bf"
+set statusbar-bg          "#0a0a0a"
+set statusbar-fg          "#abb2bf"
+set inputbar-bg           "#0a0a0a"
+set inputbar-fg           "#abb2bf"
+set notification-bg       "#0a0a0a"
+set notification-fg       "#abb2bf"
+
+set completion-bg         "#0a0a0a"
+set completion-fg         "#abb2bf"
+set completion-highlight-bg "#61afef"
+set completion-highlight-fg "#0a0a0a"
+
+set index-bg              "#0a0a0a"
+set index-fg              "#abb2bf"
+set index-active-bg       "#61afef"
+set index-active-fg       "#0a0a0a"
+
+set render-loading-bg     "#0a0a0a"
+set render-loading-fg     "#abb2bf"
+
+# ---------- recolor / invert-based dark mode ----------
+set recolor-lightcolor    "#0a0a0a"
+set recolor-darkcolor     "#abb2bf"
+set recolor               true
+set recolor-keephue       true
+
+# ---------- key binding ----------
+# Toggle between normal colors and recolored one-dark view
+map i recolor
