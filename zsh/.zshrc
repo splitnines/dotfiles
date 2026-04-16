@@ -18,6 +18,7 @@ path=(
 [[ -d "$HOME/bin" ]] && path=("$HOME/bin" $path)
 [[ -d "$HOME/.cargo/bin" ]] && path=("$HOME/.cargo/bin" $path)
 [[ -d "/usr/local/go/bin" ]] && path=("/usr/local/go/bin" $path)
+[[ -d "$HOME/.opencode/bin" ]] && path=("$HOME/.opencode/bin" $path)
 
 # Windows interop (optional, WSL only)
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
@@ -31,13 +32,15 @@ if $IS_WSL; then
         [[ -d $p ]] && path+=($p)
     done
 fi
+export PATH
 
+# ===========================
 # NVM setup
+# ===========================
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-export PATH
 
 # ===========================
 # Prioritize local fzf install
@@ -109,9 +112,9 @@ HISTFILE="$HOME/.zsh_history"
 HISTSIZE=50000
 SAVEHIST=50000
 
-setopt HIST_IGNORE_DUPS       # Don't record duplicate commands
-setopt HIST_IGNORE_SPACE      # Skip commands starting with a space
-setopt HIST_REDUCE_BLANKS     # Remove extra blanks
+setopt HIST_IGNORE_DUPS        # Don't record duplicate commands
+setopt HIST_IGNORE_SPACE       # Skip commands starting with a space
+setopt HIST_REDUCE_BLANKS      # Remove extra blanks
 setopt INC_APPEND_HISTORY      # Append to history immediately
 setopt SHARE_HISTORY           # Share history across sessions
 setopt APPEND_HISTORY          # Don’t overwrite, just append
@@ -125,8 +128,6 @@ setopt HIST_SAVE_NO_DUPS       # Don’t save duplicate entries
 setopt AUTO_PUSHD
 setopt PUSHD_SILENT
 setopt PUSHD_IGNORE_DUPS
-
-alias h='fc -l 1'
 
 # Force write to history after each command
 save_history_now() { fc -AI; }
@@ -150,25 +151,11 @@ bindkey '^[[B' down-line-or-beginning-search
 autoload -Uz compinit
 compinit
 
-# Git completion & aliases
+# Git completion
 if type git &>/dev/null; then
   autoload -Uz bashcompinit && bashcompinit
   source <(git completion zsh 2>/dev/null || git completion bash 2>/dev/null)
 fi
-
-# git aliases
-alias g='git'
-alias ga='git add .'
-alias gb='git branch'
-alias gc='git commit'
-alias gcm='git commit -m'
-alias gco='git checkout'
-alias gd='git diff | nvim -'
-alias gf='git fetch'
-alias gm='git merge'
-alias gs='git status'
-alias pull='git pull'
-alias push='git push'
 
 # ===========================
 # Tab completion enhancements
@@ -230,39 +217,51 @@ setopt EXTENDED_GLOB
 # ===========================
 # Aliases
 # ===========================
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias grep='grep --color=auto'
-alias l='ls'
-alias la='ls -A'
-alias ll='ls -Alh'
-alias ls='ls --color=auto'
-alias path='echo "$PATH" | tr ":" "\n"'
-alias q='exit'
-alias le='less -X'
 alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
-alias nv='nvim'
-alias cal='ncal -C'
-alias python='python3'
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias ty="ttyper -w25 -lenglish1000"
-alias tl="tmux ls"
-alias ta="tmux attach -t"
-alias update="sudo apt update && sudo apt upgrade -y"
-alias p="ping"
-alias t="telnet"
-alias rcd="script -m advanced"
-alias md="mkdir -p"
-alias rs="rsync -avzr"
-alias feh='feh --image-bg black'
 alias bt='bluetoothctl'
-alias btl='bluetoothctl devices'
-alias btC='bluetoothctl devices Connected'
 alias btc='bluetoothctl connect'
+alias btC='bluetoothctl devices Connected'
 alias btd='bluetoothctl disconnect'
+alias btl='bluetoothctl devices'
+alias cal='ncal -C'
+alias ....="cd ../../.."
+alias ...="cd ../.."
+alias ..="cd .."
+alias egrep='egrep --color=auto'
+alias feh='feh --image-bg black'
+alias fgrep='fgrep --color=auto'
+alias ga='git add .'
+alias gb='git branch'
+alias gc='git commit'
+alias gcm='git commit -m'
+alias gco='git checkout'
+alias gd='git diff | nvim -'
+alias gf='git fetch'
+alias g='git'
+alias gm='git merge'
+alias grep='grep --color=auto'
+alias gs='git status'
+alias h='fc -l 1'
+alias la='ls -A'
+alias le='less -X'
+alias ll='ls -Alh'
+alias l='ls'
+alias ls='ls --color=auto'
+alias md="mkdir -p"
 alias micc='arecord -f cd -vv -D default /dev/null'
+alias nv='nvim'
+alias path='echo "$PATH" | tr ":" "\n"'
+alias p="ping"
+alias pull='git pull'
+alias push='git push'
+alias python='python3'
+alias q='exit'
+alias rcd="script -m advanced"
+alias rs="rsync -avzr"
+alias ta="tmux attach -t"
+alias tl="tmux ls"
+alias t="telnet"
+alias ty="ttyper -w25 -lenglish1000"
 alias z='zathura'
 
 [ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
@@ -537,6 +536,3 @@ add-zsh-hook chpwd __zsh_auto_venv
 
 # Run once at shell startup too
 __zsh_auto_venv
-
-# opencode
-[[ -d "$HOME/.opencode/bin" ]] && path=("$HOME/.opencode/bin" $path)
