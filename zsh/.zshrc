@@ -129,7 +129,6 @@ setopt PUSHD_IGNORE_DUPS
 alias h='fc -l 1'
 
 # Force write to history after each command
-autoload -Uz add-zsh-hook
 save_history_now() { fc -AI; }
 add-zsh-hook precmd save_history_now
 
@@ -148,7 +147,8 @@ bindkey '^[[B' down-line-or-beginning-search
 # ===========================
 # Completion
 # ===========================
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+compinit
 
 # Git completion & aliases
 if type git &>/dev/null; then
@@ -174,12 +174,12 @@ alias push='git push'
 # Tab completion enhancements
 # ===========================
 zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}:ma=48;5;238;38;5;229"
+zstyle ':completion:*:default' list-colors \
+  "${(s.:.)LS_COLORS}:ma=48;5;238;38;5;229"
 zstyle ':completion:*' matcher-list 'r:|[._-]=* r:|=*'
 
 setopt AUTO_MENU
@@ -187,7 +187,6 @@ setopt AUTO_LIST
 setopt COMPLETE_IN_WORD
 setopt ALWAYS_TO_END
 setopt AUTO_PARAM_SLASH
-setopt MENU_COMPLETE
 
 # ===========================
 # Autocorrection
@@ -324,8 +323,6 @@ export FZF_DEFAULT_OPTS="
   --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
   --color=border:#3e4451,label:#61afef
 "
-#  --color=bg:#141414,bg+:#2b3038,fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
-
 
 # Search command history
 fh() {
@@ -396,7 +393,6 @@ fk() {
 # ===========================
 # Python environment helpers
 # ===========================
-
 pyon() {
   local venv_dir
   if [[ -n "$1" ]]; then
@@ -485,14 +481,11 @@ _weather() {
       ;;
   esac
 }
-autoload -Uz compinit
-compinit
 compdef _weather weather
 
 # ===========================
 # Auto Python venv activation
 # ===========================
-autoload -Uz add-zsh-hook
 
 # Track which venv is active
 __ZSH_AUTO_VENV_CURRENT=""
@@ -500,7 +493,6 @@ __ZSH_AUTO_VENV_CURRENT=""
 __zsh_auto_venv() {
   local dir venv_path=""
 
-  # Walk up the directory tree to find .venv or venv
   dir=$PWD
   while [[ "$dir" != "/" ]]; do
     if [[ -d "$dir/.venv" ]]; then
@@ -513,9 +505,7 @@ __zsh_auto_venv() {
     dir=${dir:h}
   done
 
-  # If found and not already active, activate it
   if [[ -n "$venv_path" && "$VIRTUAL_ENV" != "$venv_path" ]]; then
-    # If another venv is active, deactivate first
     if [[ -n "$VIRTUAL_ENV" && "$VIRTUAL_ENV" != "$venv_path" ]]; then
       pyoff >/dev/null
     fi
@@ -525,7 +515,6 @@ __zsh_auto_venv() {
     return
   fi
 
-  # If no venv found but one is active, deactivate it
   if [[ -z "$venv_path" && -n "$VIRTUAL_ENV" ]]; then
     pyoff >/dev/null
     __ZSH_AUTO_VENV_CURRENT=""
@@ -537,7 +526,7 @@ y() {
   xclip -selection clipboard
 }
 
-# Run fastfetch of neofetch
+# Run fastfetch or neofetch
 ff() {
   command -v fastfetch >/dev/null 2>&1 && fastfetch
   command -v neofetch >/dev/null 2>&1 && neofetch
