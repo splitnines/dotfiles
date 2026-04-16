@@ -242,19 +242,19 @@ alias path='echo "$PATH" | tr ":" "\n"'
 alias q='exit'
 alias le='less -X'
 alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
-alias nv='/usr/bin/nvim'
+alias nv='nvim'
 alias cal='ncal -C'
 alias python='python3'
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ty="ttyper -w25 -lenglish1000"
-alias tl="/usr/bin/tmux ls"
-alias ta="/usr/bin/tmux attach -t"
+alias tl="tmux ls"
+alias ta="tmux attach -t"
 alias update="sudo apt update && sudo apt upgrade -y"
-alias p="/usr/bin/ping"
-alias t="/usr/bin/telnet"
-alias rcd="/usr/bin/script -m advanced"
+alias p="ping"
+alias t="telnet"
+alias rcd="script -m advanced"
 alias md="mkdir -p"
 alias rs="rsync -avzr"
 alias feh='feh --image-bg black'
@@ -264,6 +264,7 @@ alias btC='bluetoothctl devices Connected'
 alias btc='bluetoothctl connect'
 alias btd='bluetoothctl disconnect'
 alias micc='arecord -f cd -vv -D default /dev/null'
+alias z='zathura'
 
 [ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
 
