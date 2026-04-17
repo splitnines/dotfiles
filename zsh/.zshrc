@@ -223,13 +223,11 @@ alias btc='bluetoothctl connect'
 alias btC='bluetoothctl devices Connected'
 alias btd='bluetoothctl disconnect'
 alias btl='bluetoothctl devices'
-alias cal='ncal -C'
 alias ....="cd ../../.."
 alias ...="cd ../.."
 alias ..="cd .."
 alias egrep='egrep --color=auto'
 alias feh='feh --image-bg black'
-alias fgrep='fgrep --color=auto'
 alias ga='git add .'
 alias gb='git branch'
 alias gc='git commit'
@@ -245,7 +243,6 @@ alias h='fc -l 1'
 alias la='ls -A'
 alias le='less -X'
 alias ll='ls -Alh'
-alias l='ls'
 alias ls='ls --color=auto'
 alias md="mkdir -p"
 alias micc='arecord -f cd -vv -D default /dev/null'
@@ -254,14 +251,13 @@ alias path='echo "$PATH" | tr ":" "\n"'
 alias p="ping"
 alias pull='git pull'
 alias push='git push'
-alias python='python3'
+alias py='python3'
 alias q='exit'
 alias rcd="script -m advanced"
 alias rs="rsync -avzr"
 alias ta="tmux attach -t"
 alias tl="tmux ls"
 alias t="telnet"
-alias ty="ttyper -w25 -lenglish1000"
 alias z='zathura'
 
 [ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
