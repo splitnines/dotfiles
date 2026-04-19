@@ -76,6 +76,7 @@ git_branch() {
   [[ -z $branch ]] && return
 
   # local dirty_icon=" ⚡"
+  #      
   local dirty_icon=" Δ "
 
   if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
@@ -97,7 +98,22 @@ python_env() {
 
 setopt PROMPT_SUBST
 build_prompt() {
-  PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n@%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
+    local os
+
+    if [[ -r /etc/os-release ]]; then
+        . /etc/os-release
+        os="$ID"
+    else
+        os=""
+    fi
+
+    if [[ "$os" == "arch" ]]; then
+        PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
+    elif [[ "$os" == "ubuntu" ]]; then
+        PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
+    else
+        PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n@%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
+    fi
 }
 unsetopt PROMPT_CR
 unsetopt PROMPT_SP
