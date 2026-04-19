@@ -16,7 +16,7 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = {
     { "tpope/vim-sleuth" },
-    { "folke/neodev.nvim",              opts = {} },
+    { "folke/neodev.nvim", opts = {} },
 
     require("plugins.todo-comments"),
     require("plugins.gitsigns"),
@@ -33,7 +33,6 @@ require("lazy").setup({
     require("plugins.smear"),
     require("plugins.markdown"),
     require("plugins.surround"),
-    require("plugins.gp"),
     require("plugins.undotree"),
     require("plugins.cisco"),
   },
