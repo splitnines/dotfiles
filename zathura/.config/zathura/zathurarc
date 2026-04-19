@@ -3,6 +3,9 @@ set selection-clipboard clipboard
 set adjust-open width
 set page-h-padding 1
 set page-v-padding 1
+set pages-per-row 1
+set first-page-column 1
+set scroll-page-aware true
 
 # ---------- one-dark style ----------
 set default-bg            "#0a0a0a"
