@@ -69,18 +69,38 @@ fi
 # Prompt
 # ===========================
 
+# identify the os for building the prompt
+os_icon() {
+  local os=""
+
+  if [[ -r /etc/os-release ]]; then
+    . /etc/os-release
+    os="$ID"
+  fi
+
+  if [[ "$os" == "arch" ]]; then
+    printf ""
+  elif [[ "$os" == "ubuntu" ]]; then
+    printf ""
+  else:
+    printf "@"
+  fi
+}
+
 # add git dirty branch indication to prompt
 git_branch() {
   local branch dirty
+  local dirty_icon=$(os_icon)
+
+  if [[ dirty_icon == "@" ]]; then
+    dirty_icon="✖"
+  fi
+
   branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
   [[ -z $branch ]] && return
-
-  # local dirty_icon=" ⚡"
-  #      
-  local dirty_icon=" Δ "
-
+  
   if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
-    dirty="$dirty_icon"
+    dirty=" $dirty_icon "
   else
     dirty=""
   fi
@@ -98,22 +118,7 @@ python_env() {
 
 setopt PROMPT_SUBST
 build_prompt() {
-    local os
-
-    if [[ -r /etc/os-release ]]; then
-        . /etc/os-release
-        os="$ID"
-    else
-        os=""
-    fi
-
-    if [[ "$os" == "arch" ]]; then
-        PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
-    elif [[ "$os" == "ubuntu" ]]; then
-        PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
-    else
-        PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n@%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
-    fi
+    PS1="$(python_env)${GRAY}[${BLUE}%n$(os_icon)%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
 }
 unsetopt PROMPT_CR
 unsetopt PROMPT_SP
