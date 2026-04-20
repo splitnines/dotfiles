@@ -244,7 +244,7 @@ alias ....="cd ../../.."
 alias ...="cd ../.."
 alias ..="cd .."
 alias egrep='egrep --color=auto'
-alias feh='feh --image-bg black'
+alias feh='feh --image-bg black --auto-zoom --scale-down'
 alias ga='git add .'
 alias gb='git branch'
 alias gc='git commit'
@@ -264,6 +264,7 @@ alias ll='ls -Alh'
 alias ls='ls --color=auto'
 alias md="mkdir -p"
 alias micc='arecord -f cd -vv -D default /dev/null'
+alias montage='feh --image-bg black --montage'
 alias nv='nvim'
 alias path='echo "$PATH" | tr ":" "\n"'
 alias p="ping"
@@ -273,6 +274,7 @@ alias py='python3'
 alias q='exit'
 alias rcd="script -m advanced"
 alias rs="rsync -avzr"
+alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
 alias ta="tmux attach -t"
 alias tl="tmux ls"
 alias t="telnet"
