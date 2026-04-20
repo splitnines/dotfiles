@@ -83,24 +83,20 @@ os_icon() {
   elif [[ "$os" == "ubuntu" ]]; then
     printf ""
   else
-    printf "@"
+    printf "✪"
   fi
 }
 
 # add git dirty branch indication to prompt
 git_branch() {
   local branch dirty
-  local dirty_icon=$(os_icon)
 
-  if [[ dirty_icon == "@" ]]; then
-    dirty_icon="✖"
-  fi
 
   branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
   [[ -z $branch ]] && return
   
   if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
-    dirty=" $dirty_icon "
+    dirty=" $(os_icon) "
   else
     dirty=""
   fi
