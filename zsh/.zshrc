@@ -82,7 +82,7 @@ os_icon() {
     printf ""
   elif [[ "$os" == "ubuntu" ]]; then
     printf ""
-  else:
+  else
     printf "@"
   fi
 }
