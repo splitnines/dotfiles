@@ -2,10 +2,6 @@
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
--- Disable page up and page down because I hit them too much by mistake
-vim.keymap.set("n", "<Esc>[5~", "<Nop>", { noremap = true, silent = true })
-vim.keymap.set("n", "<Esc>[6~", "<Nop>", { noremap = true, silent = true })
-
 vim.keymap.set({ "n", "i", "v", "c" }, "<PageUp>", "<Nop>")
 vim.keymap.set({ "n", "i", "v", "c" }, "<PageDown>", "<Nop>")
 
@@ -65,7 +61,7 @@ vim.keymap.set("n", "<S-Tab>", ":bprevious<CR>")
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
 -- Explore
-vim.keymap.set("n", "<leader>d", "<CMD>Explore<CR>", { desc = " Directory explorer" })
+vim.keymap.set("n", "<leader>d", "<CMD>Explore<CR>", { desc = "Directory explorer" })
 
 -- Center search results
 vim.keymap.set("n", "n", "nzzzv")
