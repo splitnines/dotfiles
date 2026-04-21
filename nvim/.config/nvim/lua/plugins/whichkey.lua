@@ -6,6 +6,12 @@ return {
     local wk = require("which-key")
     wk.setup({
       plugins = { spelling = true },
+      presets = {
+        operators = true,
+        montions = true,
+        test_objects = true,
+        nav = true,
+      },
       win = {
         border = "rounded",
         wo = {
@@ -33,11 +39,18 @@ return {
     })
 
     wk.add({
-      { "<leader>",  group = "Leader",  mode = { "n", "v" } },
-      { "<leader>w", group = "Windows", mode = { "n" } },
+      { "<leader>",  group = "Leader",             mode = { "n", "v" } },
+      { "<leader>w", group = "Windows",            mode = { "n" } },
       { "<leader>m", group = "Misc" },
       { "<leader>s", group = "Search" },
       { "<leader>t", group = "Toggle" },
+      { '"',         group = "Registers" },
+      { "'",         group = "Marks" },
+      { "`",         group = "Marks" },
+      { "g",         group = "Goto" },
+      { "z",         group = "Fold / Spell / View" },
+      { "[",         group = "Previous" },
+      { "]",         group = "Next" },
     })
   end,
 }
