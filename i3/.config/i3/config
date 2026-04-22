@@ -12,17 +12,14 @@ font pango:JetBrains Mono 10
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
 # Set background
-exec_always --no-startup-id sh -c 'sleep 0.5; hsetroot -solid "#151515"'
-# exec_always --no-startup-id sh -c 'sleep 0.5; hsetroot -fill ~/dotfiles/bg'
+exec_always --no-startup-id sh -c 'hsetroot -solid "#151515"'
+# exec_always --no-startup-id sh -c 'sleep 0.5; hsetroot -solid "#151515"'
 
 # Run picom on only where nvidia cards are installed
 exec_always --no-startup-id ~/.config/picom/launch.sh
 
 # Start XDG autostart .desktop files using dex
 exec --no-startup-id dex --autostart --environment i3
-
-# Start the clipboard manager
-exec --no-startup-id parcellite
 
 # Start dunst
 exec_always --no-startup-id dunst
@@ -65,6 +62,7 @@ bindsym $mod+z exec --no-startup-id ~/.local/bin/sk
 
 # Clipboard manager
 exec --no-startup-id clipman store
+# exec --no-startup-id parcellite
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
