@@ -8,7 +8,7 @@ esac
 HISTCONTROL=ignoreboth
 HISTSIZE=50000
 HISTFILESIZE=50000
-HISTFILE="$HOME/.bash_history"
+HISTFILE="$HOME/.config/bash/bash_history"
 
 shopt -s histappend
 shopt -s checkwinsize
