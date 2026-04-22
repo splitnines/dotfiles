@@ -52,17 +52,17 @@ fi
 # ===========================
 # ls, directory colors
 # ===========================
-if [[ -f "$HOME/.dircolors-onedark" ]]; then
-  eval "$(dircolors ~/.dircolors-onedark)"
+if [[ -f "$HOME/.config/shell/dircolors-onedark" ]]; then
+  eval "$(dircolors ~/.config/shell/dircolors-onedark)"
 fi
 
 # ===========================
 # OneDark Color Scheme
 # ===========================
-if [[ -f "$HOME/.config/onedark-colors.sh" ]]; then
-  source "$HOME/.config/onedark-colors.sh"
+if [[ -f "$HOME/.config/shell/onedark-colors.sh" ]]; then
+  source "$HOME/.config/shell/onedark-colors.sh"
 else
-  echo "Warning: ~/.config/onedark-colors.sh not found" >&2
+  echo "Warning: ~/.config/shell/onedark-colors.sh not found" >&2
 fi
 
 # ===========================

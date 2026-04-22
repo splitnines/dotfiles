@@ -2,7 +2,7 @@
 # OneDark Color Palette (Universal Shell)
 # ==========================================
 # Source this file from zshrc, tmux.conf, or scripts:
-#   source ~/.config/onedark-colors.sh
+#   source ~/.config/shell/onedark-colors.sh
 
 # Base Colors (HEX)
 ONEDARK_BLACK="#282c34"

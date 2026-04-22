@@ -1,7 +1,7 @@
 # ==========================================
 # OneDark dircolors (256-color compatible)
 # ==========================================
-# Source with: eval "$(dircolors ~/.dircolors-onedark)"
+# Source with: eval "$(dircolors ~/.config/shell/dircolors-onedark)"
 # This gives ls, fzf, and tab completion the same vibe as your OneDark config.
 
 # Global default colors

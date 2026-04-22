@@ -58,10 +58,10 @@ fi
 # ls, directory colors
 # ===========================
 if [ -x /usr/bin/dircolors ]; then
-    if [ -f "$HOME/.dircolors-onedark" ]; then
-        eval "$(dircolors -b "$HOME/.dircolors-onedark")"
+    if [ -f "$HOME/.config/shell/dircolors-onedark" ]; then
+        eval "$(dircolors -b "$HOME/.config/shell/dircolors-onedark")"
     elif [ -f "$HOME/.dircolors" ]; then
-        eval "$(dircolors -b "$HOME/.dircolors")"
+        eval "$(dircolors -b "$HOME/.config/shell/dircolors")"
     else
         eval "$(dircolors -b)"
     fi
@@ -72,11 +72,11 @@ fi
 # ===========================
 # OneDark Color Scheme
 # ===========================
-if [ -f "$HOME/.config/onedark-colors.sh" ]; then
-    . "$HOME/.config/onedark-colors.sh"
+if [ -f "$HOME/.config/shell/onedark-colors.sh" ]; then
+    . "$HOME/.config/shell/onedark-colors.sh"
 fi
 # else
-#     printf 'Warning: ~/.config/onedark-colors.sh not found\n' >&2
+#     printf 'Warning: ~/.config/shell/onedark-colors.sh not found\n' >&2
 # fi
 
 # ===========================
