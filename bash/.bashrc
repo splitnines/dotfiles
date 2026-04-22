@@ -67,7 +67,7 @@ if [ -x /usr/bin/dircolors ]; then
     fi
 fi
 
-[ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
+[ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
 
 # ===========================
 # OneDark Color Scheme

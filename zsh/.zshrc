@@ -280,14 +280,14 @@ alias tl="tmux ls"
 alias t="telnet"
 alias z='zathura'
 
-[ -f "$HOME/.local_aliases" ] && source "$HOME/.local_aliases"
+[ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
 
 case $TERM in
   xterm*|tmux*|screen*) print -Pn "\e]0;%n@%m\a" ;;
 esac
 
 # Load any local env vars
-[ -f "$HOME/.myenv" ] && source "$HOME/.myenv"
+[ -f "$HOME/.config/shell/myenv" ] && source "$HOME/.config/shell/myenv"
 
 # ===========================
 # Vi mode and cursor changes
