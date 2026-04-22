@@ -246,7 +246,7 @@ alias ..="cd .."
 alias egrep='egrep --color=auto'
 alias feh='feh --image-bg black --auto-zoom --scale-down'
 alias ga='git add .'
-alias gb='git branch'
+alias gb='git --no-pager branch'
 alias gc='git commit'
 alias gcm='git commit -m'
 alias gco='git checkout'
