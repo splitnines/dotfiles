@@ -125,7 +125,7 @@ add-zsh-hook precmd build_prompt
 # ===========================
 # History
 # ===========================
-HISTFILE="$HOME/.config/zsh/zsh_history"
+HISTFILE="$HOME/.cache/zsh/zsh_history"
 HISTSIZE=50000
 SAVEHIST=50000
 
