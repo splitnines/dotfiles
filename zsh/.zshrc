@@ -166,7 +166,7 @@ bindkey '^[[B' down-line-or-beginning-search
 # Completion
 # ===========================
 autoload -Uz compinit
-compinit
+compinit -d "$HOME/.cache/zsh/zcompdump"
 
 # Git completion
 if type git &>/dev/null; then
