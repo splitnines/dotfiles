@@ -1,0 +1,218 @@
+#!/usr/bin/env bash
+# scan-yara-system: system-wide YARA hunt wrapper for Linux persistence threats.
+
+set -uo pipefail
+
+rules_file="${YARA_RULES:-/home/rickey/.local/share/yara/linux_persistence_hunt.yar}"
+target="/"
+max_size="-5M"
+include_all=0
+json_output=0
+summary_only=0
+match_count=0
+file_count=0
+error_count=0
+
+usage() {
+    cat <<'HELP'
+Usage:
+  scan-yara-system [OPTIONS] [TARGET]
+
+Options:
+  -r, --rules FILE       YARA rules file
+  -t, --target PATH      Path to scan
+  -a, --all              Broader scan; do not skip large app/cache dirs
+  -j, --json             Emit JSON-lines results
+  -q, --summary-only     Only print final summary
+  -h, --help             Show help
+
+Environment:
+  YARA_RULES             Default rules file override
+
+Examples:
+  scan-yara-system
+  scan-yara-system "$HOME"
+  scan-yara-system /etc
+  scan-yara-system --rules ./linux_persistence_hunt.yar --target "$HOME"
+HELP
+}
+
+json_escape() {
+    python3 -c 'import json,sys; print(json.dumps(sys.stdin.read())[1:-1])'
+}
+
+while (($#)); do
+    case "$1" in
+        -r|--rules)
+            [[ $# -ge 2 ]] || { printf 'error: missing argument for %s\n' "$1" >&2; exit 2; }
+            rules_file="$2"; shift 2 ;;
+        -t|--target)
+            [[ $# -ge 2 ]] || { printf 'error: missing argument for %s\n' "$1" >&2; exit 2; }
+            target="$2"; shift 2 ;;
+        -a|--all)
+            include_all=1; shift ;;
+        -j|--json)
+            json_output=1; shift ;;
+        -q|--summary-only)
+            summary_only=1; shift ;;
+        -h|--help)
+            usage; exit 0 ;;
+        --)
+            shift; break ;;
+        -*)
+            printf 'error: unknown option: %s\n' "$1" >&2; usage >&2; exit 2 ;;
+        *)
+            target="$1"; shift ;;
+    esac
+done
+
+if ! command -v yara >/dev/null 2>&1; then
+    printf 'error: yara command not found\n' >&2
+    exit 2
+fi
+
+if [[ ! -f "$rules_file" ]]; then
+    printf 'error: rules file not found: %s\n' "$rules_file" >&2
+    exit 2
+fi
+
+if [[ ! -e "$target" ]]; then
+    printf 'error: target does not exist: %s\n' "$target" >&2
+    exit 2
+fi
+
+if ! yara -w "$rules_file" /dev/null >/dev/null 2>&1; then
+    printf 'error: rules file failed to compile: %s\n' "$rules_file" >&2
+    yara "$rules_file" /dev/null >&2
+    exit 2
+fi
+
+scan_file() {
+    local file=$1 output rc escaped_file escaped_output
+
+    ((file_count++))
+    output=$(yara -s "$rules_file" "$file" 2>&1)
+    rc=$?
+
+    case "$rc" in
+        0)
+            return 0 ;;
+        1)
+            ((match_count++))
+            if (( summary_only == 0 )); then
+                if (( json_output == 1 )); then
+                    escaped_file=$(printf '%s' "$file" | json_escape)
+                    escaped_output=$(printf '%s' "$output" | json_escape)
+                    printf '{"file":"%s","result":"match","output":"%s"}\n' "$escaped_file" "$escaped_output"
+                else
+                    printf '%s\n' "$output"
+                fi
+            fi
+            ;;
+        *)
+            ((error_count++))
+            if (( summary_only == 0 )); then
+                if (( json_output == 1 )); then
+                    escaped_file=$(printf '%s' "$file" | json_escape)
+                    escaped_output=$(printf '%s' "$output" | json_escape)
+                    printf '{"file":"%s","result":"error","output":"%s"}\n' "$escaped_file" "$escaped_output"
+                else
+                    printf 'scan error: %s\n%s\n' "$file" "$output" >&2
+                fi
+            fi
+            ;;
+    esac
+}
+
+export LC_ALL=C
+
+if (( json_output == 0 && summary_only == 0 )); then
+    printf 'rules:  %s\n' "$rules_file"
+    printf 'target: %s\n' "$target"
+    if (( include_all == 0 )); then
+        printf 'mode:   default exclusions enabled\n\n'
+    else
+        printf 'mode:   broad scan (--all)\n\n'
+    fi
+fi
+
+if (( include_all == 0 )); then
+    while IFS= read -r -d '' file; do
+        scan_file "$file"
+    done < <(
+        find "$target" \
+            -xdev \
+            -path /proc -prune -o \
+            -path /sys -prune -o \
+            -path /dev -prune -o \
+            -path /run -prune -o \
+            -path /tmp -prune -o \
+            -path /var/tmp -prune -o \
+            -path /mnt -prune -o \
+            -path /media -prune -o \
+            -path '*/.cache' -prune -o \
+            -path '*/Cache' -prune -o \
+            -path '*/.git' -prune -o \
+            -path '*/.hg' -prune -o \
+            -path '*/.svn' -prune -o \
+            -path '*/.venv' -prune -o \
+            -path '*/venv' -prune -o \
+            -path '*/node_modules' -prune -o \
+            -path '*/__pycache__' -prune -o \
+            -path '*/.cargo/registry' -prune -o \
+            -path '*/.npm' -prune -o \
+            -path '*/.local/share/Steam' -prune -o \
+            -path '*/.local/share/Trash' -prune -o \
+            -path '*/.local/share/nvim/lazy' -prune -o \
+            -path '*/.local/share/nvim/mason' -prune -o \
+            -path '*/.var/app' -prune -o \
+            -path '/var/cache' -prune -o \
+            -path '/var/lib/docker' -prune -o \
+            -path '/var/lib/containers' -prune -o \
+            -path '/var/lib/flatpak' -prune -o \
+            -path '/usr/lib' -prune -o \
+            -path '/usr/lib64' -prune -o \
+            -path '/usr/share' -prune -o \
+            -path '/opt' -prune -o \
+            -type f \
+            -size "$max_size" \
+            ! -name "$(basename "$rules_file")" \
+            ! -name 'linux_persistence_hunt.yar' \
+            ! -name 'sus_rules.yara' \
+            -print0 2>/dev/null
+    )
+else
+    while IFS= read -r -d '' file; do
+        scan_file "$file"
+    done < <(
+        find "$target" \
+            -xdev \
+            -path /proc -prune -o \
+            -path /sys -prune -o \
+            -path /dev -prune -o \
+            -path /run -prune -o \
+            -type f \
+            -size "$max_size" \
+            ! -name "$(basename "$rules_file")" \
+            ! -name 'linux_persistence_hunt.yar' \
+            ! -name 'sus_rules.yara' \
+            -print0 2>/dev/null
+    )
+fi
+
+if (( json_output == 1 )); then
+    printf '{"summary":{"files_scanned":%d,"matches":%d,"errors":%d}}\n' "$file_count" "$match_count" "$error_count"
+else
+    printf '\nsummary:\n'
+    printf '  files scanned: %d\n' "$file_count"
+    printf '  matches:       %d\n' "$match_count"
+    printf '  errors:        %d\n' "$error_count"
+fi
+
+if (( error_count > 0 )); then
+    exit 2
+elif (( match_count > 0 )); then
+    exit 1
+else
+    exit 0
+fi
