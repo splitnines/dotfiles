@@ -19,6 +19,7 @@ path=(
 [[ -d "$HOME/.cargo/bin" ]] && path=("$HOME/.cargo/bin" $path)
 [[ -d "/usr/local/go/bin" ]] && path=("/usr/local/go/bin" $path)
 [[ -d "$HOME/.opencode/bin" ]] && path=("$HOME/.opencode/bin" $path)
+[[ -d "$HOME/.local/share/npm/bin" ]] && path=("$HOME/.local/share/npm/bin" $path)
 
 # Windows interop (optional, WSL only)
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
