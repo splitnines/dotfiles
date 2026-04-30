@@ -4,7 +4,7 @@
 set -uo pipefail
 
 prog="${0##*/}"
-rules_file="${YARA_RULES:-/home/rickey/.local/share/yara/linux_persistence_hunt.yar}"
+rules_file="${YARA_RULES:-/home/rickey/.local/share/yara/linux_persistence_hunt_nightly.yar}"
 target="/"
 max_size="-5M"
 include_all=0
@@ -184,7 +184,7 @@ if (( include_all == 0 )); then
             -size "$max_size" \
             ! -name "$(basename "$rules_file")" \
             ! -name 'linux_persistence_hunt.yar' \
-            ! -name 'awesome_yara_linux_triage.yar' \
+            ! -name 'linux_persistence_hunt_nightly.yar' \
             -print0 2>/dev/null
     )
 else
@@ -201,7 +201,7 @@ else
             -size "$max_size" \
             ! -name "$(basename "$rules_file")" \
             ! -name 'linux_persistence_hunt.yar' \
-            ! -name 'awesome_yara_linux_triage.yar' \
+            ! -name 'linux_persistence_hunt_nightly.yar' \
             -print0 2>/dev/null
     )
 fi
