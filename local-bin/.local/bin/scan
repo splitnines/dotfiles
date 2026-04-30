@@ -15,24 +15,26 @@ error_count=0
 
 usage() {
     cat <<'HELP'
-Usage:
-  scan [OPTIONS] [TARGET]
 
-Options:
-  -r, --rules FILE       YARA rules file
-  -t, --target PATH      Path to scan
-  -a, --all              Broader scan; do not skip large app/cache dirs
-  -j, --json             Emit JSON-lines results
-  -h, --help             Show help
+    Usage:
+      scan [OPTIONS] [TARGET]
+    
+    Options:
+      -r, --rules FILE       YARA rules file
+      -t, --target PATH      Path to scan
+      -a, --all              Broader scan; do not skip large app/cache dirs
+      -j, --json             Emit JSON-lines results
+      -h, --help             Show help
+    
+    Environment:
+      YARA_RULES             Default rules file override
+    
+    Examples:
+      scan
+      scan "$HOME"
+      scan /etc
+      scan --rules ./linux_persistence_hunt.yar --target "$HOME"
 
-Environment:
-  YARA_RULES             Default rules file override
-
-Examples:
-  scan
-  scan "$HOME"
-  scan /etc
-  scan --rules ./linux_persistence_hunt.yar --target "$HOME"
 HELP
 }
 
@@ -95,36 +97,37 @@ scan_file() {
     local file=$1 output rc escaped_file escaped_output
 
     ((file_count++))
-    output=$(yara -s "$rules_file" "$file" 2>&1)
+    output=$(yara -q -s "$rules_file" "$file" 2>&1)
     rc=$?
 
-    case "$rc" in
-        0)
-            return 0 ;;
-        1)
-            ((match_count++))
-            if (( json_output == 1 )); then
-                escaped_file=$(printf '%s' "$file" | json_escape)
-                escaped_output=$(printf '%s' "$output" | json_escape)
-                printf '{"date":"%s","program":"%s","file":"%s","result":"match","output":"%s"}\n' \
-                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$escaped_file" "$escaped_output"
-            else
-                printf '%s: [%s] %s\n' "$(date '+%b %d %T.%3N %Z')" "%prog" "$output"
-            fi
-            ;;
-        *)
-            ((error_count++))
-            if (( json_output == 1 )); then
-                escaped_file=$(printf '%s' "$file" | json_escape)
-                escaped_output=$(printf '%s' "$output" | json_escape)
-                printf '{"date":"%s","program":"%s","file":"%s","result":"error","output":"%s"}\n' \
-                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$escaped_file" "$escaped_output"
-            else
-                printf '%s: [%s] error %s\n%s\n' \
-                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$file" "$output" >&2
-            fi
-            ;;
-    esac
+    if (( rc != 0 )); then
+           ((error_count++))
+           if (( json_output == 1 )); then
+               escaped_file=$(printf '%s' "$file" | json_escape)
+               escaped_output=$(printf '%s' "$output" | json_escape)
+               printf '{"date":"%s","program":"%s","file":"%s","result":"error","output":"%s"}\n' \
+                   "$(date '+%b %d %T.%3N %Z')" "$prog" "$escaped_file" "$escaped_output"
+           else
+               printf '%s: [%s] error %s\n%s\n' \
+                   "$(date '+%b %d %T.%3N %Z')" "$prog" "$file" "$output" >&2
+           fi
+           return 0
+       fi
+
+       if [[ -n "$output" ]]; then
+           ((match_count++))
+           if (( json_output == 1 )); then
+               escaped_file=$(printf '%s' "$file" | json_escape)
+               escaped_output=$(printf '%s' "$output" | json_escape)
+               printf '{"date":"%s","program":"%s","file":"%s","result":"match","output":"%s"}\n' \
+                   "$(date '+%b %d %T.%3N %Z')" "$prog" "$escaped_file" "$escaped_output"
+           else
+               printf '%s: [%s] match\n\n%s\n\n' \
+                   "$(date '+%b %d %T.%3N %Z')" \
+                   "$prog" \
+                   "$(printf '%s' "$output" | sed 's/^/\t/')"
+           fi
+       fi
 }
 
 export LC_ALL=C
@@ -181,7 +184,7 @@ if (( include_all == 0 )); then
             -size "$max_size" \
             ! -name "$(basename "$rules_file")" \
             ! -name 'linux_persistence_hunt.yar' \
-            ! -name 'sus_rules.yara' \
+            ! -name 'awesome_yara_linux_triage.yar' \
             -print0 2>/dev/null
     )
 else
@@ -198,7 +201,7 @@ else
             -size "$max_size" \
             ! -name "$(basename "$rules_file")" \
             ! -name 'linux_persistence_hunt.yar' \
-            ! -name 'sus_rules.yara' \
+            ! -name 'awesome_yara_linux_triage.yar' \
             -print0 2>/dev/null
     )
 fi

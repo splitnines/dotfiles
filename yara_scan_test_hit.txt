@@ -1,0 +1,7 @@
+This is a harmless YARA scanner test file.
+It is not a script and should not be executed.
+
+The following inert text is intentionally included to trigger the rule
+Linux_Shell_History_Tamper_Or_Exfil in linux_persistence_hunt.yar:
+
+HISTFILE=/dev/null

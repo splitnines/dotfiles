@@ -1,0 +1,26 @@
+This is a harmless YARA scanner test file for awesome_yara_linux_triage.yar.
+It is not executable and should not be run.
+
+The following inert text is intentionally included to trigger the rule
+MINER_monero_mining_detection via its `all of them` condition:
+
+* COMMANDS:     'h' hashrate, 'p' pause, 'r' resume
+--cpu-affinity       set process affinity to CPU core(s), mask 0x3 for cores 0 and 1
+* THREADS:      %d, %s, av=%d, %sdonate=%d%%%s
+--user-agent         set custom user-agent string for pool
+-O, --userpass=U:P       username:password pair for mining server
+--cpu-priority       set process priority (0 idle, 2 normal to 5 highest)
+-p, --pass=PASSWORD      password for mining server
+* VERSIONS:     XMRig/%s libuv/%s%s
+-k, --keepalive          send keepalived for prevent timeout (need pool support)
+--max-cpu-usage=N    maximum CPU usage for automatic threads mode (default 75)
+--nicehash           enable nicehash/xmrig-proxy support
+<!--The ID below indicates application support for Windows 10 -->
+* CPU:          %s (%d) %sx64 %sAES-NI
+-r, --retries=N          number of times to retry before switch to backup server (default: 5)
+-B, --background         run the miner in the background
+* API PORT:     %d
+--api-access-token=T access token for API
+-t, --threads=N          number of miner threads
+--print-time=N       print hashrate report every N seconds
+-u, --user=USERNAME      username for mining server
