@@ -10,8 +10,8 @@ PRIMARY="$(polybar --list-monitors | awk '/ \(primary\)/ {print $1}' | cut -d: -
 
 for m in $(polybar --list-monitors | cut -d":" -f1); do
     if [ "$m" = "$PRIMARY" ]; then
-        MONITOR="$m" polybar main &
+        MONITOR="$m" polybar main > /dev/null 2>&1 &
     else
-        MONITOR="$m" polybar main-secondary &
+        MONITOR="$m" polybar main-secondary > /dev/null 2>&1 & 
     fi
 done

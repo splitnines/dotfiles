@@ -9,8 +9,7 @@ mouse_warping output
 font pango:JetBrains Mono 10
 
 # Polybar display
-# exec_always --no-startup-id ~/.config/polybar/launch.sh
-exec --no-startup-id ~/.config/polybar/launch.sh
+exec --no-startup-id ~/.local/bin/polybar-launch
 
 # Set background
 exec_always --no-startup-id sh -c 'hsetroot -solid "#151515"'
@@ -142,6 +141,17 @@ set $ws7 "7:7"
 set $ws8 "8:8"
 set $ws9 "9:9"
 set $ws10 "10:10"
+
+# Launch programs to specific work space
+assign [class="Chromium"] $ws1
+assign [class="Thunderbird"] $ws2
+assign [class="st-256color"] $ws3
+
+exec --no-startup-id thunderbird
+exec --no-startup-id st
+exec --no-startup-id chromium
+
+exec --no-startup-id i3-msg "workspace $ws1"
 
 # Switch to workspace
 bindsym $mod+1 workspace number $ws1
