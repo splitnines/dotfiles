@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
-# scan-yara-system: system-wide YARA hunt wrapper for Linux persistence threats.
+# scan: YARA hunt wrapper with nightly/weekly/monthly scan profiles.
 
 set -uo pipefail
 
 prog="${0##*/}"
-rules_file="${YARA_RULES:-/home/rickey/.local/share/yara/linux_persistence_hunt_nightly.yar}"
+
+rules_dir="/home/rickey/.local/share/yara"
+cadence="nightly"
+rules_file=""
 target="/"
 max_size="-5M"
 include_all=0
 json_output=0
+show_strings=0
+list_files=0
+output_file=""
 match_count=0
 file_count=0
 error_count=0
@@ -19,21 +25,33 @@ usage() {
     Usage:
       scan [OPTIONS] [TARGET]
     
+    Cadence:
+      --nightly              Low-noise focused persistence scan, default
+      --weekly               Balanced scan of risky file classes in noisier areas
+      --monthly              Broad scan using monthly/broad rules
+      -c, --cadence MODE     MODE is nightly, weekly, or monthly
+    
     Options:
-      -r, --rules FILE       YARA rules file
+      -r, --rules FILE       YARA rules file override
       -t, --target PATH      Path to scan
-      -a, --all              Broader scan; do not skip large app/cache dirs
+      -a, --all              Broad traversal; override cadence pruning
+      -s, --strings          Show matching strings and offsets
       -j, --json             Emit JSON-lines results
+      -o, --output FILE      Write output to FILE
+      -l, --list-files       List files that would be scanned, do not run YARA
       -h, --help             Show help
     
     Environment:
-      YARA_RULES             Default rules file override
+      YARA_RULES             Rules file override
+      YARA_RULES_DIR         Rules directory override
     
     Examples:
-      scan
-      scan "$HOME"
-      scan /etc
-      scan --rules ./linux_persistence_hunt.yar --target "$HOME"
+      scan --nightly
+      scan --weekly "$HOME"
+      scan --monthly --all
+      scan --weekly --strings
+      scan --rules ./custom.yar --target "$HOME"
+      scan --list-files --weekly
 
 HELP
 }
@@ -42,34 +60,105 @@ json_escape() {
     jq -Rsr '@json | .[1:-1]'
 }
 
+set_cadence_rules() {
+    if [[ -n "${YARA_RULES:-}" ]]; then
+        rules_file="$YARA_RULES"
+        return
+    fi
+
+    case "$cadence" in
+        nightly)
+            rules_file="$rules_dir/linux_persistence_hunt_nightly_focused.yar"
+            ;;
+        weekly)
+            rules_file="$rules_dir/linux_persistence_hunt_weekly_balanced.yar"
+            ;;
+        monthly)
+            rules_file="$rules_dir/linux_persistence_hunt_monthly_broad.yar"
+            ;;
+        *)
+            printf '%s: [%s] error invalid cadence: %s\n' \
+                "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" >&2
+            exit 2
+            ;;
+    esac
+}
+
 while (($#)); do
     case "$1" in
+        --nightly)
+            cadence="nightly"; shift ;;
+        --weekly)
+            cadence="weekly"; shift ;;
+        --monthly)
+            cadence="monthly"; shift ;;
+        -c|--cadence)
+            [[ $# -ge 2 ]] || {
+                printf '%s: [%s] error missing argument for %s\n' \
+                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
+                exit 2
+            }
+            cadence="$2"; shift 2 ;;
         -r|--rules)
-            [[ $# -ge 2 ]] || { printf '%s: [%s] error missing argument for %s\n' \
-                "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2; exit 2; }
+            [[ $# -ge 2 ]] || {
+                printf '%s: [%s] error missing argument for %s\n' \
+                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
+                exit 2
+            }
             rules_file="$2"; shift 2 ;;
         -t|--target)
-            [[ $# -ge 2 ]] || { printf '%s: [%s] error missing argument for %s\n' \
-                "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2; exit 2; }
+            [[ $# -ge 2 ]] || {
+                printf '%s: [%s] error missing argument for %s\n' \
+                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
+                exit 2
+            }
             target="$2"; shift 2 ;;
         -a|--all)
             include_all=1; shift ;;
+        -s|--strings)
+            show_strings=1; shift ;;
         -j|--json)
             json_output=1; shift ;;
+        -o|--output)
+            [[ $# -ge 2 ]] || {
+                printf '%s: [%s] error missing argument for %s\n' \
+                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
+                exit 2
+            }
+            output_file="$2"; shift 2 ;;
+        -l|--list-files)
+            list_files=1; shift ;;
         -h|--help)
             usage; exit 0 ;;
         --)
             shift; break ;;
         -*)
             printf '%s: [%s] error unknown option: %s\n' \
-                "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2; usage >&2; exit 2 ;;
+                "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
+            usage >&2
+            exit 2 ;;
         *)
             target="$1"; shift ;;
     esac
 done
 
+if [[ -z "$rules_file" ]]; then
+    set_cadence_rules
+fi
+
+if [[ -n "$output_file" ]]; then
+    mkdir -p "$(dirname "$output_file")"
+    exec >"$output_file" 2>&1
+fi
+
 if ! command -v yara >/dev/null 2>&1; then
-    printf '%s: [%s] error: yara command not found\n' \
+    printf '%s: [%s] error yara command not found\n' \
+        "$(date '+%b %d %T.%3N %Z')" "$prog" >&2
+    exit 2
+fi
+
+if (( json_output == 1 )) && ! command -v jq >/dev/null 2>&1; then
+    printf '%s: [%s] error jq command not found, required for --json\n' \
         "$(date '+%b %d %T.%3N %Z')" "$prog" >&2
     exit 2
 fi
@@ -95,123 +184,209 @@ fi
 
 scan_file() {
     local file=$1 output rc escaped_file escaped_output
+    local yara_args=(-q)
+
+    if (( show_strings == 1 )); then
+        yara_args=(-q -s)
+    fi
 
     ((file_count++))
-    output=$(yara -q -s "$rules_file" "$file" 2>&1)
+    output=$(yara "${yara_args[@]}" "$rules_file" "$file" 2>&1)
     rc=$?
 
     if (( rc != 0 )); then
-           ((error_count++))
-           if (( json_output == 1 )); then
-               escaped_file=$(printf '%s' "$file" | json_escape)
-               escaped_output=$(printf '%s' "$output" | json_escape)
-               printf '{"date":"%s","program":"%s","file":"%s","result":"error","output":"%s"}\n' \
-                   "$(date '+%b %d %T.%3N %Z')" "$prog" "$escaped_file" "$escaped_output"
-           else
-               printf '%s: [%s] error %s\n%s\n' \
-                   "$(date '+%b %d %T.%3N %Z')" "$prog" "$file" "$output" >&2
-           fi
-           return 0
-       fi
+        ((error_count++))
+        if (( json_output == 1 )); then
+            escaped_file=$(printf '%s' "$file" | json_escape)
+            escaped_output=$(printf '%s' "$output" | json_escape)
+            printf '{"date":"%s","program":"%s","cadence":"%s","file":"%s","result":"error","output":"%s"}\n' \
+                "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" "$escaped_file" "$escaped_output"
+        else
+            printf '%s: [%s] %s error %s\n%s\n' \
+                "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" "$file" "$output" >&2
+        fi
+        return 0
+    fi
 
-       if [[ -n "$output" ]]; then
-           ((match_count++))
-           if (( json_output == 1 )); then
-               escaped_file=$(printf '%s' "$file" | json_escape)
-               escaped_output=$(printf '%s' "$output" | json_escape)
-               printf '{"date":"%s","program":"%s","file":"%s","result":"match","output":"%s"}\n' \
-                   "$(date '+%b %d %T.%3N %Z')" "$prog" "$escaped_file" "$escaped_output"
-           else
-               printf '%s: [%s] match\n\n%s\n\n' \
-                   "$(date '+%b %d %T.%3N %Z')" \
-                   "$prog" \
-                   "$(printf '%s' "$output" | sed 's/^/\t/')"
-           fi
-       fi
+    if [[ -n "$output" ]]; then
+        ((match_count++))
+        if (( json_output == 1 )); then
+            escaped_file=$(printf '%s' "$file" | json_escape)
+            escaped_output=$(printf '%s' "$output" | json_escape)
+            printf '{"date":"%s","program":"%s","cadence":"%s","file":"%s","result":"match","output":"%s"}\n' \
+                "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" "$escaped_file" "$escaped_output"
+        else
+            printf '%s: [%s] %s match\n\n%s\n\n' \
+                "$(date '+%b %d %T.%3N %Z')" \
+                "$prog" "$cadence" \
+                "$(printf '%s' "$output" | sed 's/^/\t/')"
+        fi
+    fi
+}
+
+print_header() {
+    (( json_output == 1 )) && return
+
+    local mode
+    if (( include_all == 1 )); then
+        mode="all"
+    else
+        mode="$cadence"
+    fi
+
+    if (( list_files == 1 )); then
+        printf '%s: [%s] listing files, rules: %s, target: %s, mode: %s\n' \
+            "$(date '+%b %d %T.%3N %Z')" "$prog" "$rules_file" "$target" "$mode"
+    else
+        printf '%s: [%s] %s rules: %s, target directory: %s, mode: %s\n' \
+            "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" "$rules_file" "$target" "$mode"
+    fi
+}
+
+run_find_all() {
+    find "$target" \
+        -xdev \
+        -path /proc -prune -o \
+        -path /sys -prune -o \
+        -path /dev -prune -o \
+        -path /run -prune -o \
+        -type f \
+        -size "$max_size" \
+        ! -path "$HOME/.local/state/logs/scan*.log" \
+        ! -name "$(basename "$rules_file")" \
+        ! -name 'linux_persistence_hunt.yar' \
+        ! -name 'linux_persistence_hunt_nightly.yar' \
+        ! -name 'linux_persistence_hunt_nightly_focused.yar' \
+        ! -name 'linux_persistence_hunt_weekly_balanced.yar' \
+        ! -name 'linux_persistence_hunt_monthly_broad.yar' \
+        -print0 2>/dev/null
+}
+
+run_find_nightly() {
+    find "$target" \
+        -xdev \
+        -path /proc -prune -o \
+        -path /sys -prune -o \
+        -path /dev -prune -o \
+        -path /run -prune -o \
+        -path /tmp -prune -o \
+        -path /var/tmp -prune -o \
+        -path /mnt -prune -o \
+        -path /media -prune -o \
+        -path "$HOME/.pi/agent" -prune -o \
+        -path "$HOME/.local/state/logs" -prune -o \
+        -path "$HOME/.bun/install/cache" -prune -o \
+        -path "$HOME/.local/share/uv/python" -prune -o \
+        -path "$HOME/.thunderbird" -prune -o \
+        -path "$HOME/yay/src" -prune -o \
+        -path '*/.cache' -prune -o \
+        -path '*/Cache' -prune -o \
+        -path '*/.git' -prune -o \
+        -path '*/.hg' -prune -o \
+        -path '*/.svn' -prune -o \
+        -path '*/.venv' -prune -o \
+        -path '*/venv' -prune -o \
+        -path '*/node_modules' -prune -o \
+        -path '*/__pycache__' -prune -o \
+        -path '*/.cargo/registry' -prune -o \
+        -path '*/.npm' -prune -o \
+        -path '*/.local/share/Steam' -prune -o \
+        -path '*/.local/share/Trash' -prune -o \
+        -path '*/.local/share/nvim/lazy' -prune -o \
+        -path '*/.local/share/nvim/mason' -prune -o \
+        -path '*/.var/app' -prune -o \
+        -path '/var/cache' -prune -o \
+        -path '/var/lib/docker' -prune -o \
+        -path '/var/lib/containers' -prune -o \
+        -path '/var/lib/flatpak' -prune -o \
+        -path '/usr/lib' -prune -o \
+        -path '/usr/lib64' -prune -o \
+        -path '/usr/share' -prune -o \
+        -path '/opt' -prune -o \
+        -type f \
+        -size "$max_size" \
+        ! -name "$(basename "$rules_file")" \
+        ! -name 'linux_persistence_hunt.yar' \
+        ! -name 'linux_persistence_hunt_nightly.yar' \
+        ! -name 'linux_persistence_hunt_nightly_focused.yar' \
+        ! -name 'linux_persistence_hunt_weekly_balanced.yar' \
+        ! -name 'linux_persistence_hunt_monthly_broad.yar' \
+        -print0 2>/dev/null
+}
+
+run_find_weekly() {
+    find "$target" \
+        -xdev \
+        -path /proc -prune -o \
+        -path /sys -prune -o \
+        -path /dev -prune -o \
+        -path /run -prune -o \
+        -type f \
+        -size "$max_size" \
+        ! -path "$HOME/.local/state/logs/scan*.log" \
+        ! -name "$(basename "$rules_file")" \
+        ! -name 'linux_persistence_hunt.yar' \
+        ! -name 'linux_persistence_hunt_nightly.yar' \
+        ! -name 'linux_persistence_hunt_nightly_focused.yar' \
+        ! -name 'linux_persistence_hunt_weekly_balanced.yar' \
+        ! -name 'linux_persistence_hunt_monthly_broad.yar' \
+        \( \
+            -perm /111 -o \
+            -name '*.sh' -o \
+            -name '*.bash' -o \
+            -name '*.zsh' -o \
+            -name '*.ksh' -o \
+            -name '*.py' -o \
+            -name '*.pl' -o \
+            -name '*.rb' -o \
+            -name '*.php' -o \
+            -name '*.service' -o \
+            -name '*.timer' -o \
+            -name '*.desktop' -o \
+            -name '*.so' -o \
+            -name '*.conf' -o \
+            -name 'authorized_keys' -o \
+            -name 'crontab' \
+        \) \
+        -print0 2>/dev/null
 }
 
 export LC_ALL=C
 
-if (( json_output == 0)); then
-    if (( include_all == 0 )); then
-        printf '%s: [%s] rules  %s, target directory: %s, mode: default\n' \
-            "$(date '+%b %d %T.%3N %Z')" "$prog" "$rules_file" "$target"
-    else
-        printf '%s: [%s] rules  %s, target directory: %s, mode: broad scan\n' \
-            "$(date '+%b %d %T.%3N %Z')" "$prog" "$rules_file" "$target"
-    fi
+print_header
+
+if (( include_all == 1 )); then
+    finder=run_find_all
+else
+    case "$cadence" in
+        nightly) finder=run_find_nightly ;;
+        weekly) finder=run_find_weekly ;;
+        monthly) finder=run_find_all ;;
+        *) finder=run_find_nightly ;;
+    esac
 fi
 
-if (( include_all == 0 )); then
+if (( list_files == 1 )); then
     while IFS= read -r -d '' file; do
-        scan_file "$file"
-    done < <(
-        find "$target" \
-            -xdev \
-            -path /proc -prune -o \
-            -path /sys -prune -o \
-            -path /dev -prune -o \
-            -path /run -prune -o \
-            -path /tmp -prune -o \
-            -path /var/tmp -prune -o \
-            -path /mnt -prune -o \
-            -path /media -prune -o \
-            -path '*/.cache' -prune -o \
-            -path '*/Cache' -prune -o \
-            -path '*/.git' -prune -o \
-            -path '*/.hg' -prune -o \
-            -path '*/.svn' -prune -o \
-            -path '*/.venv' -prune -o \
-            -path '*/venv' -prune -o \
-            -path '*/node_modules' -prune -o \
-            -path '*/__pycache__' -prune -o \
-            -path '*/.cargo/registry' -prune -o \
-            -path '*/.npm' -prune -o \
-            -path '*/.local/share/Steam' -prune -o \
-            -path '*/.local/share/Trash' -prune -o \
-            -path '*/.local/share/nvim/lazy' -prune -o \
-            -path '*/.local/share/nvim/mason' -prune -o \
-            -path '*/.var/app' -prune -o \
-            -path '/var/cache' -prune -o \
-            -path '/var/lib/docker' -prune -o \
-            -path '/var/lib/containers' -prune -o \
-            -path '/var/lib/flatpak' -prune -o \
-            -path '/usr/lib' -prune -o \
-            -path '/usr/lib64' -prune -o \
-            -path '/usr/share' -prune -o \
-            -path '/opt' -prune -o \
-            -type f \
-            -size "$max_size" \
-            ! -name "$(basename "$rules_file")" \
-            ! -name 'linux_persistence_hunt.yar' \
-            ! -name 'linux_persistence_hunt_nightly.yar' \
-            -print0 2>/dev/null
-    )
-else
-    while IFS= read -r -d '' file; do
-        scan_file "$file"
-    done < <(
-        find "$target" \
-            -xdev \
-            -path /proc -prune -o \
-            -path /sys -prune -o \
-            -path /dev -prune -o \
-            -path /run -prune -o \
-            -type f \
-            -size "$max_size" \
-            ! -name "$(basename "$rules_file")" \
-            ! -name 'linux_persistence_hunt.yar' \
-            ! -name 'linux_persistence_hunt_nightly.yar' \
-            -print0 2>/dev/null
-    )
+        printf '%s\n' "$file"
+        ((file_count++))
+    done < <("$finder")
+
+    printf '%s: [%s] %s results files listed: %d\n' \
+        "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" "$file_count"
+    exit 0
 fi
+
+while IFS= read -r -d '' file; do
+    scan_file "$file"
+done < <("$finder")
 
 if (( json_output == 1 )); then
-    printf '{"%s results":{"date":"%s","files scanned":%d,"matches":%d,"errors":%d}}\n' \
-        "$prog" "$(date '+%b %d %T.%3N %Z')" "$file_count" "$match_count" "$error_count"
+    printf '{"%s results":{"date":"%s","cadence":"%s","files scanned":%d,"matches":%d,"errors":%d}}\n' \
+        "$prog" "$(date '+%b %d %T.%3N %Z')" "$cadence" "$file_count" "$match_count" "$error_count"
 else
-    printf '%s: [%s] results files scanned: %d, matches: %d, errors: %d\n' \
-        "$(date '+%b %d %T.%3N %Z')" "$prog" "$file_count" "$match_count" "$error_count"
+    printf '%s: [%s] %s results files scanned: %d, matches: %d, errors: %d\n' \
+        "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" "$file_count" "$match_count" "$error_count"
 fi
 
 if (( error_count > 0 )); then
@@ -221,3 +396,4 @@ elif (( match_count > 0 )); then
 else
     exit 0
 fi
+
