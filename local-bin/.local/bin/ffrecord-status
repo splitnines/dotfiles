@@ -3,12 +3,47 @@ set -euo pipefail
 
 pid_file="${XDG_RUNTIME_DIR:-/tmp}/ffrecord.pid"
 
-if [[ -f "$pid_file" ]]; then
-    pid="$(cat "$pid_file" 2>/dev/null || true)"
-    if [[ -n "${pid:-}" ]] && kill -0 "$pid" 2>/dev/null; then
-        printf '●\n'
-        exit 0
-    fi
-fi
+recording_is_running() {
+    local pid
 
-printf '\n'
+    [[ -f "$pid_file" ]] || return 1
+
+    pid="$(cat "$pid_file" 2>/dev/null || true)"
+
+    [[ -n "${pid:-}" ]] || return 1
+    kill -0 "$pid" 2>/dev/null
+}
+
+timer() {
+    local hours=0
+    local minutes=0
+    local seconds=0
+
+    while recording_is_running; do
+        printf '%02d:%02d:%02d %%{F#ff0000}●%%{F-}\n' \
+            "$hours" "$minutes" "$seconds"
+
+        sleep 1
+
+        ((++seconds))
+
+        if ((seconds == 60)); then
+            seconds=0
+            ((++minutes))
+        fi
+
+        if ((minutes == 60)); then
+            minutes=0
+            ((++hours))
+        fi
+    done
+
+    # Clear the module when recording stops.
+    printf '\n'
+}
+
+if recording_is_running; then
+    timer
+else
+    printf '\n'
+fi
