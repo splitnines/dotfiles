@@ -1,49 +1,49 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -u
 
 pid_file="${XDG_RUNTIME_DIR:-/tmp}/ffrecord.pid"
 
-recording_is_running() {
+recording_pid() {
     local pid
 
     [[ -f "$pid_file" ]] || return 1
 
     pid="$(cat "$pid_file" 2>/dev/null || true)"
+    [[ -n "$pid" ]] || return 1
 
-    [[ -n "${pid:-}" ]] || return 1
-    kill -0 "$pid" 2>/dev/null
+    kill -0 "$pid" 2>/dev/null || return 1
+
+    printf '%s\n' "$pid"
 }
 
-timer() {
-    local hours=0
-    local minutes=0
-    local seconds=0
+shown=0
 
-    while recording_is_running; do
-        printf '%02d:%02d:%02d %%{F#ff0000}●%%{F-}\n' \
-            "$hours" "$minutes" "$seconds"
+while true; do
+    if pid="$(recording_pid)"; then
+        shown=1
+
+        elapsed="$(ps -o etimes= -p "$pid" 2>/dev/null | tr -d ' ')"
+
+        if [[ -n "$elapsed" ]]; then
+            hours=$((elapsed / 3600))
+            minutes=$(((elapsed % 3600) / 60))
+            seconds=$((elapsed % 60))
+
+            printf '%02d:%02d:%02d %%{F#ff0000}●%%{F-}\n' \
+                "$hours" "$minutes" "$seconds"
+        fi
 
         sleep 1
+    else
+        rm -f "$pid_file" 2>/dev/null || true
 
-        ((++seconds))
-
-        if ((seconds == 60)); then
-            seconds=0
-            ((++minutes))
+        # Clear the module only once after recording stops.
+        if ((shown)); then
+            printf '\n'
+            shown=0
         fi
 
-        if ((minutes == 60)); then
-            minutes=0
-            ((++hours))
-        fi
-    done
-
-    # Clear the module when recording stops.
-    printf '\n'
-}
-
-if recording_is_running; then
-    timer
-else
-    printf '\n'
-fi
+        # Idle mode: do not spam blank lines into polybar.
+        sleep 2
+    fi
+done
