@@ -309,6 +309,7 @@ rule Linux_Common_Token_Leak
         description = "Common API token or credential-looking string in non-binary file"
         severity = "medium"
         nightly_tuned = "true"
+        disabled_reason = "Too noisy for nightly intrusion/persistence alerts. Run credential discovery separately/weekly where findings can be reviewed intentionally."
 
     strings:
         $aws_access_key = /AKIA[0-9A-Z]{16}/
@@ -318,9 +319,7 @@ rule Linux_Common_Token_Leak
         $generic_assign_secret = /(^|\n)\s*[A-Z0-9_]*(TOKEN|SECRET|PASSWORD|PASSWD|API_KEY|ACCESS_KEY)[A-Z0-9_]*\s*=\s*['"][^'"\n]{16,}['"]/ nocase
 
     condition:
-        any of them and
-        not uint16(0) == 0x457f and  // ELF
-        not uint16(0) == 0x5a4d      // PE/MZ
+        any of them and false
 }
 
 

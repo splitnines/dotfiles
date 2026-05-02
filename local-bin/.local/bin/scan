@@ -5,7 +5,23 @@ set -uo pipefail
 
 prog="${0##*/}"
 
-rules_dir="/home/rickey/.local/share/yara"
+scan_user="${SCAN_USER:-${SUDO_USER:-${USER:-}}}"
+scan_home="${SCAN_HOME:-}"
+if [[ -z "$scan_home" ]]; then
+    scan_home="$(getent passwd "$scan_user" 2>/dev/null | awk -F: '{print $6}')"
+fi
+
+# Root cron has USER=root, HOME=/root, and no SUDO_USER. This scanner is
+# maintained from my dotfiles, so default to that home for user-cache/log
+# pruning unless SCAN_HOME is explicitly set.
+if [[ "$scan_user" == "root" && -d /home/rickey ]]; then
+    scan_home="/home/rickey"
+fi
+[[ -n "$scan_home" ]] || scan_home="$HOME"
+
+rules_dir="$scan_home/.local/share/yara"
+
+
 cadence="nightly"
 rules_file=""
 target="/"
@@ -276,12 +292,21 @@ run_find_nightly() {
         -path /var/tmp -prune -o \
         -path /mnt -prune -o \
         -path /media -prune -o \
-        -path "$HOME/.pi/agent" -prune -o \
-        -path "$HOME/.local/state/logs" -prune -o \
-        -path "$HOME/.bun/install/cache" -prune -o \
-        -path "$HOME/.local/share/uv/python" -prune -o \
-        -path "$HOME/.thunderbird" -prune -o \
-        -path "$HOME/yay/src" -prune -o \
+        -path "$scan_home/.pi/agent" -prune -o \
+        -path "$scan_home/.pi/agent/sessions" -prune -o \
+        -path "$scan_home/.pi/agent/sessions-general" -prune -o \
+        -path "$scan_home/.local/state/logs" -prune -o \
+        -path "$scan_home/.bun/install/cache" -prune -o \
+        -path "$scan_home/.local/share/uv/python" -prune -o \
+        -path "$scan_home/.local/share/yara" -prune -o \
+        -path "$scan_home/.thunderbird" -prune -o \
+        -path "$scan_home/yay/src" -prune -o \
+        -path '/home/*/.pi/agent' -prune -o \
+        -path '/home/*/.local/state/logs' -prune -o \
+        -path '/home/*/.bun/install/cache' -prune -o \
+        -path '/home/*/.local/share/uv/python' -prune -o \
+        -path '/home/*/.local/share/yara' -prune -o \
+        -path '/home/*/yay/src' -prune -o \
         -path '*/.cache' -prune -o \
         -path '*/Cache' -prune -o \
         -path '*/.git' -prune -o \
@@ -314,6 +339,8 @@ run_find_nightly() {
         ! -name 'linux_persistence_hunt_nightly_focused.yar' \
         ! -name 'linux_persistence_hunt_weekly_balanced.yar' \
         ! -name 'linux_persistence_hunt_monthly_broad.yar' \
+        ! -name '*.yar' \
+        ! -name '*.yara' \
         -print0 2>/dev/null
 }
 
@@ -375,7 +402,7 @@ if (( list_files == 1 )); then
         ((file_count++))
     done < <("$finder")
 
-    printf '%s: [%s] %s results files listed: %d\n' \
+    printf '%s: [%s] %s, results files listed: %d\n' \
         "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" "$file_count"
     exit 0
 fi
@@ -388,7 +415,7 @@ if (( json_output == 1 )); then
     printf '{"%s results":{"date":"%s","cadence":"%s","files scanned":%d,"matches":%d,"errors":%d}}\n' \
         "$prog" "$(date '+%b %d %T.%3N %Z')" "$cadence" "$file_count" "$match_count" "$error_count"
 else
-    printf '%s: [%s] %s results files scanned: %d, matches: %d, errors: %d\n' \
+    printf '%s: [%s] %s, results files scanned: %d, matches: %d, errors: %d\n' \
         "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" "$file_count" "$match_count" "$error_count"
 fi
 
