@@ -9,30 +9,30 @@ set scroll-page-aware true
 set open-first-page true
 
 # ---------- one-dark style ----------
-set default-bg            "#0a0a0a"
+set default-bg            "#1c1c1c"
 set default-fg            "#abb2bf"
-set statusbar-bg          "#0a0a0a"
+set statusbar-bg          "#1c1c1c"
 set statusbar-fg          "#abb2bf"
-set inputbar-bg           "#0a0a0a"
+set inputbar-bg           "#1c1c1c"
 set inputbar-fg           "#abb2bf"
-set notification-bg       "#0a0a0a"
+set notification-bg       "#1c1c1c"
 set notification-fg       "#abb2bf"
 
-set completion-bg         "#0a0a0a"
+set completion-bg         "#1c1c1c"
 set completion-fg         "#abb2bf"
 set completion-highlight-bg "#61afef"
-set completion-highlight-fg "#0a0a0a"
+set completion-highlight-fg "#1c1c1c"
 
-set index-bg              "#0a0a0a"
+set index-bg              "#1c1c1c"
 set index-fg              "#abb2bf"
 set index-active-bg       "#61afef"
-set index-active-fg       "#0a0a0a"
+set index-active-fg       "#1c1c1c"
 
-set render-loading-bg     "#0a0a0a"
+set render-loading-bg     "#1c1c1c"
 set render-loading-fg     "#abb2bf"
 
 # ---------- recolor / invert-based dark mode ----------
-set recolor-lightcolor    "#0a0a0a"
+set recolor-lightcolor    "#1c1c1c"
 set recolor-darkcolor     "#abb2bf"
 set recolor               true
 set recolor-keephue       true
