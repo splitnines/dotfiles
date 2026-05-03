@@ -16,11 +16,11 @@ recording_pid() {
     printf '%s\n' "$pid"
 }
 
-shown=0
+displayed=0
 
 while true; do
     if pid="$(recording_pid)"; then
-        shown=1
+        displayed=1
 
         elapsed="$(ps -o etimes= -p "$pid" 2>/dev/null | tr -d ' ')"
 
@@ -35,15 +35,12 @@ while true; do
 
         sleep 1
     else
-        rm -f "$pid_file" 2>/dev/null || true
-
         # Clear the module only once after recording stops.
-        if ((shown)); then
+        if ((displayed)); then
             printf '\n'
-            shown=0
+            displayed=0
         fi
 
-        # Idle mode: do not spam blank lines into polybar.
         sleep 2
     fi
 done
