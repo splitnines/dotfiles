@@ -26,6 +26,7 @@ extract_geometry() {
     
     if [[ -z "${line}" ]]; then
     	printf 'failed to determine monitor geometry\n' >&2
+        notify-send -u critial "failed tp determine monitor geometry" 
     	exit 1
     fi
     
@@ -33,6 +34,7 @@ extract_geometry() {
     
     if [[ ! $geometry =~ ^([0-9]+)/[0-9]+x([0-9]+)/[0-9]+\+([0-9]+)\+([0-9]+)$ ]]; then
     	printf 'failed to parse geometry: %s\n' "$geometry" >&2
+        notify-send -u critial "failed to parse geometry" 
     	exit 1
     fi
     
@@ -85,6 +87,7 @@ stop_recording() {
         printf 'stopped recording\n'
     else
         rm -f "$pid_file"
+        notify-send -u critical "stale pid file removed"
         printf 'stale pid file removed\n'
     fi
 }
