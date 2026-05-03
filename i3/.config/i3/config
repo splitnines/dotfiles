@@ -145,7 +145,6 @@ set $ws10 "10:10"
 # Launch programs to specific work space
 assign [class="Chromium"] $ws1
 assign [class="Thunderbird"] $ws2
-assign [class="st-256color"] $ws3
 
 exec --no-startup-id thunderbird
 exec --no-startup-id st
