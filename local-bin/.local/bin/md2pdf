@@ -39,6 +39,7 @@ cat > "$tmp_header" <<'LATEX'
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{everypage}
+\usepackage{enumitem}
 
 % Better Pandoc task-list checkboxes
 \newcommand{\mdUncheckedBox}{%
@@ -62,6 +63,25 @@ cat > "$tmp_header" <<'LATEX'
   \renewcommand{\boxtimes}{\mathord{\vcenter{\hbox{\mdCheckedBox}}}}%
 }
 
+% Better Markdown list bullets
+\newcommand{\mdBulletOne}{%
+  \tikz[baseline=-0.55ex]\fill (0,0) circle (0.28em);%
+}
+
+\newcommand{\mdBulletTwo}{%
+  \tikz[baseline=-0.55ex]\draw[line width=0.45pt] (0,0) circle (0.28em);%
+}
+
+\newcommand{\mdBulletThree}{%
+  \tikz[baseline=-0.35ex]{
+    \draw[line width=0.65pt, rounded corners=0.2pt]
+      (0,0) -- (0.55em,0);
+  }%
+}
+
+\setlist[itemize,1]{label=\mdBulletOne}
+\setlist[itemize,2]{label=\mdBulletTwo}
+\setlist[itemize,3]{label=\mdBulletThree}
 
 
 \AddEverypageHook{
@@ -97,7 +117,7 @@ LATEX
     --pdf-engine=xelatex \
     -V geometry:margin=1in \
     -V mainfont="DejaVu Serif" \
-    -V sansfont="JetBrainsMono Nerd Font Mono" \
+    -V sansfont="DejaVu Sans" \
     -V monofont="JetBrainsMono Nerd Font Mono" \
     -H "$tmp_header"
 )
