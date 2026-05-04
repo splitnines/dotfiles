@@ -13,7 +13,6 @@ exec --no-startup-id ~/.local/bin/polybar-launch
 
 # Set background
 exec_always --no-startup-id sh -c 'hsetroot -solid "#151515"'
-# exec_always --no-startup-id sh -c 'sleep 0.5; hsetroot -solid "#151515"'
 
 # Run picom on only where nvidia cards are installed
 exec_always --no-startup-id ~/.config/picom/launch.sh
@@ -69,8 +68,7 @@ exec --no-startup-id clipman store
 floating_modifier $mod
 
 # Start a terminal
-bindsym $mod+Shift+Return exec alacritty
-bindsym $mod+Return exec st
+bindsym $mod+Return exec --no-startup-id st
 
 # Kill focused window
 bindsym $mod+Shift+q kill
@@ -78,7 +76,7 @@ bindsym $mod+Shift+q kill
 # Start rofi
 bindsym $mod+d exec rofi -config ~/.config/rofi/config.rasi -show drun
 bindsym $mod+Shift+d exec rofi -config ~/.config/rofi/config.rasi -show run
-bindsym $mod+w exec rofi -config ~/.config/rofi/config.rasi -show window
+# bindsym $mod+w exec rofi -config ~/.config/rofi/config.rasi -show window
 
 # Move workspace to other monitor
 bindsym $mod+x move workspace to output next
@@ -235,7 +233,3 @@ bindsym Alt+Print exec --no-startup-id flameshot gui --current
 
 # Autotiling
 exec_always --no-startup-id ~/.config/autotiling/autotiling
-
-# Polybar display
-# exec_always --no-startup-id ~/.config/polybar/launch.sh
-# exec --no-startup-id ~/.config/polybar/launch.sh
