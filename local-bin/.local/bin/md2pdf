@@ -40,6 +40,30 @@ cat > "$tmp_header" <<'LATEX'
 \usepackage{tikz}
 \usepackage{everypage}
 
+% Better Pandoc task-list checkboxes
+\newcommand{\mdUncheckedBox}{%
+  \tikz[baseline=-0.15em]{
+    \draw[line width=0.45pt, rounded corners=0.5pt]
+      (0,0) rectangle (0.9em,0.9em);
+  }%
+}
+
+\newcommand{\mdCheckedBox}{%
+  \tikz[baseline=-0.15em]{
+    \draw[line width=0.45pt, rounded corners=0.5pt]
+      (0,0) rectangle (0.9em,0.9em);
+    \draw[line width=0.75pt]
+      (0.18em,0.45em) -- (0.38em,0.22em) -- (0.72em,0.72em);
+  }%
+}
+
+\AtBeginDocument{%
+  \renewcommand{\square}{\mathord{\vcenter{\hbox{\mdUncheckedBox}}}}%
+  \renewcommand{\boxtimes}{\mathord{\vcenter{\hbox{\mdCheckedBox}}}}%
+}
+
+
+
 \AddEverypageHook{
   \begin{tikzpicture}[remember picture,overlay]
     \draw[line width=1.5pt]
@@ -67,12 +91,14 @@ LATEX
 
 (
   cd "$indir"
-  pandoc "$infile" -o "$outpath" \
+  pandoc "$infile" \
+    -o "$outpath" \
     --from=markdown+raw_tex \
     --pdf-engine=xelatex \
     -V geometry:margin=1in \
-    -V mainfont="JetBrainsMono Nerd Font" \
-    -V monofont="JetBrainsMono Nerd Font" \
+    -V mainfont="DejaVu Serif" \
+    -V sansfont="JetBrainsMono Nerd Font Mono" \
+    -V monofont="JetBrainsMono Nerd Font Mono" \
     -H "$tmp_header"
 )
 
