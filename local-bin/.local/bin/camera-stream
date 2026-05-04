@@ -38,11 +38,12 @@ win_h=$((height / 10))
 # start the camera stream
 # original size 420X180
 # removed:	-framedrop \
+# -video_size 640x360 \
 ffplay -loglevel -8 \
 	-f v4l2 \
 	-input_format yuyv422 \
 	-framerate 30 \
-	-video_size 640x360 \
+	-video_size 960x540 \
 	-fflags nobuffer \
 	-flags low_delay \
 	-fast \

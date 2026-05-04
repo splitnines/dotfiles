@@ -52,7 +52,8 @@ bindsym $mod+Shift+b exec --no-startup-id ~/.local/bin/btt
 
 # Start camera stream
 bindsym $mod+Shift+F4 exec --no-startup-id ~/.local/bin/camera-stream
-for_window [class="ffplay"] floating enable, resize set 230 130
+# for_window [class="ffplay"] floating enable, resize set 230 130
+for_window [class="ffplay"] floating enable, resize set  306 174
 
 # Start deskop recording
 bindsym $mod+Shift+F5 exec --no-startup-id ~/.local/bin/ffrecord

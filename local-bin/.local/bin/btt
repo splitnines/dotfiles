@@ -33,7 +33,7 @@ main() {
     }
 
     bt_status=$(bt_cmd devices Connected)
-    if [ -n "$bt_status" ]; then
+    if [[ -n "$bt_status" ]]; then
         bt_cmd disconnect || {
             error "%BLUETOOTH-3-ERROR: failed to disconnect from bluetooth devices."
         }
