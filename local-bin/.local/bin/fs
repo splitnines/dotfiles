@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# A fzf wrapper script that open the selected file in nvim
+
+require_cmd() {
+    local cmd
+    for cmd in "$@"; do
+        command -v "$cmd" >/dev/null 2>&1 || {
+            error "required command not found: $cmd"
+        }
+    done
+}
+
+fs() {
+  local path="$1"
+  local file
+  local prompt="Search in $path → "
+
+  file=$(find "$path" \
+    \( \
+      -path "$path/proc" -o \
+      -path "$path/sys" -o \
+      -path "$path/dev" -o \
+      -path "$path/run" -o \
+      -path "$path/tmp" -o \
+      -path "$path/var/lib" -o \
+      -path "$path/var/run" -o \
+      -path "$path/snap" -o \
+      -name .git -o \
+      -name .cache -o \
+      -name node_modules \
+    \) -prune -o \
+    -type f -readable -print 2>/dev/null |
+    fzf --prompt="$prompt"
+  )
+  [[ -n "$file" ]] && nvim "$file"
+}
+
+require_cmd readlink find fzf nvim
+
+path=${1-"$HOME"}
+if [[ -d "$path" ]]; then
+  fs "$(readlink -f "$path")"
+else
+  printf 'error: path %s not found\n' "$path"
+fi
+

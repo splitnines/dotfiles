@@ -347,58 +347,12 @@ fh() {
   eval "$cmd"
 }
 
-fv() {
-  local file
-  file=$(find . -type f | fzf \
-    --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-    --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0)
-  [[ -n "$file" ]] && nvim "$file"
-}
-
 # Search cd history
 fcd() {
   local dir
   dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
   [[ -z "$dir" ]] && return
   [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
-}
-
-# Search current directory (fuzzy filenames only)
-fsc() {
-  local file
-  file=$(fzf --prompt="Search files → " --exit-0)
-  [[ -n "$file" ]] && nvim "$file"
-}
-
-# Search entire home directory (fuzzy)
-fsh() {
-  local file
-  file=$(fd --type f --hidden \
-    --exclude .git \
-    --exclude .cache \
-    --exclude .local \
-    --exclude node_modules \
-    --exclude target \
-    . "$HOME" 2>/dev/null | \
-    fzf --prompt="Search in home → " --exit-0)
-  [[ -n "$file" ]] && nvim "$file"
-}
-
-# Search the whole file system (fuzzy, skips unsafe dirs)
-fsa() {
-  local file
-  file=$(find / \
-    -path /proc -prune -o \
-    -path /sys -prune -o \
-    -path /dev -prune -o \
-    -path /run -prune -o \
-    -path /tmp -prune -o \
-    -path /var/lib -prune -o \
-    -path /var/run -prune -o \
-    -path /snap -prune -o \
-    -type f -readable -print 2>/dev/null | \
-    fzf --prompt='Search all files → ')
-  [[ -n "$file" ]] && nvim "$file"
 }
 
 # Search and kill processes
