@@ -318,44 +318,6 @@ fcd() {
   [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
 }
 
-# Search current directory (fuzzy filenames only)
-fsc() {
-  local file
-  file=$(fzf --prompt="Search files → " --exit-0)
-  [[ -n "$file" ]] && nvim "$file"
-}
-
-# Search entire home directory (fuzzy)
-fsh() {
-  local file
-  file=$(fdfind --type f --hidden \
-    --exclude .git \
-    --exclude .cache \
-    --exclude .local \
-    --exclude node_modules \
-    --exclude target \
-    . "$HOME" 2>/dev/null | \
-    fzf --prompt="Search in home → " --exit-0)
-  [[ -n "$file" ]] && nvim "$file"
-}
-
-# Search the whole file system (fuzzy, skips unsafe dirs)
-fsa() {
-  local file
-  file=$(find / \
-    -path /proc -prune -o \
-    -path /sys -prune -o \
-    -path /dev -prune -o \
-    -path /run -prune -o \
-    -path /tmp -prune -o \
-    -path /var/lib -prune -o \
-    -path /var/run -prune -o \
-    -path /snap -prune -o \
-    -type f -readable -print 2>/dev/null | \
-    fzf --prompt='Search all files → ')
-  [[ -n "$file" ]] && nvim "$file"
-}
-
 # Search and kill processes
 fk() {
   ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
