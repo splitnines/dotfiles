@@ -279,6 +279,7 @@ alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
 alias ta="tmux attach -t"
 alias tl="tmux ls"
 alias t="telnet"
+alias ts="tailscale"
 alias z='zathura'
 
 [ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
