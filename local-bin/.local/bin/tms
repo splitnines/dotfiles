@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 
-tmux new-session -d -s Main -n dotfiles
-tmux send-keys -t Main:dotfiles 'cd ~/dotfiles/' C-m
-tmux new-session -d -s Pi -n Pi
-tmux send-keys -t Pi:Pi 'pi' C-m
-tmux attach-session -t Main
+SESSION_MAIN="Main"
+SESSION_PI="Pi"
+
+tmux has-session -t "$SESSION_PI" 2>/dev/null
+if [ "$?" -eq 1 ]; then
+    tmux new-session -d -s "$SESSION_PI" -n Pi 2>/dev/null
+    tmux send-keys -t "$SESSION_PI":Pi 'pi' C-m 2>/dev/null
+fi
+
+tmux has-session -t "$SESSION_MAIN" 2>/dev/null
+if [ "$?" -eq 1 ]; then
+    tmux new-session -d -s Main -n dotfiles 2>/dev/null
+    tmux send-keys -t "$SESSION_MAIN":dotfiles 'cd ~/dotfiles/' C-m 2>/dev/null
+    tmux attach-session -t "$SESSION_MAIN" 2>/dev/null
+else
+    tmux attach-session -t "$SESSION_MAIN" 2>/dev/null
+fi
