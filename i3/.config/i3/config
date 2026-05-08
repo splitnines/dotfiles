@@ -212,6 +212,7 @@ bindsym $mod+r mode "resize"
 
 # OneDark Colors
 set $bg        #282c34
+set $bg-alt    #1c1c1c
 set $fg        #abb2bf
 set $blue      #61afef
 set $gray      #5c6370
@@ -223,8 +224,8 @@ default_border pixel 2
 default_floating_border pixel 2
 
 client.focused          $blue     $blue     $black $blue     $blue
-client.focused_inactive $darkgray $darkgray $fg    $darkgray $darkgray
-client.unfocused        $bg       $bg       $gray  $bg       $bg
+client.focused_inactive $bg-alt   $darkgray $fg    $darkgray $bg-alt
+client.unfocused        $bg-alt   $bg       $gray  $bg       $bg-alt
 client.urgent           $red      $red      $black $red      $red
 client.placeholder      $bg       $bg       $fg    $bg       $bg
 
