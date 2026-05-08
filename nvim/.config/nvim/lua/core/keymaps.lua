@@ -2,6 +2,10 @@
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
+-- F1 is Esc because I always typo it
+vim.keymap.set("n", "<F1>", "<Nop>", { silent = true })
+vim.keymap.set({ "i", "v", "c" }, "<F1>", "<Esc>", { silent = true })
+
 vim.keymap.set({ "n", "i", "v", "c" }, "<PageUp>", "<Nop>")
 vim.keymap.set({ "n", "i", "v", "c" }, "<PageDown>", "<Nop>")
 
