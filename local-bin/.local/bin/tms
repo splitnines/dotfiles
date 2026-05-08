@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+tmux new-session -d -s Main -n dotfiles
+tmux new-session -d -s Pi -n Pi
+tmux send-keys -t Pi:Pi 'pi' C-m
+tmux attach-session -t Main
