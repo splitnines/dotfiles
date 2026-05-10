@@ -84,7 +84,7 @@ bindsym $mod+Shift+q kill
 bindsym $mod+d exec rofi -config ~/.config/rofi/config.rasi -show drun
 bindsym $mod+Shift+d exec rofi -config ~/.config/rofi/config.rasi -show run
 bindsym $mod+period exec rofi -modi emoji -show emoji
-bindsym $mod+Shift+p exec --no-startup-id rofi -show power-menu -modi power-menu:rofi-power-menu
+bindsym $mod+p exec --no-startup-id rofi -show power-menu -modi power-menu:rofi-power-menu
 # bindsym $mod+w exec rofi -config ~/.config/rofi/config.rasi -show window
 
 # Move workspace to other monitor
