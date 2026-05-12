@@ -508,3 +508,16 @@ add-zsh-hook chpwd __zsh_auto_venv
 
 # Run once at shell startup too
 __zsh_auto_venv
+
+# Fixed F key bindings from sending junk characters
+zmodload zsh/terminfo
+
+fkey-noop() { }
+zle -N fkey-noop
+
+for key in kf1 kf2 kf3 kf4 kf5 kf6 kf7 kf8 kf9 kf10 kf11 kf12; do
+  [[ -n ${terminfo[$key]} ]] || continue
+  bindkey -M viins "${terminfo[$key]}" fkey-noop
+  bindkey -M vicmd "${terminfo[$key]}" fkey-noop
+  bindkey -M emacs "${terminfo[$key]}" fkey-noop
+done
