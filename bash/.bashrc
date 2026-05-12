@@ -141,6 +141,24 @@ __auto_venv() {
 # ===========================
 # Prompt
 # ===========================
+# identify the os for building the prompt
+__os_icon() {
+  local os=""
+
+  if [[ -r /etc/os-release ]]; then
+    . /etc/os-release
+    os="$ID"
+  fi
+
+  if [[ "$os" == "arch" ]]; then
+    printf ""
+  elif [[ "$os" == "ubuntu" ]]; then
+    printf ""
+  else
+    printf "✪"
+  fi
+}
+
 __git_branch_name() {
     git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
     git symbolic-ref --quiet --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || return 0
@@ -162,7 +180,8 @@ __set_prompt() {
     branch_color='\[\033[0;31m\]'
     venv_color='\[\033[0;32m\]'
     dirty_color='\[\033[38;5;208m\]'
-    prompt_symbol='@'
+    # prompt_symbol='@'
+    prompt_symbol="$(__os_icon)"
     dollar='$'
 
     if [ "$EUID" -eq 0 ]; then
@@ -182,7 +201,8 @@ __set_prompt() {
     if [ -n "$branch" ]; then
         git_segment=" ${branch_color}${branch}"
         if __git_is_dirty; then
-            git_segment+=" ${dirty_color}⚡"
+            # git_segment+=" ${dirty_color}⚡"
+            git_segment+=" ${dirty_color}"$(__os_icon)" "
         fi
         git_segment+="\[\033[0m\]"
     fi
