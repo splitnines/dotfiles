@@ -5,12 +5,13 @@ case $- in
     *) return ;;
 esac
 
-HISTCONTROL=ignoreboth
+HISTFILE="$HOME/.local/state/bash/bash_history"
 HISTSIZE=50000
 HISTFILESIZE=50000
-HISTFILE="$HOME/.cache/bash/bash_history"
-
+HISTCONTROL=ignoreboth:erasedups
 shopt -s histappend
+export PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+
 shopt -s checkwinsize
 
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -19,10 +20,17 @@ shopt -s checkwinsize
 # Path
 # ===========================
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/local/go/bin"
-[ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
-[ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH"
-[ -d "$HOME/.cargo/bin" ] && PATH="$HOME/.cargo/bin:$PATH"
-[ -d "/usr/local/go/bin" ] && PATH="/usr/local/go/bin:$PATH"
+[[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin":$PATH
+[[ -d "$HOME/bin" ]] && PATH="$HOME/bin":$PATH
+[[ -d "$HOME/.cargo/bin" ]] && PATH="$HOME/.cargo/bin":$PATH
+[[ -d "/usr/local/go/bin" ]] && PATH="/usr/local/go/bin":$PATH
+[[ -d "$HOME/.opencode/bin" ]] && PATH="$HOME/.opencode/bin":$PATH
+[[ -d "$HOME/.local/share/npm/bin" ]] && PATH="$HOME/.local/share/npm/bin":$PATH
+[[ -d "$HOME/.local/share/pi-node/current/bin" ]] && PATH="$HOME/.local/share/pi-node/current/bin":$PATH
+# [ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
+# [ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH"
+# [ -d "$HOME/.cargo/bin" ] && PATH="$HOME/.cargo/bin:$PATH"
+# [ -d "/usr/local/go/bin" ] && PATH="/usr/local/go/bin:$PATH"
 
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
     IS_WSL=true
@@ -66,8 +74,6 @@ if [ -x /usr/bin/dircolors ]; then
         eval "$(dircolors -b)"
     fi
 fi
-
-[ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
 
 # ===========================
 # OneDark Color Scheme
@@ -404,46 +410,55 @@ sk() {
   fi
 }
 
-# =====================
+# ===========================
 # Aliases
-# =====================
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
+# ===========================
 alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
-alias bt=bluetoothctl
+alias bt='bluetoothctl'
 alias btc='bluetoothctl connect'
+alias btC='bluetoothctl devices Connected'
 alias btd='bluetoothctl disconnect'
 alias btl='bluetoothctl devices'
-alias cal='ncal -C'
+alias ....="cd ../../.."
+alias ...="cd ../.."
+alias ..="cd .."
 alias egrep='egrep --color=auto'
-alias feh='feh --image-bg black'
-alias fgrep='fgrep --color=auto'
-alias g=git
+alias feh='feh --image-bg black --auto-zoom --scale-down'
 alias ga='git add .'
-alias gb='git branch'
+alias gb='git --no-pager branch'
 alias gc='git commit'
 alias gcm='git commit -m'
 alias gco='git checkout'
 alias gd='git diff | nvim -'
+alias gf='git fetch'
+alias g='git'
 alias gm='git merge'
 alias grep='grep --color=auto'
 alias gs='git status'
-alias h='history'
-alias ls='ls --color=auto'
-alias l=ls
+alias h='fc -l 1'
+alias l='ls --color=auto'
 alias la='ls -A'
 alias le='less -X'
 alias ll='ls -Alh'
-alias md='mkdir -p'
-alias nv=/usr/bin/nvim
+alias ls='ls --color=auto'
+alias md="mkdir -p"
+alias micc='arecord -f cd -vv -D default /dev/null'
+alias montage='feh --image-bg black --montage'
+alias nv='nvim'
 alias path='echo "$PATH" | tr ":" "\n"'
+alias p="ping"
 alias pull='git pull'
 alias push='git push'
-alias python=python3
-alias q=exit
-alias rcd='/usr/bin/script -m advanced'
-alias rs='rsync -avzr'
-alias ta='/usr/bin/tmux attach -t'
-alias tl='/usr/bin/tmux ls'
-alias which-command=whence
+alias py='python3'
+alias q='exit'
+alias rcd="script -m advanced"
+alias rs="rsync -avzr"
+alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
+alias ta="tmux attach -t"
+alias tl="tmux ls"
+alias t="telnet"
+alias ts="tailscale"
+alias z='zathura'
+
+[ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
+
