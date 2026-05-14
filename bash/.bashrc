@@ -247,6 +247,8 @@ bind '"\C-n":history-search-forward'
 # Bash completion
 # ===========================
 if ! shopt -oq posix; then
+    shopt -s progcomp
+
     if [ -f /usr/share/bash-completion/bash_completion ]; then
         . /usr/share/bash-completion/bash_completion
     elif [ -f /etc/bash_completion ]; then
@@ -257,8 +259,17 @@ fi
 if command -v git >/dev/null 2>&1; then
     if [ -f /usr/share/bash-completion/completions/git ]; then
         . /usr/share/bash-completion/completions/git
+    elif [ -f /usr/share/git/completion/git-completion.bash ]; then
+        . /usr/share/git/completion/git-completion.bash
     elif [ -f /etc/bash_completion.d/git ]; then
         . /etc/bash_completion.d/git
+    fi
+
+    # Apply git completion to the `g` alias too.
+    if declare -F __git_wrap__git_main >/dev/null 2>&1; then
+        complete -o bashdefault -o default -o nospace -F __git_wrap__git_main git g
+    elif declare -F _git >/dev/null 2>&1; then
+        complete -o bashdefault -o default -o nospace -F _git git g
     fi
 fi
 
