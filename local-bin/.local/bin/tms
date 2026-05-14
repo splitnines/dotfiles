@@ -6,7 +6,7 @@ SESSION_PI="Pi"
 tmux has-session -t "$SESSION_MAIN" 2>/dev/null
 if [ "$?" -eq 1 ]; then
     systemd-run --user --scope --unit=tmux-keep \
-        /usr/bin/tmux new-session -d -s Main -n dotfiles 2>/dev/null
+        "$(command -v tmux)" new-session -d -s Main -n dotfiles 2>/dev/null
     tmux send-keys -t "$SESSION_MAIN":dotfiles 'cd ~/dotfiles/' C-m 2>/dev/null
 fi
 
