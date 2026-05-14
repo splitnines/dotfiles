@@ -236,61 +236,15 @@ setopt EXTENDED_GLOB
 # ===========================
 # Aliases
 # ===========================
-alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
-alias bt='bluetoothctl'
-alias btc='bluetoothctl connect'
-alias btC='bluetoothctl devices Connected'
-alias btd='bluetoothctl disconnect'
-alias btl='bluetoothctl devices'
-alias ....="cd ../../.."
-alias ...="cd ../.."
-alias ..="cd .."
-alias egrep='egrep --color=auto'
-alias feh='feh --image-bg black --auto-zoom --scale-down'
-alias ga='git add .'
-alias gb='git --no-pager branch'
-alias gc='git commit'
-alias gcm='git commit -m'
-alias gco='git checkout'
-alias gd='git diff | nvim -'
-alias gf='git fetch'
-alias g='git'
-alias gm='git merge'
-alias grep='grep --color=auto'
-alias gs='git status'
-alias h='fc -l 1'
-alias l='ls --color=auto'
-alias la='ls -A'
-alias le='less -X'
-alias ll='ls -Alh'
-alias ls='ls --color=auto'
-alias md="mkdir -p"
-alias micc='arecord -f cd -vv -D default /dev/null'
-alias montage='feh --image-bg black --montage'
-alias nv='nvim'
-alias path='echo "$PATH" | tr ":" "\n"'
-alias p="ping"
-alias pull='git pull'
-alias push='git push'
-alias py='python3'
-alias q='exit'
-alias rcd="script -m advanced"
-alias rs="rsync -avzr"
-alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
-alias ta="tmux attach -t"
-alias tl="tmux ls"
-alias t="telnet"
-alias ts="tailscale"
-alias z='zathura'
-
+[ -f "$HOME/.config/shell/aliases" ] && source "$HOME/.config/shell/aliases"
 [ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
+
+# Load any local env vars
+[ -f "$HOME/.config/shell/myenv" ] && source "$HOME/.config/shell/myenv"
 
 case $TERM in
   xterm*|tmux*|screen*) print -Pn "\e]0;%n@%m\a" ;;
 esac
-
-# Load any local env vars
-[ -f "$HOME/.config/shell/myenv" ] && source "$HOME/.config/shell/myenv"
 
 # ===========================
 # Vi mode and cursor changes
