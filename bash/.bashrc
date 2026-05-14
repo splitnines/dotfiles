@@ -20,17 +20,13 @@ shopt -s checkwinsize
 # Path
 # ===========================
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/local/go/bin"
-[[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin":$PATH
-[[ -d "$HOME/bin" ]] && PATH="$HOME/bin":$PATH
-[[ -d "$HOME/.cargo/bin" ]] && PATH="$HOME/.cargo/bin":$PATH
-[[ -d "/usr/local/go/bin" ]] && PATH="/usr/local/go/bin":$PATH
-[[ -d "$HOME/.opencode/bin" ]] && PATH="$HOME/.opencode/bin":$PATH
-[[ -d "$HOME/.local/share/npm/bin" ]] && PATH="$HOME/.local/share/npm/bin":$PATH
-[[ -d "$HOME/.local/share/pi-node/current/bin" ]] && PATH="$HOME/.local/share/pi-node/current/bin":$PATH
-# [ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
-# [ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH"
-# [ -d "$HOME/.cargo/bin" ] && PATH="$HOME/.cargo/bin:$PATH"
-# [ -d "/usr/local/go/bin" ] && PATH="/usr/local/go/bin:$PATH"
+[ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin":$PATH
+[ -d "$HOME/bin" ] && PATH="$HOME/bin":$PATH
+[ -d "$HOME/.cargo/bin" ] && PATH="$HOME/.cargo/bin":$PATH
+[ -d "/usr/local/go/bin" ] && PATH="/usr/local/go/bin":$PATH
+[ -d "$HOME/.opencode/bin" ] && PATH="$HOME/.opencode/bin":$PATH
+[ -d "$HOME/.local/share/npm/bin" ] && PATH="$HOME/.local/share/npm/bin":$PATH
+[ -d "$HOME/.local/share/pi-node/current/bin" ] && PATH="$HOME/.local/share/pi-node/current/bin":$PATH
 
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
     IS_WSL=true
