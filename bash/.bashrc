@@ -6,6 +6,7 @@ case $- in
 esac
 
 HISTFILE="$HOME/.local/state/bash/bash_history"
+mkdir -p "${HISTFILE%/*}"
 HISTSIZE=50000
 HISTFILESIZE=50000
 HISTCONTROL=ignoreboth:erasedups
@@ -76,10 +77,9 @@ fi
 # ===========================
 if [ -f "$HOME/.config/shell/onedark-colors.sh" ]; then
     . "$HOME/.config/shell/onedark-colors.sh"
+else
+    printf 'Warning: ~/.config/shell/onedark-colors.sh not found\n' >&2
 fi
-# else
-#     printf 'Warning: ~/.config/shell/onedark-colors.sh not found\n' >&2
-# fi
 
 # ===========================
 # Python venv auto-activation
@@ -157,7 +157,7 @@ __os_icon() {
   elif [[ "$os" == "ubuntu" ]]; then
     printf ""
   else
-    printf "✪"
+    printf "@"
   fi
 }
 
@@ -182,7 +182,6 @@ __set_prompt() {
     branch_color='\[\033[0;31m\]'
     venv_color='\[\033[0;32m\]'
     dirty_color='\[\033[38;5;208m\]'
-    # prompt_symbol='@'
     prompt_symbol="$(__os_icon)"
     dollar='$'
 
@@ -203,8 +202,11 @@ __set_prompt() {
     if [ -n "$branch" ]; then
         git_segment=" ${branch_color}${branch}"
         if __git_is_dirty; then
-            # git_segment+=" ${dirty_color}⚡"
-            git_segment+=" ${dirty_color}"$(__os_icon)" "
+            if [ "$prompt_symbol" == "@" ]; then
+                git_segment+=" ${dirty_color} !! "
+            else
+                git_segment+=" ${dirty_color}"$prompt_symbol" "
+            fi
         fi
         git_segment+="\[\033[0m\]"
     fi
@@ -222,6 +224,11 @@ __set_prompt() {
 # History behavior / completion
 # ===========================
 shopt -s cmdhist
+stty stop undef 2>/dev/null || true
+bind 'set editing-mode vi'
+bind 'set show-mode-in-prompt on'
+bind 'set vi-ins-mode-string \1\e[6 q\2'
+bind 'set vi-cmd-mode-string \1\e[2 q\2'
 bind 'set completion-ignore-case on'
 bind 'set show-all-if-ambiguous on'
 bind 'set show-all-if-unmodified on'
@@ -247,15 +254,6 @@ if ! shopt -oq posix; then
     fi
 fi
 
-# fzf integration
-if [ -f "$HOME/.fzf/shell/key-bindings.bash" ]; then
-    . "$HOME/.fzf/shell/key-bindings.bash"
-fi
-
-if [ -f "$HOME/.fzf/shell/completion.bash" ]; then
-    . "$HOME/.fzf/shell/completion.bash"
-fi
-
 if command -v git >/dev/null 2>&1; then
     if [ -f /usr/share/bash-completion/completions/git ]; then
         . /usr/share/bash-completion/completions/git
@@ -274,7 +272,32 @@ export MANROFFOPT="-c"
 export LESS_TERMCAP_me=$'\e[0m'
 export LESS_TERMCAP_se=$'\e[0m'
 export LESS_TERMCAP_ue=$'\e[0m'
-export LESS_TERMCAP_md=$'\e[38;2;97;175;239m'
+export LESS_TERMCAP_md=$'\e[38;2;97;175;239m\e[1m'
+export LESS_TERMCAP_mr=$'\e[38;2;198;120;221m'
+export LESS_TERMCAP_us=$'\e[38;2;152;195;121m'
+export LESS_TERMCAP_so=$'\e[48;2;40;44;52m\e[38;2;229;192;123m'
+
+# The one, true editor
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+export BAT_THEME="OneHalfDark"
+export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
+
+# Better globbing
+shopt -s dotglob globstar extglob
+
+# Push cd history to stack
+cd() {
+    local oldpwd="$PWD"
+
+    builtin cd "$@" || return
+
+    # Keep the previous directory in the stack so popd/fcd work.
+    if [ "$oldpwd" != "$PWD" ]; then
+        pushd -n "$oldpwd" >/dev/null || true
+    fi
+}
 
 PROMPT_COMMAND="__auto_venv;__set_prompt${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 
@@ -314,8 +337,6 @@ export FZF_DEFAULT_OPTS="
   --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
   --color=border:#3e4451,label:#61afef
 "
-#  --color=bg:#141414,bg+:#2b3038,fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
-
 
 # Search command history
 fh() {
@@ -346,9 +367,50 @@ fk() {
 }
 
 # ===========================
+# Python environment helpers
+# ===========================
+pyon() {
+  local venv_dir
+  if [[ -n "$1" ]]; then
+    venv_dir="$1"
+  elif [[ -d .venv ]]; then
+    venv_dir=".venv"
+  elif [[ -d venv ]]; then
+    venv_dir="venv"
+  else
+    echo "${E_RED:-}No virtual environment found.${E_RESET:-}"
+    return 1
+  fi
+
+  if [[ ! -f "$venv_dir/bin/activate" ]]; then
+    echo "${E_RED:-}No activate script found in $venv_dir/bin.${E_RESET:-}"
+    return 1
+  fi
+
+  echo "${E_GREEN:-}Activating Python environment: ${E_BLUE:-}${venv_dir}${E_RESET:-}"
+  source "$venv_dir/bin/activate"
+}
+
+pyoff() {
+  if [[ -z "$VIRTUAL_ENV" ]]; then
+    echo "${E_RED:-}No virtual environment active.${E_RESET:-}"
+    return 1
+  fi
+  if type deactivate &>/dev/null; then
+    deactivate
+    echo "${E_ORANGE:-}Python environment deactivated.${E_RESET:-}"
+  else
+    PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$VIRTUAL_ENV/bin" | paste -sd:)
+    export PATH
+    unset VIRTUAL_ENV
+    echo "${E_ORANGE:-}Python environment deactivated (manual cleanup).${E_RESET:-}"
+  fi
+}
+
+# ===========================
 # Weather
 # ===========================
-typeset -ga WEATHER_CITIES
+WEATHER_CITIES=()
 WEATHER_CITIES_FILE="$HOME/.config/zsh/weather_cities.zsh"
 [[ -f $WEATHER_CITIES_FILE ]] && source "$WEATHER_CITIES_FILE"
 
@@ -369,32 +431,31 @@ weather() {
 }
 
 _weather() {
-  local -a states countries
+  local cur cword
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  cword=$COMP_CWORD
 
-  states=(
-    al ak az ar ca co ct de fl ga hi id il in ia ks ky
-    la me md ma mi mn ms mo mt ne nv nh nj nm ny nc
-    nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy
-  )
+  local states="al ak az ar ca co ct de fl ga hi id il in ia ks ky la me md ma mi mn ms mo mt ne nv nh nj nm ny nc nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy"
+  local countries="usa"
 
-  countries=(usa)
-
-  _arguments -C \
-    '1:city:->city' \
-    '2:state:->state' \
-    '3:country:->country'
-
-  case $state in
-    city)
-      compadd -Q -a WEATHER_CITIES
-      ;;
-    state)
-      compadd -a states
-      ;;
-    country)
-      compadd -a countries
-      ;;
+  case "$cword" in
+    1) COMPREPLY=( $(compgen -W "${WEATHER_CITIES[*]}" -- "$cur") ) ;;
+    2) COMPREPLY=( $(compgen -W "$states" -- "$cur") ) ;;
+    3) COMPREPLY=( $(compgen -W "$countries" -- "$cur") ) ;;
   esac
+}
+complete -F _weather weather
+
+# copy command output to clipboard
+y() {
+  xclip -selection clipboard
+}
+
+# Run fastfetch or neofetch
+ff() {
+  command -v fastfetch >/dev/null 2>&1 && fastfetch
+  command -v neofetch >/dev/null 2>&1 && neofetch
 }
 
 # Screenkey
@@ -458,3 +519,9 @@ alias z='zathura'
 
 [ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
 
+case $TERM in
+  xterm*|tmux*|screen*) printf '\e]0;%s@%s\a' "$USER" "${HOSTNAME%%.*}" ;;
+esac
+
+# Load any local env vars
+[ -f "$HOME/.config/shell/myenv" ] && source "$HOME/.config/shell/myenv"
