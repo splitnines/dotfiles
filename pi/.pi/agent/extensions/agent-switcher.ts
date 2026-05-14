@@ -13,8 +13,8 @@ const PROFILE_SYSTEM_FILES: Partial<Record<AgentName, string>> = {
 	general: join(AGENT_DIR, "general", "SYSTEM.md"),
 	writing: join(AGENT_DIR, "writing", "SYSTEM.md"),
 };
-const READ_ONLY_TOOLS = ["read", "grep", "find", "ls", "web_search", "websearch"];
-const DEFAULT_TOOL_FALLBACK = ["read", "bash", "edit", "write", "web_search", "websearch"];
+const READ_ONLY_TOOLS = ["read", "grep", "find", "ls", "web_search", "websearch", "view_video"];
+const DEFAULT_TOOL_FALLBACK = ["read", "bash", "edit", "write", "web_search", "websearch", "view_video"];
 
 function readActiveAgent(): AgentName {
 	try {
