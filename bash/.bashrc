@@ -162,8 +162,10 @@ __git_branch_name() {
 __git_is_dirty() {
     git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 1
     git update-index -q --refresh >/dev/null 2>&1
+
     ! git diff --quiet --ignore-submodules --cached 2>/dev/null || \
-    ! git diff --quiet --ignore-submodules 2>/dev/null
+    ! git diff --quiet --ignore-submodules 2>/dev/null || \
+    [ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]
 }
 
 __set_prompt() {
