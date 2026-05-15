@@ -12,6 +12,7 @@ HISTFILESIZE=50000
 HISTCONTROL=ignoreboth:erasedups
 shopt -s histappend
 export PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+export XAUTHORITY="$HOME/.Xauthority"
 
 shopt -s checkwinsize
 
@@ -20,30 +21,31 @@ shopt -s checkwinsize
 # ===========================
 # Path
 # ===========================
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/local/go/bin"
-[ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin":$PATH
-[ -d "$HOME/bin" ] && PATH="$HOME/bin":$PATH
-[ -d "$HOME/.cargo/bin" ] && PATH="$HOME/.cargo/bin":$PATH
-[ -d "/usr/local/go/bin" ] && PATH="/usr/local/go/bin":$PATH
-[ -d "$HOME/.opencode/bin" ] && PATH="$HOME/.opencode/bin":$PATH
-[ -d "$HOME/.local/share/npm/bin" ] && PATH="$HOME/.local/share/npm/bin":$PATH
-[ -d "$HOME/.local/share/pi-node/current/bin" ] && PATH="$HOME/.local/share/pi-node/current/bin":$PATH
+PATH="/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
+[ -d "$HOME/.local/bin" ] && \
+    PATH="$PATH:$HOME/.local/bin"
+[ -d "$HOME/bin" ] && PATH=$PATH:"$HOME/bin"
+# Ubuntu
+[ -d "/snap/bin" ] && \
+    PATH="$PATH:/snap/bin"
+[ -d "$HOME/.cargo/bin" ] && \
+    PATH="$PATH:$HOME/.cargo/bin"
+[ -d "/usr/local/go/bin" ] && \
+    PATH="$PATH:/usr/local/go/bin"
+[ -d "$HOME/.opencode/bin" ] && \
+    PATH="$PATH:$HOME/.opencode/bin"
+# Pi on Arch
+[ -d "$HOME/.local/share/npm/bin" ] && \
+    PATH="$PATH:$HOME/.local/share/npm/bin"
+# Pi on Ubuntu
+[ -d "$HOME/.local/share/pi-node/current/bin" ] && \
+    PATH="$PATH:$HOME/.local/share/pi-node/current/bin"
 
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
-    IS_WSL=true
-else
-    IS_WSL=false
-fi
-
-if $IS_WSL; then
     for p in /usr/lib/wsl/lib /mnt/c/WINDOWS/System32 /mnt/c/WINDOWS; do
         [ -d "$p" ] && PATH="$PATH:$p"
     done
 fi
-
-export XAUTHORITY="$HOME/.Xauthority"
-
-export PATH
 
 # ===========================
 # Prioritize local fzf install
@@ -51,6 +53,8 @@ export PATH
 if [ -d "$HOME/.fzf/bin" ]; then
     PATH="$HOME/.fzf/bin:$PATH"
 fi
+
+export PATH
 
 # ===========================
 # ls, directory colors
@@ -471,14 +475,60 @@ sk() {
   if pgrep -x screenkey > /dev/null; then
     pkill -x screenkey
   else
-    screenkey -g '1920x300+1600+0' -s large >/dev/null 2>&1 &
+    screenkey -g '1920x300+1900+20' -s large >/dev/null 2>&1 &
   fi
 }
 
 # ===========================
 # Aliases
 # ===========================
-[ -f "$HOME/.config/shell/aliases" ] && source "$HOME/.config/shell/aliases"
+alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
+alias bt='bluetoothctl'
+alias btc='bluetoothctl connect'
+alias btC='bluetoothctl devices Connected'
+alias btd='bluetoothctl disconnect'
+alias btl='bluetoothctl devices'
+alias ....="cd ../../.."
+alias ...="cd ../.."
+alias ..="cd .."
+alias egrep='egrep --color=auto'
+alias feh='feh --image-bg black --auto-zoom --scale-down'
+alias ga='git add .'
+alias gb='git --no-pager branch'
+alias gc='git commit'
+alias gcm='git commit -m'
+alias gco='git checkout'
+alias gd='git diff | nvim -'
+alias gf='git fetch'
+alias g='git'
+alias gm='git merge'
+alias grep='grep --color=auto'
+alias gs='git status'
+alias h='fc -l 1'
+alias l='ls --color=auto'
+alias la='ls -A'
+alias le='less -X'
+alias ll='ls -Alh'
+alias ls='ls --color=auto'
+alias md="mkdir -p"
+alias micc='arecord -f cd -vv -D default /dev/null'
+alias montage='feh --image-bg black --montage'
+alias nv='nvim'
+alias path='echo "$PATH" | tr ":" "\n"'
+alias p="ping"
+alias pull='git pull'
+alias push='git push'
+alias py='python3'
+alias q='exit'
+alias rcd="script -m advanced"
+alias rs="rsync -avzr"
+alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
+alias ta="tmux attach -t"
+alias tl="tmux ls"
+alias t="telnet"
+alias ts="tailscale"
+alias z='zathura'
+
 [ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
 
 # Load any local env vars
