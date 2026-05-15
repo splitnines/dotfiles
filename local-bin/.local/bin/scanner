@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+dep_check() {
+    local cmd
+    for cmd in "$@"; do
+        command -v "$cmd" >/dev/null 2>&1 || {
+            echo "required command not found: $cmd"
+            exit 1
+        }
+    done
+}
+
+device_check() {
+    local DEVICE="$@[1]"
+    scanimage -L | grep -F "$DEVICE" >/dev/null || {
+        echo "ERROR: scanner not found: $DEVICE"
+        echo "Available scanners:"
+        scanimage -L
+        exit 1
+    }
+}
+
+dep_check scanimage magick
+
+DEVICE="airscan:e0:HP ENVY 4500 series [5E07DA]"
+TS="$(date "+%Y-%m-%d_%H_%M_%S")"
+SCANTYPE=""
+FILENAME=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -s)
+            if [[ $# -lt 2 || "${2:0:1}" == "-" ]]; then
+               echo "ERROR: -s requires a scanner device string"
+               exit 1
+           fi
+           DEVICE="$2"
+           shift 2
+           ;;
+        -i)
+            if [[ -n "$SCANTYPE" ]]; then
+                echo "ERROR: only one scan type may be selected: -i or -d"
+                exit 1
+            fi
+            SCANTYPE="image"
+            shift
+            ;;
+        -d)
+            if [[ -n "$SCANTYPE" ]]; then
+                echo "ERROR: only one scan type may be selected: -i or -d"
+                exit 1
+            fi
+            SCANTYPE="document"
+            shift
+            ;;
+        *) 
+           echo "ERROR: unknown option: $1"
+           exit 1
+           ;;
+    esac
+done
+
+if [[ -z "$SCANTYPE" ]]; then
+    echo "ERROR: choose exactly one scan type: -i or -d"
+    exit 1
+fi
+
+device_check "$DEVICE"
+
+if [[ "$SCANTYPE" == "image" ]]; then
+    FILENAME="image-$TS.png"
+    echo "Scanning image..."
+    scanimage -d "$DEVICE" --format=tiff --resolution 600 |
+        magick tiff:- -auto-level -strip "$FILENAME"
+    echo "Image scan saved to: $FILENAME"
+
+elif [[ "$SCANTYPE" == "document" ]]; then
+    FILENAME="document-$TS.pdf"
+    echo "Scanning document..."
+    scanimage -d "$DEVICE" --format=tiff --resolution 300 |
+        magick tiff:- \
+        -colorspace Gray \
+        -auto-level \
+        -contrast-stretch 1%x1% \
+        -sharpen 0x1 \
+        "$FILENAME"
+    echo "Document scan saved to: $FILENAME"
+fi
+

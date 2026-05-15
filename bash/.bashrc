@@ -43,13 +43,6 @@ fi
 
 export XAUTHORITY="$HOME/.Xauthority"
 
-# ===========================
-# NVM setup
-# ===========================
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-
 export PATH
 
 # ===========================
@@ -293,6 +286,7 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 
 export BAT_THEME="OneHalfDark"
+
 export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
 
 # Better globbing
@@ -356,6 +350,7 @@ fh() {
   eval "$cmd"
 }
 
+# Search with preview
 fv() {
   local file
   file=$(find . -type f | fzf \
