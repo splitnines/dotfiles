@@ -12,7 +12,7 @@ dep_check() {
 }
 
 device_check() {
-    local DEVICE="$@[1]"
+    local DEVICE="$1"
     scanimage -L | grep -F "$DEVICE" >/dev/null || {
         echo "ERROR: scanner not found: $DEVICE"
         echo "Available scanners:"
