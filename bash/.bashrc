@@ -74,8 +74,8 @@ fi
 # ===========================
 if [ -f "$HOME/.config/shell/onedark-colors.sh" ]; then
     . "$HOME/.config/shell/onedark-colors.sh"
-else
-    printf 'Warning: ~/.config/shell/onedark-colors.sh not found\n' >&2
+# else
+#     printf 'Warning: ~/.config/shell/onedark-colors.sh not found\n' >&2
 fi
 
 # ===========================
@@ -189,6 +189,7 @@ __set_prompt() {
         info_color='\[\033[0;31m\]'
         branch_color='\[\033[0;31m\]'
         venv_color='\[\033[0;32m\]'
+        dollar='#'
     fi
 
     venv_segment=''
