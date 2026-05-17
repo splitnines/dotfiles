@@ -1,0 +1,25 @@
+#/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ $# -ne 2 ]]; then
+    echo "Usage: vidcat <input-file-1> <input-file-2>"
+    exit 1
+fi
+
+tmpfile=$(mktemp)
+trap 'rm -f "$tmpfile"' EXIT
+ts="$(date "+%Y-%m-%d_%H_%M_%S")"
+output_file="video-$ts.mp4"
+
+file1=$(realpath "$1")
+file2=$(realpath "$2")
+
+printf "file '%s'\nfile '%s'\n" "$file1" "$file2" > "$tmpfile"
+cat "$tmpfile"
+
+ffmpeg -f concat -safe 0 -i "$tmpfile" -c copy "$output_file"  >/dev/null 2>&1
+# ffmpeg -f concat -safe 0 -i "$tmpfile" -c copy test.mp4
+
+echo "ffmpeg concat success"
+
