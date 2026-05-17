@@ -16,41 +16,41 @@ export XAUTHORITY="$HOME/.Xauthority"
 
 shopt -s checkwinsize
 
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+[[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # ===========================
 # Path
 # ===========================
 PATH="/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
-[ -d "$HOME/.local/bin" ] && \
+[[ -d "$HOME/.local/bin" ]] && \
     PATH="$PATH:$HOME/.local/bin"
-[ -d "$HOME/bin" ] && PATH=$PATH:"$HOME/bin"
+[[ -d "$HOME/bin" ]] && PATH=$PATH:"$HOME/bin"
 # Ubuntu
-[ -d "/snap/bin" ] && \
+[[ -d "/snap/bin" ]] && \
     PATH="$PATH:/snap/bin"
-[ -d "$HOME/.cargo/bin" ] && \
+[[ -d "$HOME/.cargo/bin" ]] && \
     PATH="$PATH:$HOME/.cargo/bin"
-[ -d "/usr/local/go/bin" ] && \
+[[ -d "/usr/local/go/bin" ]] && \
     PATH="$PATH:/usr/local/go/bin"
-[ -d "$HOME/.opencode/bin" ] && \
+[[ -d "$HOME/.opencode/bin" ]] && \
     PATH="$PATH:$HOME/.opencode/bin"
 # Pi on Arch
-[ -d "$HOME/.local/share/npm/bin" ] && \
+[[ -d "$HOME/.local/share/npm/bin" ]] && \
     PATH="$PATH:$HOME/.local/share/npm/bin"
 # Pi on Ubuntu
-[ -d "$HOME/.local/share/pi-node/current/bin" ] && \
+[[ -d "$HOME/.local/share/pi-node/current/bin" ]] && \
     PATH="$PATH:$HOME/.local/share/pi-node/current/bin"
 
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
     for p in /usr/lib/wsl/lib /mnt/c/WINDOWS/System32 /mnt/c/WINDOWS; do
-        [ -d "$p" ] && PATH="$PATH:$p"
+        [[ -d "$p" ]] && PATH="$PATH:$p"
     done
 fi
 
 # ===========================
 # Prioritize local fzf install
 # ===========================
-if [ -d "$HOME/.fzf/bin" ]; then
+if [[ -d "$HOME/.fzf/bin" ]]; then
     PATH="$HOME/.fzf/bin:$PATH"
 fi
 
@@ -59,10 +59,10 @@ export PATH
 # ===========================
 # ls, directory colors
 # ===========================
-if [ -x /usr/bin/dircolors ]; then
-    if [ -f "$HOME/.config/shell/dircolors-onedark" ]; then
+if [[ -x /usr/bin/dircolors ]]; then
+    if [[ -f "$HOME/.config/shell/dircolors-onedark" ]]; then
         eval "$(dircolors -b "$HOME/.config/shell/dircolors-onedark")"
-    elif [ -f "$HOME/.dircolors" ]; then
+    elif [[ -f "$HOME/.dircolors" ]]; then
         eval "$(dircolors -b "$HOME/.config/shell/dircolors")"
     else
         eval "$(dircolors -b)"
@@ -72,7 +72,7 @@ fi
 # ===========================
 # OneDark Color Scheme
 # ===========================
-if [ -f "$HOME/.config/shell/onedark-colors.sh" ]; then
+if [[ -f "$HOME/.config/shell/onedark-colors.sh" ]]; then
     . "$HOME/.config/shell/onedark-colors.sh"
 # else
 #     printf 'Warning: ~/.config/shell/onedark-colors.sh not found\n' >&2
@@ -89,15 +89,15 @@ __find_venv_dir() {
     local name
 
     dir=$PWD
-    while [ "$dir" != "/" ]; do
+    while [[ "$dir" != "/" ]]; do
         for name in .venv venv env; do
-            if [ -f "$dir/$name/bin/activate" ]; then
+            if [[ -f "$dir/$name/bin/activate" ]]; then
                 printf '%s/%s\n' "$dir" "$name"
                 return 0
             fi
         done
         dir=${dir%/*}
-        [ -n "$dir" ] || dir=/
+        [[ -n "$dir" ]] || dir=/
     done
 
     return 1
@@ -108,29 +108,29 @@ __auto_venv() {
 
     found_venv=$(__find_venv_dir 2>/dev/null || true)
 
-    if [ -n "$__auto_venv_path" ]; then
-        if [ -z "$found_venv" ]; then
-            if [ "$VIRTUAL_ENV" = "$__auto_venv_path" ] && command -v deactivate >/dev/null 2>&1; then
+    if [[ -n "$__auto_venv_path" ]]; then
+        if [[ -z "$found_venv" ]]; then
+            if [[ "$VIRTUAL_ENV" = "$__auto_venv_path" ]] && command -v deactivate >/dev/null 2>&1; then
                 deactivate >/dev/null 2>&1 || true
             fi
             __auto_venv_path=''
             return 0
         fi
 
-        if [ "$found_venv" != "$__auto_venv_path" ]; then
-            if [ "$VIRTUAL_ENV" = "$__auto_venv_path" ] && command -v deactivate >/dev/null 2>&1; then
+        if [[ "$found_venv" != "$__auto_venv_path" ]]; then
+            if [[ "$VIRTUAL_ENV" = "$__auto_venv_path" ]] && command -v deactivate >/dev/null 2>&1; then
                 deactivate >/dev/null 2>&1 || true
             fi
             __auto_venv_path=''
         fi
     fi
 
-    if [ -n "$found_venv" ]; then
-        if [ -n "$VIRTUAL_ENV" ] && [ -z "$__auto_venv_path" ]; then
+    if [[ -n "$found_venv" ]]; then
+        if [[ -n "$VIRTUAL_ENV" ]] && [[ -z "$__auto_venv_path" ]]; then
             return 0
         fi
 
-        if [ "$VIRTUAL_ENV" != "$found_venv" ]; then
+        if [[ "$VIRTUAL_ENV" != "$found_venv" ]]; then
             . "$found_venv/bin/activate"
         fi
         __auto_venv_path=$found_venv
@@ -169,7 +169,7 @@ __git_is_dirty() {
 
     ! git diff --quiet --ignore-submodules --cached 2>/dev/null || \
     ! git diff --quiet --ignore-submodules 2>/dev/null || \
-    [ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]
+    [[ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]]
 }
 
 __set_prompt() {
@@ -184,7 +184,7 @@ __set_prompt() {
     prompt_symbol="$(__os_icon)"
     dollar='$'
 
-    if [ "$EUID" -eq 0 ]; then
+    if [[ "$EUID" -eq 0 ]]; then
         prompt_color='\[\033[0;94m\]'
         info_color='\[\033[0;31m\]'
         branch_color='\[\033[0;31m\]'
@@ -193,16 +193,16 @@ __set_prompt() {
     fi
 
     venv_segment=''
-    if [ -n "$VIRTUAL_ENV" ]; then
+    if [[ -n "$VIRTUAL_ENV" ]]; then
         venv_segment="${prompt_color}[${venv_color}$(basename "$VIRTUAL_ENV")${prompt_color}]-"
     fi
 
     git_segment=''
     branch=$(__git_branch_name)
-    if [ -n "$branch" ]; then
+    if [[ -n "$branch" ]]; then
         git_segment=" ${branch_color}${branch}"
         if __git_is_dirty; then
-            if [ "$prompt_symbol" == "@" ]; then
+            if [[ "$prompt_symbol" == "@" ]]; then
                 git_segment+=" ${dirty_color} !! "
             else
                 git_segment+=" ${dirty_color}"$prompt_symbol" "
@@ -249,19 +249,19 @@ bind '"\C-n":history-search-forward'
 if ! shopt -oq posix; then
     shopt -s progcomp
 
-    if [ -f /usr/share/bash-completion/bash_completion ]; then
+    if [[ -f /usr/share/bash-completion/bash_completion ]]; then
         . /usr/share/bash-completion/bash_completion
-    elif [ -f /etc/bash_completion ]; then
+    elif [[ -f /etc/bash_completion ]]; then
         . /etc/bash_completion
     fi
 fi
 
 if command -v git >/dev/null 2>&1; then
-    if [ -f /usr/share/bash-completion/completions/git ]; then
+    if [[ -f /usr/share/bash-completion/completions/git ]]; then
         . /usr/share/bash-completion/completions/git
-    elif [ -f /usr/share/git/completion/git-completion.bash ]; then
+    elif [[ -f /usr/share/git/completion/git-completion.bash ]]; then
         . /usr/share/git/completion/git-completion.bash
-    elif [ -f /etc/bash_completion.d/git ]; then
+    elif [[ -f /etc/bash_completion.d/git ]]; then
         . /etc/bash_completion.d/git
     fi
 
@@ -306,7 +306,7 @@ cd() {
     builtin cd "$@" || return
 
     # Keep the previous directory in the stack so popd/fcd work.
-    if [ "$oldpwd" != "$PWD" ]; then
+    if [[ "$oldpwd" != "$PWD" ]]; then
         pushd -n "$oldpwd" >/dev/null || true
     fi
 }
@@ -530,15 +530,15 @@ alias t="telnet"
 alias ts="tailscale"
 alias z='zathura'
 
-[ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
+[[ -f "$HOME/.config/shell/local_aliases" ]] && source "$HOME/.config/shell/local_aliases"
 
 # Load any local env vars
-[ -f "$HOME/.config/shell/myenv" ] && source "$HOME/.config/shell/myenv"
+[[ -f "$HOME/.config/shell/myenv" ]] && source "$HOME/.config/shell/myenv"
 
 case $TERM in
   xterm*|tmux*|screen*) printf '\e]0;%s@%s\a' "$USER" "${HOSTNAME%%.*}" ;;
 esac
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
