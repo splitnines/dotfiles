@@ -5,6 +5,9 @@ case $- in
     *) return ;;
 esac
 
+# Turn off ctrl-c echo
+[[ $- == *i* ]] && stty -echoctl
+
 HISTFILE="$HOME/.local/state/bash/bash_history"
 mkdir -p "${HISTFILE%/*}"
 HISTSIZE=50000
