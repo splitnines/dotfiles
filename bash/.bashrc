@@ -63,7 +63,7 @@ if [[ -x /usr/bin/dircolors ]]; then
     if [[ -f "$HOME/.config/shell/dircolors-onedark" ]]; then
         eval "$(dircolors -b "$HOME/.config/shell/dircolors-onedark")"
     elif [[ -f "$HOME/.dircolors" ]]; then
-        eval "$(dircolors -b "$HOME/.config/shell/dircolors")"
+        eval "$(dircolors -b "$HOME/.dircolors")"
     else
         eval "$(dircolors -b)"
     fi
@@ -349,7 +349,6 @@ export FZF_DEFAULT_OPTS="
   --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
   --color=border:#3e4451,label:#61afef
 "
-
 # Search command history
 fh() {
   local cmd
