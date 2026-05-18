@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-if [[ $# -ne 2 ]]; then
-    echo "Usage: vidcat <input-file-1> <input-file-2>"
+if [[ $# -le 2 ]]; then
+    echo "Usage: vidcat <input-file-1> <input-file-2> ..."
     exit 1
 fi
 
@@ -12,14 +12,21 @@ trap 'rm -f "$tmpfile"' EXIT
 ts="$(date "+%Y-%m-%d_%H_%M_%S")"
 output_file="video-$ts.mp4"
 
-file1=$(realpath "$1")
-file2=$(realpath "$2")
+count=1
+for file in $@; do
+    echo "file '"$(realpath $file)"'"
+done > $tmpfile
 
-printf "file '%s'\nfile '%s'\n" "$file1" "$file2" > "$tmpfile"
 cat "$tmpfile"
 
 ffmpeg -f concat -safe 0 -i "$tmpfile" -c copy "$output_file"  >/dev/null 2>&1
-# ffmpeg -f concat -safe 0 -i "$tmpfile" -c copy test.mp4
 
-echo "ffmpeg concat success"
+echo "Saved to: $output_file"
+
+mkdir -p tmp
+for file in $@; do
+    mv $file tmp/
+done
+
+echo "Individual files moved to ./tmp"
 
