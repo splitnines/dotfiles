@@ -284,8 +284,8 @@ fi
 # Misc settings
 # ===========================
 PAGER="less"
-export LESS="-R --use-color"
-export MANPAGER="less -R --use-color"
+export LESS="-R -X -F --use-color"
+export MANPAGER="less -R -X -F --use-color"
 export MANROFFOPT="-c"
 export LESS_TERMCAP_me=$'\e[0m'
 export LESS_TERMCAP_se=$'\e[0m'
