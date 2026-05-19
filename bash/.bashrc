@@ -113,19 +113,23 @@ __auto_venv() {
 
     if [[ -n "$__auto_venv_path" ]]; then
         if [[ -z "$found_venv" ]]; then
-            if [[ "$VIRTUAL_ENV" = "$__auto_venv_path" ]] && command -v deactivate >/dev/null 2>&1; then
-                deactivate >/dev/null 2>&1 || true
-            fi
-            __auto_venv_path=''
-            return 0
-        fi
+           if command -v deactivate >/dev/null 2>&1; then
+               deactivate >/dev/null 2>&1 || true
+           else
+               PATH=$(printf '%s' "$PATH" | tr ':' '\n' | grep -v "^$__auto_venv_path/bin$" | paste -sd:)
+               export PATH
+               unset VIRTUAL_ENV
+           fi
+           __auto_venv_path=''
+           return 0
+       fi
 
-        if [[ "$found_venv" != "$__auto_venv_path" ]]; then
-            if [[ "$VIRTUAL_ENV" = "$__auto_venv_path" ]] && command -v deactivate >/dev/null 2>&1; then
-                deactivate >/dev/null 2>&1 || true
-            fi
-            __auto_venv_path=''
-        fi
+       if [[ "$found_venv" != "$__auto_venv_path" ]]; then
+           if command -v deactivate >/dev/null 2>&1; then
+               deactivate >/dev/null 2>&1 || true
+           fi
+           __auto_venv_path=''
+       fi
     fi
 
     if [[ -n "$found_venv" ]]; then
