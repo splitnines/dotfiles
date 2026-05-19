@@ -122,12 +122,10 @@ bindsym $mod+v split v
 bindsym $mod+f fullscreen toggle
 
 # Change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
-# bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+bindsym $mod+t layout toggle tabbed split
 
 # Toggle tiling / floating
-bindsym $mod+Shift+space floating toggle
+bindsym $mod+s floating toggle
 
 # Change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
@@ -215,12 +213,13 @@ set $darkgray  #3e4451
 set $red       #e06c75
 set $black     #000000
 
-default_border pixel 2
-default_floating_border pixel 2
+default_border pixel 1
+default_floating_border pixel 1
 
+#                       border    bg        text   indicator child_border
 client.focused          $blue     $blue     $black $blue     $blue
-client.focused_inactive $bg-alt   $darkgray $fg    $darkgray $bg-alt
-client.unfocused        $bg-alt   $bg       $gray  $bg       $bg-alt
+client.focused_inactive $bg-alt   $darkgray $fg    $darkgray $darkgray
+client.unfocused        $bg-alt   $bg       $gray  $bg       $darkgray
 client.urgent           $red      $red      $black $red      $red
 client.placeholder      $bg       $bg       $fg    $bg       $bg
 
