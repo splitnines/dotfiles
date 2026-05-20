@@ -91,30 +91,40 @@ return {
     local builtin = require("telescope.builtin")
     local map = vim.keymap.set
 
-    map("n", "<leader>sf", builtin.find_files, { desc = "Search files" })
+    map("n", "<leader>sf", function()
+      builtin.find_files({
+        hidden = true,
+        no_ignore = true,
+        initial_mode = "insert",
+        prompt_title = "Find Files",
+      })
+    end, { desc = "Search files" })
     map("n", "<leader>sb", function()
-      require("telescope.builtin").live_grep({
+      builtin.live_grep({
+        grep_open_files = true,
+        initial_mode = "normal",
         prompt_title = "Search Buffers",
       })
     end, { desc = "Search buffers" })
     map("n", "<leader>sa", function()
-      require("telescope.builtin").live_grep({
+      builtin.live_grep({
         cwd = vim.loop.cwd(),
-        hidden = true,
+        initial_mode = "insert",
         prompt_title = "Search All Files",
         preview_title = "Preview",
-        additional_args = function(_)
+        additional_args = function()
           return {
-            "--no-ignore",
             "--hidden",
-            "--glob",
-            "!.git/*",
+            "--glob", "!.git/*",
+            "--glob", "!node_modules/*",
+            "--glob", "!dist/*",
+            "--glob", "!build/*",
+            "--glob", "!target/*",
+            "--glob", "!.venv/*",
           }
         end,
       })
     end, { desc = "Search all files" })
-
-    -- map("n", "<leader>q", builtin.diagnostics, { desc = "Search diagnostics" })
     map("n", "<leader><leader>", builtin.buffers, { desc = "Current buffers" })
     map("n", "\\", function()
       telescope.extensions.file_browser.file_browser({
@@ -130,6 +140,7 @@ return {
     end, { desc = "File browser" })
     map("n", "grr", function()
       require("telescope.builtin").lsp_references({
+        initial_mode = "normal",
         show_line = true,
         include_declaration = false,
         previewer = true,
