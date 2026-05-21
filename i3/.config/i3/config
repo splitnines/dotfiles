@@ -225,8 +225,8 @@ client.placeholder      $bg       $bg       $fg    $bg       $bg
 
 # Gaps
 gaps inner 10
-gaps outer 5
-gaps top 38
+gaps outer 6
+gaps top 48
 
 # Screen captures
 bindsym Print exec --no-startup-id flameshot gui
