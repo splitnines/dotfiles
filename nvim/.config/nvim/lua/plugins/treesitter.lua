@@ -1,12 +1,25 @@
 -- ~/dotfiles/nvim/.config/nvim/lua/plugins/treesitter.lua
 return {
   "nvim-treesitter/nvim-treesitter",
+  lazy = false,
   build = ":TSUpdate",
-  main = "nvim-treesitter.config",
-  opts = {
-    ensure_installed = { "bash", "c", "lua", "python" },
-    auto_install = true,
-    highlight = { enable = true },
-    indent = { enable = true },
-  },
+  config = function()
+    require("nvim-treesitter").setup()
+
+    require("nvim-treesitter").install({
+      "bash",
+      "c",
+      "lua",
+      "python",
+    })
+
+    vim.treesitter.language.register("bash", "sh")
+
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = { "sh", "bash" },
+      callback = function()
+        vim.treesitter.start()
+      end,
+    })
+  end,
 }
