@@ -1,0 +1,90 @@
+#/usr/bin/env bash
+
+dep_check() {
+    local cmd
+    for cmd in "$@"; do
+        command -v "$cmd" >/dev/null 2>&1 || {
+            echo "Error: required command not found: $cmd"
+            exit 1
+        }
+    done
+}
+
+yank() {
+  dep_check xclip
+  xclip -selection clipboard
+}
+
+usage() {
+    text="Random Password Generator"
+    cols=60
+    printf "\n%*s\n\n" $(((${#text} + cols) / 2)) "$text"
+    echo -e "Usage: $(basename "$0") [options]\n"
+    echo -e "Options:"
+    echo -e "--------"
+    echo -e "  -l [n]:  length of password to generate (default: 16)"
+    echo -e "  -n [n]:  number of passwords to generate (default: 12)"
+    echo -e "  -s:      no symbols"
+    echo -e "  -0:      no numbers"
+    echo -e "  -u:      no uppercase"
+    echo -e "  -y:      copies a single password to the clipboard"
+    exit 1
+}
+
+
+NUM=12
+LEN=16
+INCLUDE_SYMBOLS=1
+INCLUDE_UPPER=1
+INCLUDE_NUMBERS=1
+COPY=0
+
+SYMBOLS="!@#$%^&*()_+="
+UPPER="A-Z"
+NUMBERS="0-9"
+
+while getopts :su0hyn:l: OPTIONS; do
+    case $OPTIONS in
+        n)  NUM=$OPTARG ;;
+        l)  LEN=$OPTARG ;;
+        s)  SYMBOLS=0 ;;
+        u)  UPPER=0 ;;
+        0)  NUMBERS=0 ;;
+        y)  COPY=1 ;;
+        h)  usage ;;
+        \?) usage ;;
+        :)  usage ;;
+        *)  usage ;;
+    esac
+done
+shift $((OPTIND - 1))
+if [[ "$#" -gt 0 ]]; then
+    usage
+fi
+
+dep_check tr column
+
+CHARS="a-z"
+
+if [[ $INCLUDE_SYMBOLS == 1 ]]; then
+    CHARS+=$SYMBOLS
+fi
+
+if [[ $INCLUDE_UPPER == 1 ]]; then
+    CHARS+=$UPPER
+fi
+
+if [[ $INCLUDE_NUMBERS == 1 ]]; then
+    CHARS+=$NUMBERS
+fi
+
+if [[ $COPY == 1 ]]; then
+    password="$(tr -dc "$CHARS" < /dev/urandom | head -c "$LEN")"
+    printf "%s" "$password" | yank
+    exit 0
+fi
+
+for ((n=1; n<=NUM; n++)); do
+    echo "$(tr -dc "$CHARS" < /dev/urandom | head -c $LEN)"
+done | column -c "$(tput cols)"
+
