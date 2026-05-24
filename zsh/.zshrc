@@ -43,6 +43,7 @@ if grep -qi "microsoft" /proc/version 2>/dev/null; then
         [[ -d "$p" ]] && PATH="$PATH:$p"
     done
 fi
+
 export PATH
 
 # ===========================
@@ -156,6 +157,11 @@ setopt HIST_SAVE_NO_DUPS       # Don’t save duplicate entries
 setopt AUTO_PUSHD
 setopt PUSHD_SILENT
 setopt PUSHD_IGNORE_DUPS
+
+# =========================
+# Misc setopts
+# =========================
+setopt AUTOCD
 
 # Force write to history after each command
 save_history_now() { fc -AI; }
