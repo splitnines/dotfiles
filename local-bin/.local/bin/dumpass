@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+shopt -s nullglob
+
+dir="/home/rickey/.password-store"
+
+for f in "$dir"/*.gpg; do
+    account=${f##*/}
+    account=${account%.gpg}
+
+    decrypted=$(pass show $account)
+
+    password=$(printf '%s\n' "$decrypted" | awk 'NR == 1 { print; exit }')
+    username=$(printf '%s\n' "$decrypted" | awk -F'username:' '/^username:/ { print $2; exit }')
+
+    printf "%-28s%-28s%s\n" "$account" "$password" "$username"
+done
