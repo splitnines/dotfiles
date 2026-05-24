@@ -7,40 +7,40 @@ require_cmd() {
         command -v "$cmd" >/dev/null 2>&1 || {
             error "required command not found: $cmd"
         }
-    done
+done
 }
 
 fs() {
-  local path="$1"
-  local file
-  local prompt="Search in $path → "
+    local path="$1"
+    local file
+    local prompt="Search in $path → "
 
-  file=$(find "$path" \
-    \( \
-      -path "$path/proc" -o \
-      -path "$path/sys" -o \
-      -path "$path/dev" -o \
-      -path "$path/run" -o \
-      -path "$path/tmp" -o \
-      -path "$path/var/lib" -o \
-      -path "$path/var/run" -o \
-      -path "$path/snap" -o \
-      -name .git -o \
-      -name .cache -o \
-      -name node_modules \
-    \) -prune -o \
-    -type f -readable -print 2>/dev/null |
-    fzf --prompt="$prompt"
-  )
-  [[ -n "$file" ]] && nvim "$file"
+    file=$(find "$path" \
+        \( \
+        -path "$path/proc" -o \
+        -path "$path/sys" -o \
+        -path "$path/dev" -o \
+        -path "$path/run" -o \
+        -path "$path/tmp" -o \
+        -path "$path/var/lib" -o \
+        -path "$path/var/run" -o \
+        -path "$path/snap" -o \
+        -name .git -o \
+        -name .cache -o \
+        -name node_modules \
+        \) -prune -o \
+        -type f -readable -print 2>/dev/null |
+        fzf --prompt="$prompt"
+    )
+    [[ -n "$file" ]] && xdg-open "$file"
 }
 
-require_cmd readlink find fzf nvim
+require_cmd readlink find fzf xdg-open
 
 path=${1-"$HOME"}
 if [[ -d "$path" ]]; then
-  fs "$(readlink -f "$path")"
+    fs "$(readlink -f "$path")"
 else
-  printf 'error: path %s not found\n' "$path"
+    printf 'error: path %s not found\n' "$path"
 fi
 

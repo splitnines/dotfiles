@@ -5,33 +5,42 @@
 # ===========================
 typeset -U path PATH
 path=(
-  /usr/local/sbin
-  /usr/local/bin
-  /usr/sbin
-  /usr/bin
-  /sbin
-  /bin
-  /snap/bin
-  /usr/local/go/bin
+    /usr/local/sbin
+    /usr/local/bin
+    /usr/sbin
+    /usr/bin
+    /sbin
+    /bin
+    /snap/bin
+    /usr/local/go/bin
 )
-[[ -d "$HOME/.local/bin" ]] && path=("$HOME/.local/bin" $path)
-[[ -d "$HOME/bin" ]] && path=("$HOME/bin" $path)
-[[ -d "$HOME/.cargo/bin" ]] && path=("$HOME/.cargo/bin" $path)
-[[ -d "/usr/local/go/bin" ]] && path=("/usr/local/go/bin" $path)
-[[ -d "$HOME/.opencode/bin" ]] && path=("$HOME/.opencode/bin" $path)
-[[ -d "$HOME/.local/share/npm/bin" ]] && path=("$HOME/.local/share/npm/bin" $path)
-[[ -d "$HOME/.local/share/pi-node/current/bin" ]] && path=("$HOME/.local/share/pi-node/current/bin" $path)
+# ===========================
+# Path
+# ===========================
+PATH="/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
+[[ -d "$HOME/.local/bin" ]] && \
+    PATH="$PATH:$HOME/.local/bin"
+[[ -d "$HOME/bin" ]] && PATH=$PATH:"$HOME/bin"
+# Ubuntu
+[[ -d "/snap/bin" ]] && \
+    PATH="$PATH:/snap/bin"
+[[ -d "$HOME/.cargo/bin" ]] && \
+    PATH="$PATH:$HOME/.cargo/bin"
+[[ -d "/usr/local/go/bin" ]] && \
+    PATH="$PATH:/usr/local/go/bin"
+[[ -d "$HOME/.opencode/bin" ]] && \
+    PATH="$PATH:$HOME/.opencode/bin"
+# Pi on Arch
+[[ -d "$HOME/.local/share/npm/bin" ]] && \
+    PATH="$PATH:$HOME/.local/share/npm/bin"
+# Pi on Ubuntu
+[[ -d "$HOME/.local/share/pi-node/current/bin" ]] && \
+    PATH="$PATH:$HOME/.local/share/pi-node/current/bin"
 
 # Windows interop (optional, WSL only)
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
-    IS_WSL=true
-else
-    IS_WSL=false
-fi
-
-if $IS_WSL; then
     for p in /usr/lib/wsl/lib /mnt/c/WINDOWS/System32 /mnt/c/WINDOWS; do
-        [[ -d $p ]] && path+=($p)
+        [[ -d "$p" ]] && PATH="$PATH:$p"
     done
 fi
 export PATH
@@ -48,23 +57,23 @@ export NVM_DIR="$HOME/.nvm"
 # Prioritize local fzf install
 # ===========================
 if [[ -d "$HOME/.fzf/bin" ]]; then
-  path=("$HOME/.fzf/bin" $path)
+    path=("$HOME/.fzf/bin" $path)
 fi
 
 # ===========================
 # ls, directory colors
 # ===========================
 if [[ -f "$HOME/.config/shell/dircolors-onedark" ]]; then
-  eval "$(dircolors ~/.config/shell/dircolors-onedark)"
+    eval "$(dircolors ~/.config/shell/dircolors-onedark)"
 fi
 
 # ===========================
 # OneDark Color Scheme
 # ===========================
 if [[ -f "$HOME/.config/shell/onedark-colors.sh" ]]; then
-  source "$HOME/.config/shell/onedark-colors.sh"
+    source "$HOME/.config/shell/onedark-colors.sh"
 else
-  echo "Warning: ~/.config/shell/onedark-colors.sh not found" >&2
+    echo "Warning: ~/.config/shell/onedark-colors.sh not found" >&2
 fi
 
 # ===========================
@@ -73,45 +82,45 @@ fi
 
 # identify the os for building the prompt
 os_icon() {
-  local os=""
+    local os=""
 
-  if [[ -r /etc/os-release ]]; then
-    . /etc/os-release
-    os="$ID"
-  fi
+    if [[ -r /etc/os-release ]]; then
+        . /etc/os-release
+        os="$ID"
+    fi
 
-  if [[ "$os" == "arch" ]]; then
-    printf ""
-  elif [[ "$os" == "ubuntu" ]]; then
-    printf ""
-  else
-    printf "✪"
-  fi
+    if [[ "$os" == "arch" ]]; then
+        printf ""
+    elif [[ "$os" == "ubuntu" ]]; then
+        printf ""
+    else
+        printf "✪"
+    fi
 }
 
 # add git dirty branch indication to prompt
 git_branch() {
-  local branch dirty
+    local branch dirty
 
 
-  branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
-  [[ -z $branch ]] && return
-  
-  if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
-    dirty=" $(os_icon) "
-  else
-    dirty=""
-  fi
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+    [[ -z $branch ]] && return
 
-  printf " %s%s%s%s%s" "$RED" "$branch" "$ORANGE" "$dirty" "$RESET"
+    if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
+        dirty=" $(os_icon) "
+    else
+        dirty=""
+    fi
+
+    printf " %s%s%s%s%s" "$RED" "$branch" "$ORANGE" "$dirty" "$RESET"
 }
 
 # add python venv indication to prompt
 python_env() {
-  if [[ -n "$VIRTUAL_ENV" ]]; then
-    local env_name=${VIRTUAL_ENV:t}
-    printf "%s[%s%s%s]-%s" "$GRAY" "$GREEN" "$env_name" "$GRAY" "$RESET"
-  fi
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        local env_name=${VIRTUAL_ENV:t}
+        printf "%s[%s%s%s]-%s" "$GRAY" "$GREEN" "$env_name" "$GRAY" "$RESET"
+    fi
 }
 
 setopt PROMPT_SUBST
@@ -172,8 +181,8 @@ compinit -d "$HOME/.cache/zsh/zcompdump"
 
 # Git completion
 if type git &>/dev/null; then
-  autoload -Uz bashcompinit && bashcompinit
-  source <(git completion zsh 2>/dev/null || git completion bash 2>/dev/null)
+    autoload -Uz bashcompinit && bashcompinit
+    source <(git completion zsh 2>/dev/null || git completion bash 2>/dev/null)
 fi
 
 # ===========================
@@ -185,7 +194,7 @@ zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*:default' list-colors \
-  "${(s.:.)LS_COLORS}:ma=48;5;238;38;5;229"
+    "${(s.:.)LS_COLORS}:ma=48;5;238;38;5;229"
 zstyle ':completion:*' matcher-list 'r:|[._-]=* r:|=*'
 
 setopt AUTO_MENU
@@ -288,7 +297,7 @@ alias z='zathura'
 [ -f "$HOME/.config/shell/myenv" ] && source "$HOME/.config/shell/myenv"
 
 case $TERM in
-  xterm*|tmux*|screen*) print -Pn "\e]0;%n@%m\a" ;;
+    xterm*|tmux*|screen*) print -Pn "\e]0;%n@%m\a" ;;
 esac
 
 # ===========================
@@ -296,7 +305,7 @@ esac
 # ===========================
 bindkey -v
 function zle-keymap-select {
-  [[ $KEYMAP == vicmd ]] && echo -ne "\e[2 q" || echo -ne "\e[6 q"
+    [[ $KEYMAP == vicmd ]] && echo -ne "\e[2 q" || echo -ne "\e[6 q"
 }
 zle -N zle-keymap-select
 function zle-line-init { zle -K viins; echo -ne "\e[6 q"; }
@@ -321,84 +330,104 @@ fi
 # fzf integration and functiions
 # ===========================
 if [[ -f ~/.fzf/shell/key-bindings.zsh ]]; then
-  source ~/.fzf/shell/key-bindings.zsh
+    source ~/.fzf/shell/key-bindings.zsh
 fi
 
 if [[ -f ~/.fzf/shell/completion.zsh ]]; then
-  source ~/.fzf/shell/completion.zsh
+    source ~/.fzf/shell/completion.zsh
 fi
 
 # ===========================
 # fzf defaults
 # ===========================
 export FZF_DEFAULT_OPTS="
-  --height=100%
-  --border=rounded
-  --margin=1,3
-  --padding=1
-  --color=fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
-  --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
-  --color=border:#3e4451,label:#61afef
+--height=100%
+--border=rounded
+--margin=1,3
+--padding=1
+--color=fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
+--color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
+--color=border:#3e4451,label:#61afef
 "
 
 # Search command history
 fh() {
-  local cmd
-  cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' | sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
-  eval "$cmd"
+    local cmd
+    cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' | sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
+    eval "$cmd"
 }
 
 # Search cd history
-fcd() {
-  local dir
-  dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
-  [[ -z "$dir" ]] && return
-  [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
+cdh() {
+    local dir
+    dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
+    [[ -z "$dir" ]] && return
+    [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
 }
 
 # Search and kill processes
 fk() {
-  ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
+    ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
+}
+
+fcd() {
+    command -v find >/dev/null 2>&1 || {
+        echo "required command not found: find"
+        return 1
+    }
+    command -v fzf >/dev/null 2>&1 || {
+        echo "required command not found: fzf"
+        return 1
+    }
+
+    local search_path="${1-$HOME}"
+    local dir
+    local prompt="Search in $search_path → "
+
+    dir=$(find $search_path -type d -print 2>/dev/null |
+        fzf --prompt="$prompt")
+
+    [[ -d "$dir" ]] && cd "$dir"
 }
 
 # ===========================
 # Python environment helpers
 # ===========================
 pyon() {
-  local venv_dir
-  if [[ -n "$1" ]]; then
-    venv_dir="$1"
-  elif [[ -d .venv ]]; then
-    venv_dir=".venv"
-  elif [[ -d venv ]]; then
-    venv_dir="venv"
-  else
-    echo "${E_RED}No virtual environment found.${E_RESET}"
-    return 1
-  fi
+    local venv_dir
+    if [[ -n "$1" ]]; then
+        venv_dir="$1"
+    elif [[ -d .venv ]]; then
+        venv_dir=".venv"
+    elif [[ -d venv ]]; then
+        venv_dir="venv"
+    else
+        echo "${E_RED}No virtual environment found.${E_RESET}"
+        return 1
+    fi
 
-  if [[ ! -f "$venv_dir/bin/activate" ]]; then
-    echo "${E_RED}No activate script found in $venv_dir/bin.${E_RESET}"
-    return 1
-  fi
+    if [[ ! -f "$venv_dir/bin/activate" ]]; then
+        echo "${E_RED}No activate script found in $venv_dir/bin.${E_RESET}"
+        return 1
+    fi
 
-  echo "${E_GREEN}Activating Python environment: ${E_BLUE}${venv_dir}${E_RESET}"
-  source "$venv_dir/bin/activate"
+    echo "${E_GREEN}Activating Python environment: ${E_BLUE}${venv_dir}${E_RESET}"
+    source "$venv_dir/bin/activate"
 }
 
 pyoff() {
-  if [[ -z "$VIRTUAL_ENV" ]]; then
-    echo "${E_RED}No virtual environment active.${E_RESET}"
-    return 1
-  fi
-  if type deactivate &>/dev/null; then
-    deactivate
-    echo "${E_ORANGE}Python environment deactivated.${E_RESET}"
-  else
-    export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$VIRTUAL_ENV/bin" | paste -sd:)
-    unset VIRTUAL_ENV
-    echo "${E_ORANGE}Python environment deactivated (manual cleanup).${E_RESET}"
-  fi
+    if [[ -z "$VIRTUAL_ENV" ]]; then
+        echo "${E_RED}No virtual environment active.${E_RESET}"
+        return 1
+    fi
+    if type deactivate &>/dev/null; then
+        deactivate
+        echo "${E_ORANGE}Python environment deactivated.${E_RESET}"
+    else
+        export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$VIRTUAL_ENV/bin" | paste -sd:)
+        unset VIRTUAL_ENV
+        echo "${E_ORANGE}Python environment deactivated (manual cleanup).${E_RESET}"
+    fi
 }
 
 # ===========================
@@ -409,48 +438,48 @@ WEATHER_CITIES_FILE="$HOME/.config/zsh/weather_cities.zsh"
 [[ -f $WEATHER_CITIES_FILE ]] && source "$WEATHER_CITIES_FILE"
 
 weather() {
-  local city="$1"
-  local state="$2"
-  local country="${3:-usa}"
+    local city="$1"
+    local state="$2"
+    local country="${3:-usa}"
 
-  if [[ -z "$city" ]]; then
-    echo "usage: weather <city> [state] [country]"
-    return 1
-  fi
+    if [[ -z "$city" ]]; then
+        echo "usage: weather <city> [state] [country]"
+        return 1
+    fi
 
-  city="${city// /+}"
-  state=${state// /+}
+    city="${city// /+}"
+    state=${state// /+}
 
-  curl "http://wttr.in/${city}${state:+,+$state}+${country}?u"
+    curl "http://wttr.in/${city}${state:+,+$state}+${country}?u"
 }
 
 _weather() {
-  local -a states countries
+    local -a states countries
 
-  states=(
-    al ak az ar ca co ct de fl ga hi id il in ia ks ky
-    la me md ma mi mn ms mo mt ne nv nh nj nm ny nc
-    nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy
-  )
+    states=(
+        al ak az ar ca co ct de fl ga hi id il in ia ks ky
+        la me md ma mi mn ms mo mt ne nv nh nj nm ny nc
+        nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy
+    )
 
-  countries=(usa)
+    countries=(usa)
 
-  _arguments -C \
-    '1:city:->city' \
-    '2:state:->state' \
-    '3:country:->country'
+    _arguments -C \
+        '1:city:->city' \
+        '2:state:->state' \
+        '3:country:->country'
 
-  case $state in
-    city)
-      compadd -Q -a WEATHER_CITIES
-      ;;
-    state)
-      compadd -a states
-      ;;
-    country)
-      compadd -a countries
-      ;;
-  esac
+    case $state in
+        city)
+            compadd -Q -a WEATHER_CITIES
+            ;;
+        state)
+            compadd -a states
+            ;;
+        country)
+            compadd -a countries
+            ;;
+    esac
 }
 compdef _weather weather
 
@@ -462,45 +491,45 @@ compdef _weather weather
 __ZSH_AUTO_VENV_CURRENT=""
 
 __zsh_auto_venv() {
-  local dir venv_path=""
+    local dir venv_path=""
 
-  dir=$PWD
-  while [[ "$dir" != "/" ]]; do
-    if [[ -d "$dir/.venv" ]]; then
-      venv_path="$dir/.venv"
-      break
-    elif [[ -d "$dir/venv" ]]; then
-      venv_path="$dir/venv"
-      break
+    dir=$PWD
+    while [[ "$dir" != "/" ]]; do
+        if [[ -d "$dir/.venv" ]]; then
+            venv_path="$dir/.venv"
+            break
+        elif [[ -d "$dir/venv" ]]; then
+            venv_path="$dir/venv"
+            break
+        fi
+        dir=${dir:h}
+    done
+
+    if [[ -n "$venv_path" && "$VIRTUAL_ENV" != "$venv_path" ]]; then
+        if [[ -n "$VIRTUAL_ENV" && "$VIRTUAL_ENV" != "$venv_path" ]]; then
+            pyoff >/dev/null
+        fi
+        source "$venv_path/bin/activate" >/dev/null 2>&1 && \
+            __ZSH_AUTO_VENV_CURRENT="$venv_path" && \
+            echo "${E_GREEN}Activated Python venv:${E_BLUE} ${venv_path}${E_RESET}"
+        return
     fi
-    dir=${dir:h}
-  done
 
-  if [[ -n "$venv_path" && "$VIRTUAL_ENV" != "$venv_path" ]]; then
-    if [[ -n "$VIRTUAL_ENV" && "$VIRTUAL_ENV" != "$venv_path" ]]; then
-      pyoff >/dev/null
+    if [[ -z "$venv_path" && -n "$VIRTUAL_ENV" ]]; then
+        pyoff >/dev/null
+        __ZSH_AUTO_VENV_CURRENT=""
     fi
-    source "$venv_path/bin/activate" >/dev/null 2>&1 && \
-      __ZSH_AUTO_VENV_CURRENT="$venv_path" && \
-      echo "${E_GREEN}Activated Python venv:${E_BLUE} ${venv_path}${E_RESET}"
-    return
-  fi
-
-  if [[ -z "$venv_path" && -n "$VIRTUAL_ENV" ]]; then
-    pyoff >/dev/null
-    __ZSH_AUTO_VENV_CURRENT=""
-  fi
 }
 
 # copy command output to clipboard
 y() {
-  xclip -selection clipboard
+    xclip -selection clipboard
 }
 
 # Run fastfetch or neofetch
 ff() {
-  command -v fastfetch >/dev/null 2>&1 && fastfetch
-  command -v neofetch >/dev/null 2>&1 && neofetch
+    command -v fastfetch >/dev/null 2>&1 && fastfetch
+    command -v neofetch >/dev/null 2>&1 && neofetch
 }
 
 # Hook runs every time you cd
@@ -516,8 +545,8 @@ fkey-noop() { }
 zle -N fkey-noop
 
 for key in kf1 kf2 kf3 kf4 kf5 kf6 kf7 kf8 kf9 kf10 kf11 kf12; do
-  [[ -n ${terminfo[$key]} ]] || continue
-  bindkey -M viins "${terminfo[$key]}" fkey-noop
-  bindkey -M vicmd "${terminfo[$key]}" fkey-noop
-  bindkey -M emacs "${terminfo[$key]}" fkey-noop
+    [[ -n ${terminfo[$key]} ]] || continue
+    bindkey -M viins "${terminfo[$key]}" fkey-noop
+    bindkey -M vicmd "${terminfo[$key]}" fkey-noop
+    bindkey -M emacs "${terminfo[$key]}" fkey-noop
 done

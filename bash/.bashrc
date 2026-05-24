@@ -373,11 +373,31 @@ fv() {
 }
 
 # Search cd history
-fcd() {
+cdh() {
   local dir
   dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
   [[ -z "$dir" ]] && return
   [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
+}
+
+fcd() {
+    command -v find >/dev/null 2>&1 || {
+        echo "required command not found: find"
+        return 1
+    }
+    command -v fzf >/dev/null 2>&1 || {
+        echo "required command not found: fzf"
+        return 1
+    }
+
+    local search_path="${1-$HOME}"
+    local dir
+    local prompt="Search in $search_path → "
+
+    dir=$(find $search_path -type d -print 2>/dev/null |
+        fzf --prompt="$prompt")
+
+    [[ -d "$dir" ]] && cd "$dir"
 }
 
 # Search and kill processes
