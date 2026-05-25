@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
-shopt -s nullglob
+shopt -s globstar nullglob
 
 dir="/home/rickey/.password-store"
 
-for f in "$dir"/*.gpg; do
+for f in "$dir"/**/*.gpg; do
     account=${f##*/}
     account=${account%.gpg}
 
