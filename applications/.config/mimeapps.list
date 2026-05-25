@@ -9,6 +9,8 @@ application/pdf=org.pwmt.zathura.desktop
 image/jpeg=feh.desktop;
 image/png=feh.desktop;
 text/plain=nvim.desktop
+application/x-shellscript=nvim.desktop
+text/x-shellscript=nvim.desktop
 
 [Added Associations]
 inode/directory=rfm.desktop;
