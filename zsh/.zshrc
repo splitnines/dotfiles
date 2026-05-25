@@ -108,7 +108,7 @@ git_branch() {
     [[ -z $branch ]] && return
 
     if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
-        dirty=" $(os_icon) "
+        dirty=" $(os_icon)"
     else
         dirty=""
     fi
@@ -120,13 +120,17 @@ git_branch() {
 python_env() {
     if [[ -n "$VIRTUAL_ENV" ]]; then
         local env_name=${VIRTUAL_ENV:t}
-        printf "%s[%s%s%s]-%s" "$GRAY" "$GREEN" "$env_name" "$GRAY" "$RESET"
+        # printf "%s[%s%s%s]-%s" "$GRAY" "$GREEN" "$env_name" "$GRAY" "$RESET"
+        printf "%s(%s%s%s)%s " "$GRAY" "$GREEN" "$env_name" "$GRAY" "$RESET"
     fi
 }
 
 setopt PROMPT_SUBST
+# build_prompt() {
+#     PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n$(os_icon)%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}> ${RESET}"
+# }
 build_prompt() {
-    PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n$(os_icon)%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}> ${RESET}"
+    PS1=$'\n'"$(python_env)${GRAY}${BLUE}%n$(os_icon)%m ${GRAY}(${RESET}${BLUE}%~${RESET}${GRAY})$(git_branch)"$'\n'"${BLUE}> ${RESET}"
 }
 unsetopt PROMPT_CR
 unsetopt PROMPT_SP
