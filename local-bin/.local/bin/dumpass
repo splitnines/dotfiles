@@ -6,7 +6,7 @@ shopt -s globstar nullglob
 dir="/home/rickey/.password-store"
 
 for file in "$dir"/**/*.gpg; do
-    account=${file##*/}
+    account=${file##*store/}
     account=${account%.gpg}
 
     decrypted=$(pass show $account)
