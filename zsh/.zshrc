@@ -130,7 +130,7 @@ setopt PROMPT_SUBST
 #     PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n$(os_icon)%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}> ${RESET}"
 # }
 build_prompt() {
-    PS1=$'\n'"$(python_env)${GRAY}${BLUE}%n$(os_icon)%m ${GRAY}(${RESET}${BLUE}%~${RESET}${GRAY})$(git_branch)"$'\n'"${BLUE}> ${RESET}"
+    PS1=$'\n'"$(python_env)${GRAY}${BLUE}%n$(os_icon)%m ${GRAY}(${RESET}${BLUE}%~${RESET}${GRAY})$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
 }
 unsetopt PROMPT_CR
 unsetopt PROMPT_SP
