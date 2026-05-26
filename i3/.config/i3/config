@@ -78,7 +78,7 @@ floating_modifier $mod
 bindsym $mod+Return exec --no-startup-id st
 
 # Kill focused window
-bindsym $mod+Shift+q kill
+bindsym $mod+q kill
 
 # Start rofi
 bindsym $mod+d exec rofi -config ~/.config/rofi/config.rasi -show drun
