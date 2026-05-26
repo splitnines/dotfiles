@@ -119,18 +119,14 @@ git_branch() {
 # add python venv indication to prompt
 python_env() {
     if [[ -n "$VIRTUAL_ENV" ]]; then
-        local env_name=${VIRTUAL_ENV:t}
-        # printf "%s[%s%s%s]-%s" "$GRAY" "$GREEN" "$env_name" "$GRAY" "$RESET"
-        printf "%s(%s%s%s)%s " "$GRAY" "$GREEN" "$env_name" "$GRAY" "$RESET"
+        # local env_name=${VIRTUAL_ENV:t}
+        printf "%s%s%s" "$GREEN" "π " "$RESET"
     fi
 }
 
 setopt PROMPT_SUBST
-# build_prompt() {
-#     PS1=$'\n'"$(python_env)${GRAY}[${BLUE}%n$(os_icon)%m${GRAY}]-[${RESET}${BLUE}%~${RESET}${GRAY}]$(git_branch)"$'\n'"${BLUE}> ${RESET}"
-# }
 build_prompt() {
-    PS1=$'\n'"$(python_env)${GRAY}${BLUE}%n$(os_icon)%m ${GRAY}(${RESET}${BLUE}%~${RESET}${GRAY})$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
+    PS1=$'\n'"$(python_env)${GRAY}${BLUE}%n$(os_icon)%m: %~${RESET}${GRAY}$(git_branch)"$'\n'"${BLUE}❯ ${RESET}"
 }
 unsetopt PROMPT_CR
 unsetopt PROMPT_SP

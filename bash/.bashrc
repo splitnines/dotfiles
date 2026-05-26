@@ -201,7 +201,8 @@ __set_prompt() {
 
     venv_segment=''
     if [[ -n "$VIRTUAL_ENV" ]]; then
-        venv_segment="${prompt_color}[${venv_color}$(basename "$VIRTUAL_ENV")${prompt_color}]-"
+        # venv_segment="${prompt_color}${venv_color}$(basename "$VIRTUAL_ENV") ${prompt_color}"
+        venv_segment="${prompt_color}${venv_color}π ${prompt_color}"
     fi
 
     git_segment=''
@@ -218,7 +219,7 @@ __set_prompt() {
         git_segment+="\[\033[0m\]"
     fi
 
-    PS1="${prompt_color}\n${venv_segment}[${info_color}\u${prompt_symbol}\h${prompt_color}]-[${info_color}\w${prompt_color}]${git_segment}\n${info_color}${dollar}\[\033[0m\] "
+    PS1="${prompt_color}\n${venv_segment}${info_color}\u${prompt_symbol}\h: ${prompt_color}${info_color}\w${prompt_color}${git_segment}\n${info_color}${dollar}\[\033[0m\] "
 
     case "$TERM" in
         xterm*|rxvt*)
