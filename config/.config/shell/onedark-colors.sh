@@ -58,13 +58,42 @@ E_ORANGE=$'\e[38;2;250;156;5m'
 # ==========================================
 # Optional: Print Color Palette
 # ==========================================
-print_onedark_colors() {
-  echo
-  echo "  ${E_BLACK}BLACK${E_RESET}          ${E_BRIGHT_BLACK}BRIGHT_BLACK${E_RESET}"
-  echo "  ${E_GRAY}GRAY${E_RESET}            ${E_WHITE}WHITE${E_RESET}"
-  echo "  ${E_RED}RED${E_RESET}              ${E_GREEN}GREEN${E_RESET}"
-  echo "  ${E_YELLOW}YELLOW${E_RESET}          ${E_BLUE}BLUE${E_RESET}"
-  echo "  ${E_MAGENTA}MAGENTA${E_RESET}        ${E_CYAN}CYAN${E_RESET}"
-  echo "  ${E_ORANGE}ORANGE${E_RESET}"
-  echo
+print_colors() {
+  local BLOCK='█'
+  printf "\n"
+  printf "%b%s%b " "$E_BLACK" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_GRAY" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_RED" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_YELLOW" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_MAGENTA" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_ORANGE" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_BRIGHT_BLACK" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_WHITE" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_GREEN" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_BLUE" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_CYAN" "$BLOCK" "$E_RESET"
+  printf "\n"
+  printf "%b%-14s%s%b\n" "$E_BLACK" "BLACK" "#282c34" "$E_RESET"
+  printf "%b%-14s%s%b\n" "$E_GRAY" "GRAY" "#5c6370" "$E_RESET"
+  printf "%b%-14s%s%b\n" "$E_RED" "RED" "#e06c75" "$E_RESET"
+  printf "%b%-14s%s%b\n" "$E_YELLOW" "YELLOW" "#e5c07b" "$E_RESET"
+  printf "%b%-14s%s%b\n" "$E_MAGENTA" "MAGENTA" "#c678dd" "$E_RESET"
+  printf "%b%-14s%s%b\n" "$E_ORANGE" "ORANGE" "#fa9c05" "$E_RESET"
+  printf "%b%-14s%s%b\n" "$E_BRIGHT_BLACK" "BRIGHT_BLACK" "#3e4451" "$E_RESET"
+  printf "%b%-14s%s%b\n" "$E_WHITE" "WHITE" "#abb2bf" "$E_RESET"
+  printf "%b%-14s%s%b\n" "$E_GREEN" "GREEN" "#98c379" "$E_RESET"
+  printf "%b%-14s%s%b\n" "$E_BLUE" "BLUE" "#61afef" "$E_RESET"
+  printf "%b%-14s%s%b\n" "$E_CYAN" "CYAN" "#56b6c2" "$E_RESET"
+  printf "%b%s%b " "$E_BLACK" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_GRAY" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_RED" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_YELLOW" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_MAGENTA" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_ORANGE" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_BRIGHT_BLACK" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_WHITE" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_GREEN" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_BLUE" "$BLOCK" "$E_RESET"
+  printf "%b%s%b " "$E_CYAN" "$BLOCK" "$E_RESET"
+  printf "\n"
 }
