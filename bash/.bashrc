@@ -194,7 +194,7 @@ __set_prompt() {
     if [[ "$EUID" -eq 0 ]]; then
         prompt_color='\[\033[0;94m\]'
         info_color='\[\033[0;31m\]'
-        branch_color='\[\033[0;31m\]'
+        branch_color='\[\033[0;34m\]'
         venv_color='\[\033[0;32m\]'
         dollar='#'
     fi
@@ -219,7 +219,7 @@ __set_prompt() {
         git_segment+="\[\033[0m\]"
     fi
 
-    PS1="${prompt_color}\n${venv_segment}${info_color}\u${prompt_symbol}\h: ${prompt_color}${info_color}\w${prompt_color}${git_segment}\n${info_color}${dollar}\[\033[0m\] "
+    PS1="${prompt_color}\n${venv_segment}${info_color}\u${prompt_symbol}\h ${prompt_color}${info_color}\w${prompt_color}${git_segment}\n${info_color}${dollar}\[\033[0m\] "
 
     case "$TERM" in
         xterm*|rxvt*)
