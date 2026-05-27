@@ -556,3 +556,9 @@ for key in kf1 kf2 kf3 kf4 kf5 kf6 kf7 kf8 kf9 kf10 kf11 kf12; do
     bindkey -M vicmd "${terminfo[$key]}" fkey-noop
     bindkey -M emacs "${terminfo[$key]}" fkey-noop
 done
+
+# Use pinentry-tty if in a terminal and the GUI if not
+if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
+    export GPG_TTY="$(tty)"
+    gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
+fi

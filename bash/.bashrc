@@ -569,3 +569,9 @@ esac
 export NVM_DIR="$HOME/.nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Use pinentry-tty if in a terminal and the GUI if not
+if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
+    export GPG_TTY="$(tty)"
+    gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
+fi

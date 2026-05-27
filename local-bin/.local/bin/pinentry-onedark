@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# Dynamic pinentry wrapper.
+#
+# gpg-agent sends the request TTY to pinentry over the Assuan protocol, not
+# reliably as argv/env.  Therefore this wrapper speaks enough Assuan to read
+# the startup options, then starts:
+#   - pinentry-tty when the request has a real terminal TTY
+#   - pinentry-gtk otherwise, so rofi/desktop launchers work
+#
+# pinentry-tty has no theme option; it inherits your terminal colors.
+
+set -euo pipefail
+
+PINENTRY_TTY=${PINENTRY_TTY:-/usr/bin/pinentry-tty}
+PINENTRY_GUI=${PINENTRY_GUI:-/usr/bin/pinentry}
+PINENTRY_GUI_THEME=${PINENTRY_GUI_THEME:-Pinentry-OneDark}
+LOG_FILE=${PINENTRY_WRAPPER_LOG:-}
+
+log() {
+  [[ -n $LOG_FILE ]] && printf '%s\n' "$*" >>"$LOG_FILE"
+  return 0
+}
+
+is_terminal_device() {
+  local tty=${1:-}
+  [[ -n $tty && -e $tty && -c $tty ]] || return 1
+  case $tty in
+    /dev/tty|/dev/tty[0-9]*|/dev/pts/[0-9]*|/dev/console) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# Decode the minimal percent escaping used by Assuan option values.
+decode_assuan_value() {
+  local s=${1//+/ }
+  printf '%b' "${s//%/\\x}"
+}
+
+request_tty=""
+has_request_tty=false
+startup=()
+
+# Server greeting expected by gpg-agent.
+printf 'OK Pleased to meet you, process %s\n' "$$"
+
+# Read setup commands until the first real action.  gpg-agent normally sends
+# OPTION/SET* commands and waits for OK after each one.
+while IFS= read -r line; do
+  log "agent> $line"
+
+  case $line in
+    OPTION\ ttyname=*)
+      request_tty=$(decode_assuan_value "${line#OPTION ttyname=}")
+      is_terminal_device "$request_tty" && has_request_tty=true
+      startup+=("$line")
+      printf 'OK\n'
+      ;;
+    OPTION*|SET*)
+      startup+=("$line")
+      printf 'OK\n'
+      ;;
+    BYE)
+      printf 'OK closing connection\n'
+      exit 0
+      ;;
+    GETPIN|CONFIRM|MESSAGE)
+      action=$line
+      break
+      ;;
+    *)
+      # Keep unknown pre-action commands for the real pinentry, but acknowledge
+      # them so the agent can continue to the action command.
+      startup+=("$line")
+      printf 'OK\n'
+      ;;
+  esac
+done
+
+# If no ttyname option arrived, fall back to GPG_TTY.
+if [[ $has_request_tty == false ]] && is_terminal_device "${GPG_TTY:-}"; then
+  request_tty=$GPG_TTY
+  has_request_tty=true
+  startup+=("OPTION ttyname=$GPG_TTY")
+fi
+
+if [[ $has_request_tty == true && -x $PINENTRY_TTY ]]; then
+  backend=$PINENTRY_TTY
+else
+  backend=$PINENTRY_GUI
+fi
+log "backend: $backend tty=${request_tty:-none}"
+
+if [[ $backend == "$PINENTRY_GUI" ]]; then
+  # pinentry-gtk on this system is GTK3, so GTK2_RC_FILES will not work.
+  # GTK_THEME makes GTK3 load ~/.themes/Pinentry-OneDark/gtk-3.0/gtk.css.
+  coproc PE { GTK_THEME="$PINENTRY_GUI_THEME" "$backend" "$@"; }
+else
+  coproc PE { "$backend" "$@"; }
+fi
+
+# Read and discard the real backend greeting.
+IFS= read -r backend_line <&"${PE[0]}" || exit 1
+log "backend greeting: $backend_line"
+
+send_and_drain() {
+  local cmd=$1 resp
+  printf '%s\n' "$cmd" >&"${PE[1]}"
+  while IFS= read -r resp <&"${PE[0]}"; do
+    log "backend(setup)< $resp"
+    [[ $resp == OK* || $resp == ERR* ]] && return 0
+  done
+  return 1
+}
+
+# Replay startup to the chosen backend, discarding the responses because we
+# already acknowledged them to gpg-agent.
+for cmd in "${startup[@]}"; do
+  send_and_drain "$cmd"
+done
+
+relay_command() {
+  local cmd=$1 resp
+  printf '%s\n' "$cmd" >&"${PE[1]}"
+  while IFS= read -r resp <&"${PE[0]}"; do
+    log "backend< $resp"
+    printf '%s\n' "$resp"
+    [[ $resp == OK* || $resp == ERR* ]] && return 0
+  done
+  return 1
+}
+
+# Relay the first action and all later commands sequentially.
+relay_command "$action"
+while IFS= read -r line; do
+  log "agent> $line"
+  relay_command "$line" || exit 1
+  [[ $line == BYE ]] && exit 0
+done
