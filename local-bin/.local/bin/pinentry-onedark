@@ -11,8 +11,8 @@
 
 set -euo pipefail
 
-PINENTRY_TTY=${PINENTRY_TTY:-/usr/bin/pinentry-tty}
-PINENTRY_GUI=${PINENTRY_GUI:-/usr/bin/pinentry}
+PINENTRY_TTY=${PINENTRY_TTY:-/bin/pinentry-tty}
+PINENTRY_GUI=${PINENTRY_GUI:-/bin/pinentry}
 PINENTRY_GUI_THEME=${PINENTRY_GUI_THEME:-Pinentry-OneDark}
 LOG_FILE=${PINENTRY_WRAPPER_LOG:-}
 
