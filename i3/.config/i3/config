@@ -84,8 +84,8 @@ bindsym $mod+q kill
 bindsym $mod+d exec rofi -config ~/.config/rofi/config.rasi -show drun
 bindsym $mod+Shift+d exec rofi -config ~/.config/rofi/config.rasi -show run
 bindsym $mod+period exec rofi -modi emoji -show emoji
-bindsym $mod+p exec --no-startup-id rofi -show power-menu -modi power-menu:rofi-power-menu
-# bindsym $mod+w exec rofi -config ~/.config/rofi/config.rasi -show window
+bindsym $mod+Escape exec --no-startup-id rofi -show power-menu -modi power-menu:rofi-power-menu
+bindsym $mod+p exec --no-startup-id ~/.local/bin/passmenu-rofi
 
 # Move workspace to other monitor
 bindsym $mod+x move workspace to output next
@@ -179,10 +179,6 @@ bindsym $mod+Shift+c reload
 
 # Restart i3 inplace
 bindsym $mod+Shift+r restart
-
-
-# Exit i3
-bindsym $mod+Shift+Escape exec i3-msg exit
 
 # Resize window
 mode "resize" {
