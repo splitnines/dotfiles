@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
+# TMUX startup script
 
-SESSION_MAIN="Main"
-SESSION_PI="Pi"
+SESSION_MAIN="main"
+SESSION_DOTFILES="dotfiles"
+SESSION_PI="pi"
 
 if ! tmux has-session -t "$SESSION_MAIN" 2>/dev/null; then
     systemd-run --user --scope --collect --unit=tmux-keep-${USER} \
-        "$(command -v tmux)" new-session -d -s Main -n dotfiles 2>/dev/null
-    tmux send-keys -t "$SESSION_MAIN":dotfiles 'cd ~/dotfiles/ && clear' C-m
+        "$(command -v tmux)" new-session -d -s main 2>/dev/null
+fi
+
+if ! tmux has-session -t "$SESSION_DOTFILES" 2>/dev/null; then
+    tmux new-session -d -s "$SESSION_DOTFILES" -n dotfiles 2>/dev/null
+    tmux send-keys -t "$SESSION_DOTFILES":dotfiles 'cd ~/dotfiles/ && clear' C-m 2>/dev/null
 fi
 
 if ! tmux has-session -t "$SESSION_PI" 2>/dev/null; then
-    tmux new-session -d -s "$SESSION_PI" -n Pi 2>/dev/null
-    tmux send-keys -t "$SESSION_PI":Pi 'pi' C-m 2>/dev/null
+    tmux new-session -d -s "$SESSION_PI" -n pi 2>/dev/null
+    tmux send-keys -t "$SESSION_PI":pi 'pi' C-m 2>/dev/null
 fi
 
 if tmux has-session -t "$SESSION_MAIN" 2>/dev/null; then
