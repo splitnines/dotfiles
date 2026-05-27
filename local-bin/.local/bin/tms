@@ -6,8 +6,7 @@ SESSION_DOTFILES="dotfiles"
 SESSION_PI="pi"
 
 if ! tmux has-session -t "$SESSION_MAIN" 2>/dev/null; then
-    systemd-run --user --scope --collect --unit=tmux-keep-${USER} \
-        "$(command -v tmux)" new-session -d -s main 2>/dev/null
+   tmux new-session -d -s "$SESSION_MAIN" 2>/dev/null
 fi
 
 if ! tmux has-session -t "$SESSION_DOTFILES" 2>/dev/null; then
