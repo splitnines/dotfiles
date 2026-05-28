@@ -235,7 +235,7 @@ shopt -s cmdhist
 stty stop undef 2>/dev/null || true
 bind 'set editing-mode vi'
 bind 'set show-mode-in-prompt on'
-bind 'set vi-ins-mode-string \1\e[6 q\2'
+bind 'set vi-ins-mode-string \1\e[5 q\2'
 bind 'set vi-cmd-mode-string \1\e[2 q\2'
 bind 'set completion-ignore-case on'
 bind 'set show-all-if-ambiguous on'

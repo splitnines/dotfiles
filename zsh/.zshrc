@@ -311,10 +311,10 @@ esac
 # ===========================
 bindkey -v
 function zle-keymap-select {
-    [[ $KEYMAP == vicmd ]] && echo -ne "\e[2 q" || echo -ne "\e[6 q"
+    [[ $KEYMAP == vicmd ]] && echo -ne "\e[2 q" || echo -ne "\e[5 q"
 }
 zle -N zle-keymap-select
-function zle-line-init { zle -K viins; echo -ne "\e[6 q"; }
+function zle-line-init { zle -K viins; echo -ne "\e[5 q"; }
 zle -N zle-line-init
 function zle-line-finish { echo -ne "\e[2 q"; }
 zle -N zle-line-finish
