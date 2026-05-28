@@ -7,25 +7,19 @@ PINENTRY_GNOME3=${PINENTRY_GNOME3:-/usr/bin/pinentry-gnome3}
 PINENTRY_GTK=${PINENTRY_GTK:-/usr/bin/pinentry-gtk}
 PINENTRY_GUI=${PINENTRY_GUI:-auto}
 PINENTRY_GUI_THEME=${PINENTRY_GUI_THEME:-Pinentry-OneDark}
-LOG_FILE=${PINENTRY_WRAPPER_LOG:-}
-
-log() {
-  [[ -n $LOG_FILE ]] && printf '%s\n' "$*" >>"$LOG_FILE"
-  return 0
-}
 
 is_terminal_device() {
-  local tty=${1:-}
-  [[ -n $tty && -e $tty && -c $tty ]] || return 1
-  case $tty in
-    /dev/tty|/dev/tty[0-9]*|/dev/pts/[0-9]*|/dev/console) return 0 ;;
-    *) return 1 ;;
-  esac
+    local tty=${1:-}
+    [[ -n $tty && -e $tty && -c $tty ]] || return 1
+    case $tty in
+        /dev/tty|/dev/tty[0-9]*|/dev/pts/[0-9]*|/dev/console) return 0 ;;
+        *) return 1 ;;
+    esac
 }
 
 decode_assuan_value() {
-  local s=${1//+/ }
-  printf '%b' "${s//%/\\x}"
+    local s=${1//+/ }
+    printf '%b' "${s//%/\\x}"
 }
 
 request_tty=""
@@ -35,102 +29,100 @@ startup=()
 printf 'OK Pleased to meet you, process %s\n' "$$"
 
 while IFS= read -r line; do
-  log "agent> $line"
-
-  case $line in
-    OPTION\ ttyname=*)
-      request_tty=$(decode_assuan_value "${line#OPTION ttyname=}")
-      is_terminal_device "$request_tty" && has_request_tty=true
-      startup+=("$line")
-      printf 'OK\n'
-      ;;
-    OPTION*|SET*)
-      startup+=("$line")
-      printf 'OK\n'
-      ;;
-    BYE)
-      printf 'OK closing connection\n'
-      exit 0
-      ;;
-    GETPIN|CONFIRM|MESSAGE)
-      action=$line
-      break
-      ;;
-    *)
-      startup+=("$line")
-      printf 'OK\n'
-      ;;
-  esac
+    printf 'agent> %s\n' "$line" >> /tmp/pinentry-agent-lines.log
+    case $line in
+        OPTION\ ttyname=*)
+            request_tty=$(decode_assuan_value "${line#OPTION ttyname=}")
+            is_terminal_device "$request_tty" && has_request_tty=true
+            startup+=("$line")
+            printf 'OK\n'
+            ;;
+        SETDESC*)
+            startup+=("SETDESC Enter your GPG passphase%0A")
+            printf 'OK\n'
+            ;;
+        OPTION*|SET*)
+            startup+=("$line")
+            printf 'OK\n'
+            ;;
+        BYE)
+            printf 'OK closing connection\n'
+            exit 0
+            ;;
+        GETPIN|CONFIRM|MESSAGE)
+            action=$line
+            break
+            ;;
+        *)
+            startup+=("$line")
+            printf 'OK\n'
+            ;;
+    esac
 done
 
 if [[ $has_request_tty == false ]] && is_terminal_device "${GPG_TTY:-}"; then
-  request_tty=$GPG_TTY
-  has_request_tty=true
-  startup+=("OPTION ttyname=$GPG_TTY")
+    request_tty=$GPG_TTY
+    has_request_tty=true
+    startup+=("OPTION ttyname=$GPG_TTY")
 fi
 
 gui_backend() {
-  if [[ $PINENTRY_GUI != auto ]]; then
-    printf '%s\n' "$PINENTRY_GUI"
-    return 0
-  fi
+    if [[ $PINENTRY_GUI != auto ]]; then
+        printf '%s\n' "$PINENTRY_GUI"
+        return 0
+    fi
 
-  if [[ -x $PINENTRY_GNOME3 ]] && "$PINENTRY_GNOME3" --version >/dev/null 2>&1; then
-    printf '%s\n' "$PINENTRY_GNOME3"
-  elif [[ -x $PINENTRY_GTK ]]; then
-    printf '%s\n' "$PINENTRY_GTK"
-  else
-    printf '%s\n' /usr/bin/pinentry
-  fi
+    if [[ -x $PINENTRY_GNOME3 ]] && "$PINENTRY_GNOME3" --version >/dev/null 2>&1; then
+        printf '%s\n' "$PINENTRY_GNOME3"
+    elif [[ -x $PINENTRY_GTK ]]; then
+        printf '%s\n' "$PINENTRY_GTK"
+    else
+        printf '%s\n' /usr/bin/pinentry
+    fi
 }
 
 if [[ $has_request_tty == true && -x $PINENTRY_TTY ]]; then
-  backend=$PINENTRY_TTY
+    backend=$PINENTRY_TTY
 else
-  backend=$(gui_backend)
+    backend=$(gui_backend)
 fi
-log "backend: $backend tty=${request_tty:-none}"
 
 case $backend in
-  "$PINENTRY_GNOME3"|"$PINENTRY_GTK")
-    coproc PE { GTK_THEME="$PINENTRY_GUI_THEME" "$backend" "$@"; }
-    ;;
-  *)
-    coproc PE { "$backend" "$@"; }
-    ;;
+    "$PINENTRY_GNOME3"|"$PINENTRY_GTK")
+        coproc PE { GTK_THEME="$PINENTRY_GUI_THEME" "$backend" "$@"; }
+        ;;
+    *)
+        coproc PE { "$backend" "$@"; }
+        ;;
 esac
 
 IFS= read -r backend_line <&"${PE[0]}" || exit 1
-log "backend greeting: $backend_line"
 
 send_and_drain() {
-  local cmd=$1 resp
-  printf '%s\n' "$cmd" >&"${PE[1]}"
-  while IFS= read -r resp <&"${PE[0]}"; do
-    log "backend(setup)< $resp"
-    [[ $resp == OK* || $resp == ERR* ]] && return 0
-  done
-  return 1
+    local cmd=$1 resp
+    printf '%s\n' "$cmd" >&"${PE[1]}"
+    while IFS= read -r resp <&"${PE[0]}"; do
+        [[ $resp == OK* || $resp == ERR* ]] && return 0
+    done
+    return 1
 }
 
 for cmd in "${startup[@]}"; do
-  send_and_drain "$cmd"
+    send_and_drain "$cmd"
 done
 
 relay_command() {
-  local cmd=$1 resp
-  printf '%s\n' "$cmd" >&"${PE[1]}"
-  while IFS= read -r resp <&"${PE[0]}"; do
-    log "backend< $resp"
-    printf '%s\n' "$resp"
-    [[ $resp == OK* || $resp == ERR* ]] && return 0
-  done
-  return 1
+    local cmd=$1 resp
+    printf '%s\n' "$cmd" >&"${PE[1]}"
+    while IFS= read -r resp <&"${PE[0]}"; do
+        printf '%s\n' "$resp"
+        [[ $resp == OK* || $resp == ERR* ]] && return 0
+    done
+    return 1
 }
 
 relay_command "$action"
 while IFS= read -r line; do
-  log "agent> $line"
-  relay_command "$line" || exit 1
-  [[ $line == BYE ]] && exit 0
+    relay_command "$line" || exit 1
+    [[ $line == BYE ]] && exit 0
 done
