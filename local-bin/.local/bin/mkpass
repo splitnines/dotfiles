@@ -12,11 +12,6 @@ dep_check() {
     done
 }
 
-yank() {
-  dep_check xclip
-  xclip -selection clipboard
-}
-
 usage() {
     text="Random Password Generator"
     cols=60
@@ -49,9 +44,9 @@ while getopts :su0hyn:l: OPTIONS; do
     case $OPTIONS in
         n)  NUM=$OPTARG ;;
         l)  LEN=$OPTARG ;;
-        s)  SYMBOLS=0 ;;
-        u)  UPPER=0 ;;
-        0)  NUMBERS=0 ;;
+        s)  INCLUDE_SYMBOLS=0 ;;
+        u)  INCLUDE_UPPER=0 ;;
+        0)  INCLUDE_NUMBERS=0 ;;
         y)  COPY=1 ;;
         h)  usage ;;
         \?) usage ;;
@@ -81,12 +76,13 @@ if [[ $INCLUDE_NUMBERS == 1 ]]; then
 fi
 
 if [[ $COPY == 1 ]]; then
-    password="$(tr -dc "$CHARS" < /dev/urandom | head -c "$LEN")"
-    printf "%s" "$password" | yank
+    dep_check xclip
+    password="$(tr -dc "$CHARS" < /dev/urandom | head -c "$LEN" || true)"
+    printf "%s" "$password" | xclip -selection clipboard -in
     exit 0
 fi
 
 for ((n=1; n<=NUM; n++)); do
-    echo "$(tr -dc "$CHARS" < /dev/urandom | head -c $LEN)"
+    echo "$(tr -dc "$CHARS" < /dev/urandom | head -c $LEN || true)"
 done | column -c "$(tput cols)"
 
