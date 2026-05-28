@@ -75,14 +75,36 @@ if [[ $INCLUDE_NUMBERS == 1 ]]; then
     CHARS+=$NUMBERS
 fi
 
+check_string() {
+    local string="$1"
+
+    if [[ $INCLUDE_NUMBERS == 1 && "$string" != *[0-9]* ]]; then
+        return 1
+    fi
+
+    if [[ $INCLUDE_UPPER == 1 && "$string" != *[A-Z]* ]]; then
+        return 1
+    fi
+
+    if [[ $INCLUDE_SYMBOLS == 1 && "$string" != *[!@#\$%^\&\*\(\)_+]* ]]; then
+        return 1
+    fi
+
+    return 0
+}
+
 if [[ $COPY == 1 ]]; then
     dep_check xclip
     password="$(tr -dc "$CHARS" < /dev/urandom | head -c "$LEN" || true)"
+    while ! check_string "$password"; do
+        password="$(tr -dc "$CHARS" < /dev/urandom | head -c "$LEN" || true)"
+    done
     printf "%s" "$password" | xclip -selection clipboard -in
     exit 0
 fi
 
 for ((n=1; n<=NUM; n++)); do
-    echo "$(tr -dc "$CHARS" < /dev/urandom | head -c $LEN || true)"
+    tr -dc "$CHARS" < /dev/urandom | head -c $LEN || true
+    echo
 done | column -c "$(tput cols)"
 
