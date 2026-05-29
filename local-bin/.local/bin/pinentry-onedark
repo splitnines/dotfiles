@@ -3,6 +3,7 @@
 set -euo pipefail
 
 PINENTRY_TTY=${PINENTRY_TTY:-/usr/bin/pinentry-tty}
+PINENTRY_DEFAULT=${PINENTRY_DEFAULT:-/usr/bin/pinentry}
 PINENTRY_GNOME3=${PINENTRY_GNOME3:-/usr/bin/pinentry-gnome3}
 PINENTRY_GTK=${PINENTRY_GTK:-/usr/bin/pinentry-gtk}
 PINENTRY_GUI=${PINENTRY_GUI:-auto}
@@ -29,7 +30,6 @@ startup=()
 printf 'OK Pleased to meet you, process %s\n' "$$"
 
 while IFS= read -r line; do
-    printf 'agent> %s\n' "$line" >> /tmp/pinentry-agent-lines.log
     case $line in
         OPTION\ ttyname=*)
             request_tty=$(decode_assuan_value "${line#OPTION ttyname=}")
@@ -77,7 +77,7 @@ gui_backend() {
     elif [[ -x $PINENTRY_GTK ]]; then
         printf '%s\n' "$PINENTRY_GTK"
     else
-        printf '%s\n' /usr/bin/pinentry
+        printf '%s\n' "$PINENTRY_DEFAULT"
     fi
 }
 
