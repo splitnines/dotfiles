@@ -21,4 +21,4 @@ case "${1-}" in
 		;;
 esac
 
-curl -fsSL "$url" 2>/dev/null | mpv --loop-file=inf - >/dev/null 2>&1 &
+curl -fsSL "$url" 2>/dev/null | mpv --speed=0.25 --loop-file=inf - >/dev/null 2>&1 &
