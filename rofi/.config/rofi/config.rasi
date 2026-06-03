@@ -7,7 +7,7 @@ configuration {
 }
 
 * {
-    font: "JetBrains Mono 12";
+    font: "JetBrainsMono NL 12";
     foreground: #abb2bf;
     background-color: #1c1c1c;
     active-background: #6272a4;
