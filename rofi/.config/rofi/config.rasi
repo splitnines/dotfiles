@@ -7,7 +7,7 @@ configuration {
 }
 
 * {
-    font: "Jetbrains Mono 12";
+    font: "JetBrains Mono 12";
     foreground: #abb2bf;
     background-color: #1c1c1c;
     active-background: #6272a4;
@@ -26,6 +26,8 @@ configuration {
     border-radius:    6;
     border-color:     @bordercolor;
     padding:          15;
+    width:            30%;
+    height:           30%;
 }
 #mainbox {
     border:  0;
@@ -49,7 +51,7 @@ configuration {
 }
 #element {
     border:  0;
-    padding: 3px ;
+    padding: 1px ;
 }
 #element.normal.normal {
     background-color: @background-color;
