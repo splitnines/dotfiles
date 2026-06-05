@@ -115,10 +115,12 @@ LATEX
     -o "$outpath" \
     --from=markdown+raw_tex \
     --pdf-engine=xelatex \
+    --pdf-engine-opt=-interaction=nonstopmode \
+    --pdf-engine-opt=-halt-on-error \
     -V geometry:margin=1in \
     -V mainfont="DejaVu Serif" \
     -V sansfont="DejaVu Sans" \
-    -V monofont="JetBrainsMono Nerd Font Mono" \
+    -V monofont="JetBrains Mono" \
     -H "$tmp_header"
 )
 
