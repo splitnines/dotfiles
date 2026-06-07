@@ -54,8 +54,8 @@ bindsym F6 exec --no-startup-id brightnessctl set +5%
 bindsym F5 exec --no-startup-id brightnessctl set 5%-
 
 # Keyboard lighting
-bindsym F9 exec brightnessctl --device='tpacpi::kbd_backlight' set 2
-bindsym Shift+F9 exec brightnessctl --device='tpacpi::kbd_backlight' set 0
+bindsym $mod+F9 exec brightnessctl --device='tpacpi::kbd_backlight' set 2
+bindsym $mod+Shift+F9 exec brightnessctl --device='tpacpi::kbd_backlight' set 0
 
 # Connect to bluetooth headset
 bindsym $mod+Shift+b exec --no-startup-id ~/.local/bin/btt

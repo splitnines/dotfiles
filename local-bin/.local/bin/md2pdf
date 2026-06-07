@@ -2,9 +2,16 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: $(basename "$0") <input.md> [output.pdf]" >&2
+  echo "Usage: $(basename "$0") [--landscape] <input.md> [output.pdf]" >&2
   exit 1
 }
+
+landscape=0
+
+if [[ "${1:-}" == "--landscape" || "${1:-}" == "-l" ]]; then
+  landscape=1
+  shift
+fi
 
 [[ $# -ge 1 && $# -le 2 ]] || usage
 
@@ -109,6 +116,11 @@ cat > "$tmp_header" <<'LATEX'
 }
 LATEX
 
+geometry_opts=(-V geometry:margin=1in)
+if [[ "$landscape" -eq 1 ]]; then
+  geometry_opts+=(-V geometry:landscape)
+fi
+
 (
   cd "$indir"
   pandoc "$infile" \
@@ -117,7 +129,7 @@ LATEX
     --pdf-engine=xelatex \
     --pdf-engine-opt=-interaction=nonstopmode \
     --pdf-engine-opt=-halt-on-error \
-    -V geometry:margin=1in \
+    "${geometry_opts[@]}" \
     -V mainfont="DejaVu Serif" \
     -V sansfont="DejaVu Sans" \
     -V monofont="JetBrains Mono" \
