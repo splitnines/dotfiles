@@ -39,8 +39,8 @@ return {
     })
 
     wk.add({
-      { "<leader>",  group = "Leader",             mode = { "n", "v" } },
-      { "<leader>w", group = "Windows",            mode = { "n" } },
+      { "<leader>",  group = "Leader",                           mode = { "n", "v" } },
+      { "<leader>w", group = "Windows",                          mode = { "n" } },
       { "<leader>m", group = "Misc" },
       { "<leader>s", group = "Search" },
       { "<leader>t", group = "Toggle" },
@@ -51,6 +51,16 @@ return {
       { "z",         group = "Fold / Spell / View" },
       { "[",         group = "Previous" },
       { "]",         group = "Next" },
+      -- nvim.surround
+      { "ys",        desc = "Add surround",                      mode = "n" },
+      { "yss",       desc = "Add surround line",                 mode = "n" },
+      { "yS",        desc = "Add surround with new lines",       mode = "n" },
+      { "ySS",       desc = "Add surround line with new lines",  mode = "n" },
+      { "ds",        desc = "Delete surround",                   mode = "n" },
+      { "cs",        desc = "Change surround",                   mode = "n" },
+      { "cS",        desc = "Change surround with new lines",    mode = "n" },
+      { "S",         desc = "Surround selection",                mode = "v" },
+      { "gS",        desc = "Surround selection with new lines", mode = "v" },
     })
   end,
 }
