@@ -8,8 +8,8 @@ return {
       plugins = { spelling = true },
       presets = {
         operators = true,
-        montions = true,
-        test_objects = true,
+        motions = true,
+        text_objects = true,
         nav = true,
       },
       win = {
