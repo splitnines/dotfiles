@@ -26,7 +26,6 @@ fs() {
         -path "$path/var/run" -o \
         -path "$path/snap" -o \
         -name .git -o \
-        -name .cache -o \
         -name node_modules \
         \) -prune -o \
         -type f -readable -print 2>/dev/null |

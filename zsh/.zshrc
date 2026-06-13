@@ -251,17 +251,18 @@ setopt EXTENDED_GLOB
 # ===========================
 # Aliases
 # ===========================
-alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
-alias bt='bluetoothctl'
-alias btc='bluetoothctl connect'
-alias btC='bluetoothctl devices Connected'
-alias btd='bluetoothctl disconnect'
-alias btl='bluetoothctl devices'
 alias ....="cd ../../.."
 alias ...="cd ../.."
 alias ..="cd .."
+alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
+alias bt='bluetoothctl'
+alias btC='bluetoothctl devices Connected'
+alias btc='bluetoothctl connect'
+alias btd='bluetoothctl disconnect'
+alias btl='bluetoothctl devices'
 alias egrep='egrep --color=auto'
 alias feh='feh --image-bg black --auto-zoom --scale-down'
+alias g='git'
 alias ga='git add .'
 alias gb='git --no-pager branch'
 alias gc='git commit'
@@ -269,11 +270,11 @@ alias gcm='git commit -m'
 alias gco='git checkout'
 alias gd='git diff | nvim -'
 alias gf='git fetch'
-alias g='git'
 alias gm='git merge'
 alias grep='grep --color=auto'
 alias gs='git status'
 alias h='fc -l 1'
+alias ht='fc -li 1'
 alias l='ls --color=auto'
 alias la='ls -A'
 alias le='less -X'
@@ -283,8 +284,8 @@ alias md="mkdir -p"
 alias micc='arecord -f cd -vv -D default /dev/null'
 alias montage='feh --image-bg black --montage'
 alias nv='nvim'
-alias path='echo "$PATH" | tr ":" "\n"'
 alias p="ping"
+alias path='echo "$PATH" | tr ":" "\n"'
 alias pull='git pull'
 alias push='git push'
 alias py='python3'
@@ -292,9 +293,9 @@ alias q='exit'
 alias rcd="script -m advanced"
 alias rs="rsync -avzr"
 alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
+alias t="telnet"
 alias ta="tmux attach -t"
 alias tl="tmux ls"
-alias t="telnet"
 alias ts="tailscale"
 alias z='zathura'
 [ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
