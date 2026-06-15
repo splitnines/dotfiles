@@ -95,7 +95,7 @@ return {
       builtin.find_files({
         hidden = true,
         no_ignore = true,
-        initial_mode = "insert",
+        initial_mode = "normal",
         prompt_title = "Find Files",
       })
     end, { desc = "Search files" })
@@ -109,7 +109,7 @@ return {
     map("n", "<leader>sa", function()
       builtin.live_grep({
         cwd = vim.loop.cwd(),
-        initial_mode = "insert",
+        initial_mode = "normal",
         prompt_title = "Search All Files",
         preview_title = "Preview",
         additional_args = function()
