@@ -43,13 +43,10 @@ bindsym XF86AudioMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ t
 bindsym XF86AudioMicMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
 # Audio keybindings
-# bindsym F1 exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 bindsym F2 exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-
 bindsym F3 exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
 
 # Screen brightness control
-# bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
-# bindsym XF86MonBrightnessdown exec --no-startup-id brightnessctl set 5%-
 bindsym F6 exec --no-startup-id brightnessctl set +5%
 bindsym F5 exec --no-startup-id brightnessctl set 5%-
 
@@ -62,7 +59,6 @@ bindsym $mod+Shift+b exec --no-startup-id ~/.local/bin/btt
 
 # Start camera stream
 bindsym $mod+Shift+F4 exec --no-startup-id ~/.local/bin/camera-stream
-# for_window [class="ffplay"] floating enable, resize set 230 130
 for_window [class="ffplay"] floating enable, resize set  306 174
 
 # Start deskop recording
@@ -73,7 +69,6 @@ bindsym $mod+z exec --no-startup-id ~/.local/bin/sk
 
 # Clipboard manager
 exec --no-startup-id clipman store
-# exec --no-startup-id parcellite
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -186,7 +181,6 @@ bindsym $mod+Shift+r restart
 
 # Resize window
 mode "resize" {
-
         bindsym h resize shrink width 5 px or 5 ppt
         bindsym j resize grow height 5 px or 5 ppt
         bindsym k resize shrink height 5 px or 5 ppt
