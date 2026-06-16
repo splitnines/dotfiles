@@ -1,8 +1,12 @@
+#!/usr/bin/env bash
+
 USER_AGENT="polybar-weather (you@example.com)"
 
 # Get weather station based on coordinates
+LON=$1
+LAT=$2
 URL=$(curl -s -H "User-Agent: $USER_AGENT" \
-    "https://api.weather.gov/points/$1,$2" \
+    "https://api.weather.gov/points/$LON,$LAT" \
     | jq -r '.properties.observationStations'
 )
 
@@ -15,10 +19,9 @@ station="$(
 echo "$station"
 
 [ -z "$station" ] || [ "$station" = "null" ] && {
-  echo "Weather N/A"
+  echo "--"
   exit 0
 }
-station="LBNL1"
 curl -sf \
   -H "User-Agent: ${USER_AGENT}" \
   "https://api.weather.gov/stations/${station}/observations/latest" \

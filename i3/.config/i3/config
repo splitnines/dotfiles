@@ -79,12 +79,13 @@ bindsym $mod+Return exec --no-startup-id st
 # Kill focused window
 bindsym $mod+q kill
 
-# Start rofi
+# Rofi key bindings
 bindsym $mod+d exec rofi -config ~/.config/rofi/config.rasi -show drun
 bindsym $mod+Shift+d exec rofi -config ~/.config/rofi/config.rasi -show run
 bindsym $mod+period exec rofi -modi emoji -show emoji
 bindsym $mod+Escape exec --no-startup-id rofi -show power-menu -modi power-menu:rofi-power-menu
 bindsym $mod+p exec --no-startup-id ~/.local/bin/passmenu-rofi
+bindsym $mod+Shift+w exec --no-startup-id ~/.local/bin/weather-select
 
 # Move workspace to other monitor
 bindsym $mod+x move workspace to output next

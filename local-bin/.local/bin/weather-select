@@ -12,7 +12,7 @@ get_temp() {
     "https://api.weather.gov/stations/${station}/observations/latest" \
   | jq -r '
       if .properties.temperature.value == null
-      then "N/A"
+      then "--"
       else ((.properties.temperature.value * 9/5 + 32) | round | tostring + "°F")
       end
     '
