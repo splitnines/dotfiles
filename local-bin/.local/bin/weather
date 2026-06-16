@@ -25,7 +25,7 @@ curl -sf \
 | jq -r '
     if .properties.temperature.value == null
     then "--"
-    else ((.properties.temperature.value * 9/5 + 32) | round | tostring + "°F")
+    else ((.properties.temperature.value * 9/5 + 32) | round | tostring + "°")
     end
   '
 
