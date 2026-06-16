@@ -1,0 +1,31 @@
+USER_AGENT="polybar-weather (you@example.com)"
+
+# Get weather station based on coordinates
+URL=$(curl -s -H "User-Agent: $USER_AGENT" \
+    "https://api.weather.gov/points/$1,$2" \
+    | jq -r '.properties.observationStations'
+)
+
+station="$(
+  curl -sf \
+    -H "User-Agent: ${USER_AGENT}" "$URL" \
+  | jq -r '.features[0].properties.stationIdentifier'
+)"
+
+echo "$station"
+
+[ -z "$station" ] || [ "$station" = "null" ] && {
+  echo "Weather N/A"
+  exit 0
+}
+station="LBNL1"
+curl -sf \
+  -H "User-Agent: ${USER_AGENT}" \
+  "https://api.weather.gov/stations/${station}/observations/latest" \
+| jq -r '
+    if .properties.temperature.value == null
+    then "Weather N/A"
+    else ((.properties.temperature.value * 9/5 + 32) | round | tostring + "°F")
+    end
+  '
+

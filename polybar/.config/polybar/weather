@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+USER_AGENT="polybar-weather (you@example.com)"
+station_file="$HOME/.cache/polybar/weather-stations"
+location_file="$HOME/.cache/polybar/weather-locations"
+
+default_station="$(
+  awk -F'|' '$1 == "Home" {print $2; exit}' "$location_file"
+)"
+
+if [ -z "$default_station" ]; then
+  echo "N/A"
+  exit 0
+fi
+
+station="$default_station"
+
+if [ -s "$station_file" ]; then
+  station="$(cat "$station_file")"
+fi
+
+curl -sf \
+  -H "User-Agent: ${USER_AGENT}" \
+  "https://api.weather.gov/stations/${station}/observations/latest" \
+| jq -r '
+    if .properties.temperature.value == null
+    then "N/A"
+    else ((.properties.temperature.value * 9/5 + 32) | round | tostring + "°F")
+    end
+  '
+

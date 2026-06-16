@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+USER_AGENT="polybar-weather (you@example.com)"
+locations_file="$HOME/.cache/polybar/weather-locations"
+station_file="$HOME/.cache/polybar/weather-stations"
+
+get_temp() {
+  station="$1"
+
+  curl -sf --max-time 8 \
+    -H "User-Agent: ${USER_AGENT}" \
+    "https://api.weather.gov/stations/${station}/observations/latest" \
+  | jq -r '
+      if .properties.temperature.value == null
+      then "N/A"
+      else ((.properties.temperature.value * 9/5 + 32) | round | tostring + "°F")
+      end
+    '
+}
+
+menu="$(
+  while IFS='|' read -r name station; do
+    [ -z "$name" ] && continue
+    [ -z "$station" ] && continue
+
+    temp="$(get_temp "$station")"
+    printf "%s\t%s\t%s\n" "$name" "$temp" "$station"
+  done < "$locations_file"
+)"
+
+choice="$(
+  printf "%s\n" "$menu" |
+    awk -F'\t' '{printf "%-20s %s\n", $1, $2}' |
+    rofi -dmenu -p "Weather"
+)"
+
+[ -z "$choice" ] && exit 0
+
+selected_name="$(printf "%s\n" "$choice" | awk '{print $1}')"
+
+selected_station="$(
+  printf "%s\n" "$menu" |
+    awk -F'\t' -v name="$selected_name" '$1 == name {print $3; exit}'
+)"
+
+[ -z "$selected_station" ] && exit 1
+
+echo "$selected_station" > "$station_file"
+
+polybar-msg cmd restart >/dev/null 2>&1
