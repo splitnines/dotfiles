@@ -1,4 +1,4 @@
-# Dotfiles
+# Dotfiles **NEEDS TO BE UPDATED**
 
 Personal Linux/WSL dotfiles for shell, terminal, editor, WM, and desktop UI.
 
