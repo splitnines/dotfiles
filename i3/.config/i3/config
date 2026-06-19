@@ -24,9 +24,6 @@ exec --no-startup-id dex --autostart --environment i3
 # Start dunst
 exec_always --no-startup-id dunst
 
-# View notification history
-bindsym $mod+Shift+a exec dunstctl history-pop
-
 # Screen timeout and lock
 exec_always --no-startup-id sh -c 'sleep 1; xset s 900 0'
 exec --no-startup-id xset dpms 0 0 915
@@ -35,6 +32,56 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -c 04090e --nofork
 
 # NetwoekManager in the tray
 exec --no-startup-id nm-applet
+
+# Clipboard manager
+exec --no-startup-id clipman store
+
+# Define names for default workspaces
+set $ws1 "1:1"
+set $ws2 "2:2"
+set $ws3 "3:3"
+set $ws4 "4:4"
+set $ws5 "5:5"
+set $ws6 "6:6"
+set $ws7 "7:7"
+set $ws8 "8:8"
+set $ws9 "9:9"
+set $ws10 "10:10"
+
+# OneDark Colors
+set $bg        #282c34
+set $bg-alt    #1c1c1c
+set $fg        #abb2bf
+set $blue      #61afef
+set $gray      #5c6370
+set $darkgray  #3e4451
+set $red       #e06c75
+set $black     #000000
+
+default_border pixel 1
+default_floating_border pixel 1
+
+#                       border    bg        text   indicator child_border
+client.focused          $blue     $blue     $black $blue     $blue
+client.focused_inactive $bg-alt   $darkgray $fg    $darkgray $darkgray
+client.unfocused        $bg-alt   $bg       $gray  $bg       $darkgray
+client.urgent           $red      $red      $black $red      $red
+client.placeholder      $bg       $bg       $fg    $bg       $bg
+
+# Gaps
+gaps inner 10
+gaps outer 6
+gaps top 48
+
+# Autotiling
+exec_always --no-startup-id ~/.config/autotiling/autotiling
+
+# ==========================================#
+# Key bindings
+# ==========================================#
+
+# View notification history
+bindsym $mod+Shift+a exec dunstctl history-pop
 
 # Audio controls (PipeWire)
 bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
@@ -66,9 +113,6 @@ bindsym $mod+Shift+F5 exec --no-startup-id ~/.local/bin/ffrecord
 
 # Toggle screenkey
 bindsym $mod+z exec --no-startup-id ~/.local/bin/sk
-
-# Clipboard manager
-exec --no-startup-id clipman store
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -136,18 +180,6 @@ bindsym $mod+Shift+s sticky toggle
 # Focus the parent container
 bindsym $mod+a focus parent
 
-# Define names for default workspaces
-set $ws1 "1:1"
-set $ws2 "2:2"
-set $ws3 "3:3"
-set $ws4 "4:4"
-set $ws5 "5:5"
-set $ws6 "6:6"
-set $ws7 "7:7"
-set $ws8 "8:8"
-set $ws9 "9:9"
-set $ws10 "10:10"
-
 exec --no-startup-id i3-msg "workspace $ws1"
 
 # Switch to workspace
@@ -198,37 +230,11 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
-# OneDark Colors
-set $bg        #282c34
-set $bg-alt    #1c1c1c
-set $fg        #abb2bf
-set $blue      #61afef
-set $gray      #5c6370
-set $darkgray  #3e4451
-set $red       #e06c75
-set $black     #000000
-
-default_border pixel 1
-default_floating_border pixel 1
-
-#                       border    bg        text   indicator child_border
-client.focused          $blue     $blue     $black $blue     $blue
-client.focused_inactive $bg-alt   $darkgray $fg    $darkgray $darkgray
-client.unfocused        $bg-alt   $bg       $gray  $bg       $darkgray
-client.urgent           $red      $red      $black $red      $red
-client.placeholder      $bg       $bg       $fg    $bg       $bg
-
-# Gaps
-gaps inner 10
-gaps outer 6
-gaps top 48
-
 # Screen captures
 bindsym Print exec --no-startup-id flameshot gui
 for_window [class="flameshot"] floating enable, resize set 1000 700, move position center
 
-# Autotiling
-exec_always --no-startup-id ~/.config/autotiling/autotiling
+# ============================================================================ #
 
 # Launch programs to specific work space
 assign [class="Chromium"] $ws4
