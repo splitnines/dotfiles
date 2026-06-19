@@ -113,16 +113,28 @@ vim.keymap.set("n", "<leader>ts", function()
 end, { desc = "Toggle spell checking" })
 
 -- Line number and gutter toggle
+-- vim.keymap.set("n", "<leader>tg", function()
+--   local number_enabled = vim.wo.number
+--   local new_state = not number_enabled
+--
+--   vim.wo.number = new_state
+--   vim.wo.relativenumber = new_state
+--
+--   if new_state then
+--     vim.notify("Line numbers enabled", vim.log.levels.INFO)
+--   else
+--     vim.notify("Line numbers disabled", vim.log.levels.INFO)
+--   end
+-- end, { desc = "Toggle gutter and line numbers" })
 vim.keymap.set("n", "<leader>tg", function()
-  local number_enabled = vim.wo.number
-  local new_state = not number_enabled
+  local new_state = not vim.wo.number
 
   vim.wo.number = new_state
   vim.wo.relativenumber = new_state
+  vim.wo.signcolumn = new_state and "yes" or "no"
 
-  if new_state then
-    vim.notify("Line numbers enabled", vim.log.levels.INFO)
-  else
-    vim.notify("Line numbers disabled", vim.log.levels.INFO)
-  end
+  vim.notify(
+    new_state and "Gutter enabled" or "Gutter disabled",
+    vim.log.levels.INFO
+  )
 end, { desc = "Toggle gutter and line numbers" })
