@@ -286,8 +286,8 @@ fi
 # ===========================
 PAGER="less"
 export LESS="-R -X -F --use-color"
-export MANPAGER="less -R -X -F --use-color"
-export MANROFFOPT="-c"
+# export MANPAGER="less -R -X -F --use-color"
+# export MANROFFOPT="-c"
 export LESS_TERMCAP_me=$'\e[0m'
 export LESS_TERMCAP_se=$'\e[0m'
 export LESS_TERMCAP_ue=$'\e[0m'
@@ -295,6 +295,9 @@ export LESS_TERMCAP_md=$'\e[38;2;97;175;239m\e[1m'
 export LESS_TERMCAP_mr=$'\e[38;2;198;120;221m'
 export LESS_TERMCAP_us=$'\e[38;2;152;195;121m'
 export LESS_TERMCAP_so=$'\e[48;2;40;44;52m\e[38;2;229;192;123m'
+
+# Use nvim for viewing man pages
+export MANPAGER='nvim +Man!'
 
 # The one, true editor
 export EDITOR="nvim"
