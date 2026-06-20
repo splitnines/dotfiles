@@ -138,3 +138,11 @@ vim.keymap.set("n", "<leader>tg", function()
     vim.log.levels.INFO
   )
 end, { desc = "Toggle gutter and line numbers" })
+
+-- Force :Man to open in current window
+vim.cmd([[
+   cnoreabbrev <expr> Man
+         \ getcmdtype() ==# ':' && getcmdline() ==# 'Man'
+         \ ? 'hide Man'
+         \ : 'Man'
+   ]])
