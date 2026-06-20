@@ -120,6 +120,10 @@ floating_modifier $mod
 # Start a terminal
 bindsym $mod+Return exec --no-startup-id st
 
+# Start terminal in floating window
+bindsym $mod+Shift+Return exec --no-startup-id st -t floating-term
+for_window [title="floating-term"] floating enable, resize set 1000 px 700 px, move position center
+
 # Kill focused window
 bindsym $mod+q kill
 
@@ -169,7 +173,7 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+t layout toggle tabbed split
 
 # Toggle tiling / floating
-bindsym $mod+s floating toggle
+bindsym $mod+s floating toggle, resize set 1000 px 700 px, move position center
 
 # Change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
