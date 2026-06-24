@@ -62,37 +62,37 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 -- ======================================
 -- clangd manual attach
 -- ======================================
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "c", "cpp" },
-  callback = function()
-    local active = vim.lsp.get_clients({ name = "clangd" })
-    if #active == 0 then
-      local root = vim.fs.dirname(vim.fs.find({
-        "compile_commands.json",
-        "compile_flags.txt",
-        ".clangd",
-        ".clang-tidy",
-        ".git",
-      }, { upward = true })[1] or vim.api.nvim_buf_get_name(0))
-
-      local mason_clangd = vim.fn.expand("~/.local/share/nvim/mason/bin/clangd")
-      local clangd_path = vim.fn.executable(mason_clangd) == 1 and mason_clangd or "clangd"
-
-      vim.lsp.start({
-        name = "clangd",
-        cmd = {
-          clangd_path,
-          "--background-index",
-          "--clang-tidy",
-          "--suggest-missing-includes",
-          "--completion-style=detailed",
-          "--header-insertion=iwyu",
-        },
-        root_dir = root,
-      })
-    end
-  end,
-})
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = { "c", "cpp" },
+--   callback = function()
+--     local active = vim.lsp.get_clients({ name = "clangd" })
+--     if #active == 0 then
+--       local root = vim.fs.dirname(vim.fs.find({
+--         "compile_commands.json",
+--         "compile_flags.txt",
+--         ".clangd",
+--         ".clang-tidy",
+--         ".git",
+--       }, { upward = true })[1] or vim.api.nvim_buf_get_name(0))
+--
+--       local mason_clangd = vim.fn.expand("~/.local/share/nvim/mason/bin/clangd")
+--       local clangd_path = vim.fn.executable(mason_clangd) == 1 and mason_clangd or "clangd"
+--
+--       vim.lsp.start({
+--         name = "clangd",
+--         cmd = {
+--           clangd_path,
+--           "--background-index",
+--           "--clang-tidy",
+--           "--suggest-missing-includes",
+--           "--completion-style=detailed",
+--           "--header-insertion=iwyu",
+--         },
+--         root_dir = root,
+--       })
+--     end
+--   end,
+-- })
 
 -- ====================================
 -- Open file links in nvim
