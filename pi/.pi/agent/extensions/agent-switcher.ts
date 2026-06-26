@@ -4,13 +4,14 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { homedir } from "node:os";
 
-type AgentName = "default" | "general" | "writing" | "commit-messages";
+type AgentName = "default" | "general" | "smith" | "writing" | "commit-messages";
 
-const AGENT_NAMES: AgentName[] = ["default", "general", "writing", "commit-messages"];
+const AGENT_NAMES: AgentName[] = ["default", "general", "smith", "writing", "commit-messages"];
 const AGENT_DIR = join(homedir(), ".pi", "agent");
 const STATE_FILE = join(AGENT_DIR, "active-agent.json");
 const PROFILE_SYSTEM_FILES: Partial<Record<AgentName, string>> = {
 	general: join(AGENT_DIR, "general", "SYSTEM.md"),
+	smith: join(AGENT_DIR, "smith", "SYSTEM.md"),
 	writing: join(AGENT_DIR, "writing", "SYSTEM.md"),
 	"commit-messages": join(AGENT_DIR, "commit-messages", "SYSTEM.md"),
 };
@@ -104,7 +105,7 @@ export default function (pi: ExtensionAPI) {
 	});
 
 	pi.registerCommand("agent", {
-		description: "Switch agent profile: default, general, writing, or commit-messages",
+		description: "Switch agent profile: default, general, smith, writing, or commit-messages",
 		getArgumentCompletions: (prefix: string): AutocompleteItem[] | null => {
 			const items = AGENT_NAMES.filter((value) => value.startsWith(prefix));
 			return items.length ? items.map((value) => ({ value, label: value })) : null;

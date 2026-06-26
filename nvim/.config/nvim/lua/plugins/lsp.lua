@@ -16,7 +16,7 @@ return {
     })
 
     require("mason-lspconfig").setup({
-      ensure_installed = { "lua_ls", "clangd", "bashls", "jdtls" },
+      ensure_installed = { "lua_ls", "clangd", "bashls", "jdtls", "rust_analyzer" },
     })
 
     local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -51,6 +51,24 @@ return {
       capabilities = capabilities,
     })
     vim.lsp.enable("bashls")
+
+    cfg("rust_analyzer", {
+      cmd = { "rust-analyzer" },
+      filetypes = { "rust" },
+      root_markers = { "Cargo.toml", "rust-project.json", ".git" },
+      capabilities = capabilities,
+      settings = {
+        ["rust-analyzer"] = {
+          cargo = {
+            allFeatures = true,
+          },
+          check = {
+            command = "clippy",
+          },
+        },
+      },
+    })
+    vim.lsp.enable("rust_analyzer")
 
     local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
     local jdtls_workspace = vim.fn.stdpath("cache") .. "/jdtls-workspaces/" .. project_name
