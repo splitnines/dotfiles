@@ -56,6 +56,7 @@ if [[ ! -d "$PROJECT_NAME" ]]; then
     main_c
     makefile
     git -C "$PROJECT_NAME" init
+    touch "$PROJECT_NAME/.gitignore"
 else
     echo -e "project name \"$PROJECT_NAME\" already exists"
 fi
