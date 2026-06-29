@@ -126,6 +126,33 @@ vim.keymap.set("n", "<leader>tg", function()
 end, { desc = "Toggle gutter and line numbers" })
 
 -- Toggle zen mode
+--
+-- vim.keymap.set("n", "<leader>tz", function()
+--   zen_mode = not zen_mode
+--
+--   if zen_mode then
+--     zen_state = {
+--       number = vim.wo.number,
+--       relativenumber = vim.wo.relativenumber,
+--       signcolumn = vim.wo.signcolumn,
+--       laststatus = vim.o.laststatus,
+--     }
+--
+--     vim.wo.number = false
+--     vim.wo.relativenumber = false
+--     vim.wo.signcolumn = "no"
+--     vim.o.laststatus = 0
+--
+--     vim.notify("Zen mode enabled", vim.log.levels.INFO)
+--   else
+--     vim.wo.number = zen_state.number
+--     vim.wo.relativenumber = zen_state.relativenumber
+--     vim.wo.signcolumn = zen_state.signcolumn
+--     vim.o.laststatus = zen_state.laststatus
+--
+--     vim.notify("Zen mode disabled", vim.log.levels.INFO)
+--   end
+-- end, { desc = "Toggle Zen mode" })
 local zen_mode = false
 local zen_state = {}
 
@@ -138,19 +165,25 @@ vim.keymap.set("n", "<leader>tz", function()
       relativenumber = vim.wo.relativenumber,
       signcolumn = vim.wo.signcolumn,
       laststatus = vim.o.laststatus,
+      cmdheight = vim.o.cmdheight,
+      ruler = vim.o.ruler,
     }
 
     vim.wo.number = false
     vim.wo.relativenumber = false
     vim.wo.signcolumn = "no"
     vim.o.laststatus = 0
+    vim.o.ruler = false
+    vim.o.cmdheight = 0
 
-    vim.notify("Zen mode enabled", vim.log.levels.INFO)
+    -- vim.notify("Zen mode enabled", vim.log.levels.INFO)
   else
     vim.wo.number = zen_state.number
     vim.wo.relativenumber = zen_state.relativenumber
     vim.wo.signcolumn = zen_state.signcolumn
     vim.o.laststatus = zen_state.laststatus
+    vim.o.ruler = zen_state.ruler
+    vim.o.cmdheight = zen_state.cmdheight
 
     vim.notify("Zen mode disabled", vim.log.levels.INFO)
   end
