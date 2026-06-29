@@ -112,20 +112,6 @@ vim.keymap.set("n", "<leader>ts", function()
   end
 end, { desc = "Toggle spell checking" })
 
--- Line number and gutter toggle
--- vim.keymap.set("n", "<leader>tg", function()
---   local number_enabled = vim.wo.number
---   local new_state = not number_enabled
---
---   vim.wo.number = new_state
---   vim.wo.relativenumber = new_state
---
---   if new_state then
---     vim.notify("Line numbers enabled", vim.log.levels.INFO)
---   else
---     vim.notify("Line numbers disabled", vim.log.levels.INFO)
---   end
--- end, { desc = "Toggle gutter and line numbers" })
 vim.keymap.set("n", "<leader>tg", function()
   local new_state = not vim.wo.number
 
@@ -138,6 +124,37 @@ vim.keymap.set("n", "<leader>tg", function()
     vim.log.levels.INFO
   )
 end, { desc = "Toggle gutter and line numbers" })
+
+-- Toggle zen mode
+local zen_mode = false
+local zen_state = {}
+
+vim.keymap.set("n", "<leader>tz", function()
+  zen_mode = not zen_mode
+
+  if zen_mode then
+    zen_state = {
+      number = vim.wo.number,
+      relativenumber = vim.wo.relativenumber,
+      signcolumn = vim.wo.signcolumn,
+      laststatus = vim.o.laststatus,
+    }
+
+    vim.wo.number = false
+    vim.wo.relativenumber = false
+    vim.wo.signcolumn = "no"
+    vim.o.laststatus = 0
+
+    vim.notify("Zen mode enabled", vim.log.levels.INFO)
+  else
+    vim.wo.number = zen_state.number
+    vim.wo.relativenumber = zen_state.relativenumber
+    vim.wo.signcolumn = zen_state.signcolumn
+    vim.o.laststatus = zen_state.laststatus
+
+    vim.notify("Zen mode disabled", vim.log.levels.INFO)
+  end
+end, { desc = "Toggle Zen mode" })
 
 -- Force :Man to open in current window
 vim.cmd([[
