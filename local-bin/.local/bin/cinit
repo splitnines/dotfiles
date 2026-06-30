@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$#" -lt 1 ]; then
+if [[ "$#" -lt 1 ]]; then
     echo -e "error: project name not specified\n"
     echo -e "\tusage: cinit <project name>\n"
     exit 1
@@ -22,6 +22,7 @@ makefile() {
             printf '\n'
             printf 'SRC = $(SRCDIR)/main.c\n'
             printf 'BIN = $(BINDIR)/$(PROG)\n'
+            printf 'INSTALLDIR = /usr/local/bin'
             printf '\n'
             printf '\n'
             printf 'default: $(BIN)\n'
@@ -31,14 +32,16 @@ makefile() {
             printf '\n'
             printf 'clean:\n'
             printf '\trm -rf $(BIN)\n'
+            printf '\n'
+            printf 'install: $(BIN)\n'
+            printf '\tinstall -d $(DESTDIR)$(INSTALLDIR)\n'
+            printf '\tinstall -m 755 $(BIN) $(DESTDIR)$(INSTALLDIR)/$(PROG)'
         } > "$PROJECT_NAME/Makefile"
     fi
 }
 
 main_c() {
     if [[ ! -f "$PROJECT_NAME/src/main.c" ]]; then
-        mkdir -p "$PROJECT_NAME/src"
-        mkdir -p "$PROJECT_NAME/build"
         {
             printf '#include <stdio.h>\n'
             printf '\n'
@@ -51,12 +54,23 @@ main_c() {
     fi
 }
 
+dir_structure() {
+    mkdir -p "$PROJECT_NAME"/{src,build}
+}
+
+create_git() {
+    touch "$PROJECT_NAME/.gitignore"
+    printf 'build/\n' > "$PROJECT_NAME/.gitignore"
+    git -C "$PROJECT_NAME" init
+}
+
 if [[ ! -d "$PROJECT_NAME" ]]; then
     printf '\033[32mCreating\033[0m C project "%s"\n' "$PROJECT_NAME"
+
+    dir_structure
+    create_git
     main_c
     makefile
-    git -C "$PROJECT_NAME" init
-    touch "$PROJECT_NAME/.gitignore"
 else
     echo -e "project name \"$PROJECT_NAME\" already exists"
 fi
