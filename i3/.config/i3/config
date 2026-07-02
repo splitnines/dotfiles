@@ -121,11 +121,12 @@ bindsym $mod+z exec --no-startup-id ~/.local/bin/sk
 floating_modifier $mod
 
 # Start a terminal
-bindsym $mod+Return exec --no-startup-id st
+# bindsym $mod+Return exec --no-startup-id st
+bindsym $mod+Return exec --no-startup-id st -e tmux new-session
 
 # Start terminal in floating window
-bindsym $mod+Shift+Return exec --no-startup-id st -t floating-term
-for_window [title="floating-term"] floating enable, resize set 1000 px 700 px, move position center
+bindsym $mod+Shift+Return exec --no-startup-id st -t floating-term -e tmux new-session
+for_window [title="floating-term"] floating enable, resize set 1100 px 700 px, move position center
 
 # Kill focused window
 bindsym $mod+q kill
