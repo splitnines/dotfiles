@@ -20,23 +20,26 @@ makefile() {
             printf 'SRCDIR = src\n'
             printf 'BINDIR = build\n'
             printf '\n'
-            printf 'SRC = $(SRCDIR)/main.c\n'
-            printf 'BIN = $(BINDIR)/$(PROG)\n'
+            printf 'SRC = %s/main.c\n' "\$(SRCDIR)"
+            printf 'BIN = %s/%s\n' "\$(BINDIR)" "\$(PROG)"
             printf 'INSTALLDIR = /usr/local/bin'
             printf '\n'
             printf '\n'
-            printf 'default: $(BIN)\n'
+            printf 'default: %s\n' "\$(BIN)"
             printf '\n'
-            printf '$(BIN):\n'
-            printf '\t$(CC) $(CFLAGS) -o $(BIN) $(SRC) $(LDLIBS)\n'
+            printf '%s:\n' "\$(BIN)"
+            printf '\tmkdir -p %s\n' "\$(BINDIR)"
+            printf '\t%s %s -o %s %s %s\n' \
+                "\$(CC)" "\$(CFLAGS)" "\$(BIN)" "\$(SRC)" "\$(LDLIBS)"
             printf '\n'
             printf 'clean:\n'
-            printf '\trm -rf $(BIN)\n'
+            printf '\trm -rf %s\n' "\$(BIN)"
             printf '\n'
-            printf 'install: $(BIN)\n'
-            printf '\tinstall -d $(DESTDIR)$(INSTALLDIR)\n'
-            printf '\tinstall -m 755 $(BIN) $(DESTDIR)$(INSTALLDIR)/$(PROG)'
-        } > "$PROJECT_NAME/Makefile"
+            printf 'install: %s\n' "\$(BIN)"
+            printf '\tinstall -d %s%s\n' "\$(DESTDIR)" "\$(INSTALLDIR)"
+            printf '\tinstall -m 755 %s %s%s/%s' \
+                "\$(BIN)" "\$(DESTDIR)" "\$(INSTALLDIR)" "\$(PROG)"
+        } >"$PROJECT_NAME/Makefile"
     fi
 }
 
@@ -50,17 +53,17 @@ main_c() {
             printf '\n'
             printf '    return 0;\n'
             printf '}\n'
-        } > "$PROJECT_NAME/src/main.c"
+        } >"$PROJECT_NAME/src/main.c"
     fi
 }
 
 dir_structure() {
-    mkdir -p "$PROJECT_NAME"/{src,build}
+    mkdir -p "$PROJECT_NAME"/src
 }
 
 create_git() {
     touch "$PROJECT_NAME/.gitignore"
-    printf 'build/\n' > "$PROJECT_NAME/.gitignore"
+    printf 'build/\n' >"$PROJECT_NAME/.gitignore"
     git -C "$PROJECT_NAME" init
 }
 
