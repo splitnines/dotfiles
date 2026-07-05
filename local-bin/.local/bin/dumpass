@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
 shopt -s globstar nullglob
 
 dir="/home/rickey/.password-store"
@@ -9,7 +8,7 @@ for file in "$dir"/**/*.gpg; do
     account=${file##*store/}
     account=${account%.gpg}
 
-    decrypted=$(pass show $account)
+    decrypted=$(pass show "$account")
 
     password=$(printf '%s' "$decrypted" | awk 'NR == 1 { print; exit }')
     username=$(printf '%s' "$decrypted" | awk '/^username:/ { print $2; exit }')

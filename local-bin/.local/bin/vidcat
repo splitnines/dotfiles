@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
 if [[ $# -lt 2 ]]; then
     echo "Usage: vidcat <input-file-1> <input-file-2> ..."
     exit 1
@@ -12,21 +10,19 @@ trap 'rm -f "$tmpfile"' EXIT
 ts="$(date "+%Y-%m-%d_%H_%M_%S")"
 output_file="video-$ts.mp4"
 
-count=1
-for file in $@; do
-    echo "file '"$(realpath $file)"'"
-done > $tmpfile
+for file in "$@"; do
+    echo "file $(realpath "$file")"
+done >"$tmpfile"
 
 cat "$tmpfile"
 
-ffmpeg -f concat -safe 0 -i "$tmpfile" -c copy "$output_file"  >/dev/null 2>&1
+ffmpeg -f concat -safe 0 -i "$tmpfile" -c copy "$output_file" >/dev/null 2>&1
 
 echo "Saved to: $output_file"
 
 mkdir -p tmp
-for file in $@; do
-    mv $file tmp/
+for file in "$@"; do
+    mv "$file" tmp/
 done
 
 echo "Individual files moved to ./tmp"
-

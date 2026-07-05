@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 url_local='https://radar.weather.gov/ridge/standard/KDAX_loop.gif'
 url_national='https://radar.weather.gov/ridge/standard/CONUS-LARGE_loop.gif'
@@ -9,16 +8,16 @@ url_national='https://radar.weather.gov/ridge/standard/CONUS-LARGE_loop.gif'
 url="$url_local"
 
 case "${1-}" in
-	n)
-		url="$url_national"
-		;;
-	"")
-		;;
-	*)
-		printf 'get-weather: unknown option: %s\n' "${1-}" >&2
-		notify-send -t 5000 -u critical "get-weather: unknown option ${1-}"
-		exit 1
-		;;
+n)
+	url="$url_national"
+	;;
+"")
+	;;
+*)
+	printf 'get-weather: unknown option: %s\n' "${1-}" >&2
+	notify-send -t 5000 -u critical "get-weather: unknown option ${1-}"
+	exit 1
+	;;
 esac
 
 curl -fsSL "$url" 2>/dev/null | mpv --speed=0.25 --loop-file=inf - >/dev/null 2>&1 &

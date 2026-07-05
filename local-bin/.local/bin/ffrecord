@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 record_dir="$HOME/videos"
 pid_file="${XDG_RUNTIME_DIR:-/tmp}/ffrecord.pid"
@@ -13,8 +12,8 @@ notify() {
 
 extract_geometry() {
     line="$(
-    	xrandr --listmonitors |
-    	awk '
+        xrandr --listmonitors |
+            awk '
     	    NR == 1 {
     	    	count = $2
     	    	next
@@ -23,25 +22,25 @@ extract_geometry() {
     	    count < 2  && $1 ~ /^0:/ { print; exit }
     	'
     )"
-    
+
     if [[ -z "${line}" ]]; then
-    	printf 'failed to determine monitor geometry\n' >&2
-        notify-send -t 5000 -u critial "failed tp determine monitor geometry" 
-    	exit 1
+        printf 'failed to determine monitor geometry\n' >&2
+        notify-send -t 5000 -u critial "failed tp determine monitor geometry"
+        exit 1
     fi
-    
+
     geometry="$(awk '{ print $3 }' <<<"$line")"
-    
+
     if [[ ! $geometry =~ ^([0-9]+)/[0-9]+x([0-9]+)/[0-9]+\+([0-9]+)\+([0-9]+)$ ]]; then
-    	printf 'failed to parse geometry: %s\n' "$geometry" >&2
-        notify-send -t 5000 -u critial "failed to parse geometry" 
-    	exit 1
+        printf 'failed to parse geometry: %s\n' "$geometry" >&2
+        notify-send -t 5000 -u critial "failed to parse geometry"
+        exit 1
     fi
-    
+
     width="${BASH_REMATCH[1]}"
     height="${BASH_REMATCH[2]}"
     x="${BASH_REMATCH[3]}"
-    y="${BASH_REMATCH[4]}"
+    # y="${BASH_REMATCH[4]}"
 
 }
 
@@ -57,7 +56,7 @@ start_recording() {
 
     nohup ffmpeg \
         -s "${width}"x"${height}" \
-	-framerate 30 \
+        -framerate 30 \
         -f x11grab \
         -i :0.0+"${x}",0 \
         -f alsa \
@@ -69,9 +68,9 @@ start_recording() {
         -c:a aac \
         -b:a 192k \
         "$output" \
-        >/dev/null 2>&1 < /dev/null &
+        >/dev/null 2>&1 </dev/null &
 
-    echo "$!" > "$pid_file"
+    echo "$!" >"$pid_file"
     notify "Screen recording started" "$output"
     printf 'started recording: %s\n' "$output"
 }

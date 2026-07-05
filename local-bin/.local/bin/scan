@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # scan: YARA hunt wrapper with nightly/weekly/monthly scan profiles.
 
-set -uo pipefail
-
 prog="${0##*/}"
 
 scan_user="${SCAN_USER:-${SUDO_USER:-${USER:-}}}"
@@ -20,7 +18,6 @@ fi
 [[ -n "$scan_home" ]] || scan_home="$HOME"
 
 rules_dir="$scan_home/.local/share/yara"
-
 
 cadence="nightly"
 rules_file=""
@@ -86,78 +83,107 @@ set_cadence_rules() {
     fi
 
     case "$cadence" in
-        nightly)
-            rules_file="$rules_dir/linux_persistence_hunt_nightly_focused.yar"
-            ;;
-        weekly)
-            rules_file="$rules_dir/linux_persistence_hunt_weekly_balanced.yar"
-            ;;
-        monthly)
-            rules_file="$rules_dir/linux_persistence_hunt_monthly_broad.yar"
-            ;;
-        *)
-            printf '%s: [%s] error invalid cadence: %s\n' \
-                "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" >&2
-            exit 2
-            ;;
+    nightly)
+        rules_file="$rules_dir/linux_persistence_hunt_nightly_focused.yar"
+        ;;
+    weekly)
+        rules_file="$rules_dir/linux_persistence_hunt_weekly_balanced.yar"
+        ;;
+    monthly)
+        rules_file="$rules_dir/linux_persistence_hunt_monthly_broad.yar"
+        ;;
+    *)
+        printf '%s: [%s] error invalid cadence: %s\n' \
+            "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" >&2
+        exit 2
+        ;;
     esac
 }
 
 while (($#)); do
     case "$1" in
-        --nightly)
-            cadence="nightly"; shift ;;
-        --weekly)
-            cadence="weekly"; shift ;;
-        --monthly)
-            cadence="monthly"; shift ;;
-        -c|--cadence)
-            [[ $# -ge 2 ]] || {
-                printf '%s: [%s] error missing argument for %s\n' \
-                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
-                exit 2
-            }
-            cadence="$2"; shift 2 ;;
-        -r|--rules)
-            [[ $# -ge 2 ]] || {
-                printf '%s: [%s] error missing argument for %s\n' \
-                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
-                exit 2
-            }
-            rules_file="$2"; shift 2 ;;
-        -t|--target)
-            [[ $# -ge 2 ]] || {
-                printf '%s: [%s] error missing argument for %s\n' \
-                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
-                exit 2
-            }
-            target="$2"; shift 2 ;;
-        -a|--all)
-            include_all=1; shift ;;
-        -s|--strings)
-            show_strings=1; shift ;;
-        -j|--json)
-            json_output=1; shift ;;
-        -o|--output)
-            [[ $# -ge 2 ]] || {
-                printf '%s: [%s] error missing argument for %s\n' \
-                    "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
-                exit 2
-            }
-            output_file="$2"; shift 2 ;;
-        -l|--list-files)
-            list_files=1; shift ;;
-        -h|--help)
-            usage; exit 0 ;;
-        --)
-            shift; break ;;
-        -*)
-            printf '%s: [%s] error unknown option: %s\n' \
+    --nightly)
+        cadence="nightly"
+        shift
+        ;;
+    --weekly)
+        cadence="weekly"
+        shift
+        ;;
+    --monthly)
+        cadence="monthly"
+        shift
+        ;;
+    -c | --cadence)
+        [[ $# -ge 2 ]] || {
+            printf '%s: [%s] error missing argument for %s\n' \
                 "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
-            usage >&2
-            exit 2 ;;
-        *)
-            target="$1"; shift ;;
+            exit 2
+        }
+        cadence="$2"
+        shift 2
+        ;;
+    -r | --rules)
+        [[ $# -ge 2 ]] || {
+            printf '%s: [%s] error missing argument for %s\n' \
+                "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
+            exit 2
+        }
+        rules_file="$2"
+        shift 2
+        ;;
+    -t | --target)
+        [[ $# -ge 2 ]] || {
+            printf '%s: [%s] error missing argument for %s\n' \
+                "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
+            exit 2
+        }
+        target="$2"
+        shift 2
+        ;;
+    -a | --all)
+        include_all=1
+        shift
+        ;;
+    -s | --strings)
+        show_strings=1
+        shift
+        ;;
+    -j | --json)
+        json_output=1
+        shift
+        ;;
+    -o | --output)
+        [[ $# -ge 2 ]] || {
+            printf '%s: [%s] error missing argument for %s\n' \
+                "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
+            exit 2
+        }
+        output_file="$2"
+        shift 2
+        ;;
+    -l | --list-files)
+        list_files=1
+        shift
+        ;;
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    --)
+        shift
+        break
+        ;;
+    -*)
+        printf '%s: [%s] error unknown option: %s\n' \
+            "$(date '+%b %d %T.%3N %Z')" "$prog" "$1" >&2
+        usage >&2
+        exit 2
+        ;;
+    *)
+        target="$1"
+        shift
+        ;;
     esac
 done
 
@@ -176,7 +202,7 @@ if ! command -v yara >/dev/null 2>&1; then
     exit 2
 fi
 
-if (( json_output == 1 )) && ! command -v jq >/dev/null 2>&1; then
+if ((json_output == 1)) && ! command -v jq >/dev/null 2>&1; then
     printf '%s: [%s] error jq command not found, required for --json\n' \
         "$(date '+%b %d %T.%3N %Z')" "$prog" >&2
     exit 2
@@ -190,13 +216,13 @@ fi
 
 if [[ ! -e "$target" ]]; then
     printf '%s: [%s] error target does not exist: %s\n' \
-       "$(date '+%b %d %T.%3N %Z')" "$prog" "$target" >&2
+        "$(date '+%b %d %T.%3N %Z')" "$prog" "$target" >&2
     exit 2
 fi
 
 if ! yara -w "$rules_file" /dev/null >/dev/null 2>&1; then
     printf '%s: [%s] error rules file failed to compile: %s\n' \
-       "$(date '+%b %d %T.%3N %Z')" "$prog" "$rules_file" >&2
+        "$(date '+%b %d %T.%3N %Z')" "$prog" "$rules_file" >&2
     yara "$rules_file" /dev/null >&2
     exit 2
 fi
@@ -205,7 +231,7 @@ scan_file() {
     local file=$1 output rc escaped_file escaped_output
     local yara_args=(-q)
 
-    if (( show_strings == 1 )); then
+    if ((show_strings == 1)); then
         yara_args=(-q -s)
     fi
 
@@ -213,9 +239,9 @@ scan_file() {
     output=$(yara "${yara_args[@]}" "$rules_file" "$file" 2>&1)
     rc=$?
 
-    if (( rc != 0 )); then
+    if ((rc != 0)); then
         ((error_count++))
-        if (( json_output == 1 )); then
+        if ((json_output == 1)); then
             escaped_file=$(printf '%s' "$file" | json_escape)
             escaped_output=$(printf '%s' "$output" | json_escape)
             printf '{"date":"%s","program":"%s","cadence":"%s","file":"%s","result":"error","output":"%s"}\n' \
@@ -229,7 +255,7 @@ scan_file() {
 
     if [[ -n "$output" ]]; then
         ((match_count++))
-        if (( json_output == 1 )); then
+        if ((json_output == 1)); then
             escaped_file=$(printf '%s' "$file" | json_escape)
             escaped_output=$(printf '%s' "$output" | json_escape)
             printf '{"date":"%s","program":"%s","cadence":"%s","file":"%s","result":"match","output":"%s"}\n' \
@@ -244,16 +270,16 @@ scan_file() {
 }
 
 print_header() {
-    (( json_output == 1 )) && return
+    ((json_output == 1)) && return
 
     local mode
-    if (( include_all == 1 )); then
+    if ((include_all == 1)); then
         mode="all"
     else
         mode="$cadence"
     fi
 
-    if (( list_files == 1 )); then
+    if ((list_files == 1)); then
         printf '%s: [%s] listing files, rules: %s, target: %s, mode: %s\n' \
             "$(date '+%b %d %T.%3N %Z')" "$prog" "$rules_file" "$target" "$mode"
     else
@@ -361,22 +387,22 @@ run_find_weekly() {
         ! -name 'linux_persistence_hunt_weekly_balanced.yar' \
         ! -name 'linux_persistence_hunt_monthly_broad.yar' \
         \( \
-            -perm /111 -o \
-            -name '*.sh' -o \
-            -name '*.bash' -o \
-            -name '*.zsh' -o \
-            -name '*.ksh' -o \
-            -name '*.py' -o \
-            -name '*.pl' -o \
-            -name '*.rb' -o \
-            -name '*.php' -o \
-            -name '*.service' -o \
-            -name '*.timer' -o \
-            -name '*.desktop' -o \
-            -name '*.so' -o \
-            -name '*.conf' -o \
-            -name 'authorized_keys' -o \
-            -name 'crontab' \
+        -perm /111 -o \
+        -name '*.sh' -o \
+        -name '*.bash' -o \
+        -name '*.zsh' -o \
+        -name '*.ksh' -o \
+        -name '*.py' -o \
+        -name '*.pl' -o \
+        -name '*.rb' -o \
+        -name '*.php' -o \
+        -name '*.service' -o \
+        -name '*.timer' -o \
+        -name '*.desktop' -o \
+        -name '*.so' -o \
+        -name '*.conf' -o \
+        -name 'authorized_keys' -o \
+        -name 'crontab' \
         \) \
         -print0 2>/dev/null
 }
@@ -385,18 +411,18 @@ export LC_ALL=C
 
 print_header
 
-if (( include_all == 1 )); then
+if ((include_all == 1)); then
     finder=run_find_all
 else
     case "$cadence" in
-        nightly) finder=run_find_nightly ;;
-        weekly) finder=run_find_weekly ;;
-        monthly) finder=run_find_all ;;
-        *) finder=run_find_nightly ;;
+    nightly) finder=run_find_nightly ;;
+    weekly) finder=run_find_weekly ;;
+    monthly) finder=run_find_all ;;
+    *) finder=run_find_nightly ;;
     esac
 fi
 
-if (( list_files == 1 )); then
+if ((list_files == 1)); then
     while IFS= read -r -d '' file; do
         printf '%s\n' "$file"
         ((file_count++))
@@ -411,7 +437,7 @@ while IFS= read -r -d '' file; do
     scan_file "$file"
 done < <("$finder")
 
-if (( json_output == 1 )); then
+if ((json_output == 1)); then
     printf '{"%s results":{"date":"%s","cadence":"%s","files scanned":%d,"matches":%d,"errors":%d}}\n' \
         "$prog" "$(date '+%b %d %T.%3N %Z')" "$cadence" "$file_count" "$match_count" "$error_count"
 else
@@ -419,11 +445,10 @@ else
         "$(date '+%b %d %T.%3N %Z')" "$prog" "$cadence" "$file_count" "$match_count" "$error_count"
 fi
 
-if (( error_count > 0 )); then
+if ((error_count > 0)); then
     exit 2
-elif (( match_count > 0 )); then
+elif ((match_count > 0)); then
     exit 1
 else
     exit 0
 fi
-

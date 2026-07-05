@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 dep_check() {
     local cmd
@@ -30,34 +29,34 @@ FILENAME=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        -s)
-            if [[ $# -lt 2 || "${2:0:1}" == "-" ]]; then
-               echo "ERROR: -s requires a scanner device string"
-               exit 1
-           fi
-           DEVICE="$2"
-           shift 2
-           ;;
-        -i)
-            if [[ -n "$SCANTYPE" ]]; then
-                echo "ERROR: only one scan type may be selected: -i or -d"
-                exit 1
-            fi
-            SCANTYPE="image"
-            shift
-            ;;
-        -d)
-            if [[ -n "$SCANTYPE" ]]; then
-                echo "ERROR: only one scan type may be selected: -i or -d"
-                exit 1
-            fi
-            SCANTYPE="document"
-            shift
-            ;;
-        *) 
-           echo "ERROR: unknown option: $1"
-           exit 1
-           ;;
+    -s)
+        if [[ $# -lt 2 || "${2:0:1}" == "-" ]]; then
+            echo "ERROR: -s requires a scanner device string"
+            exit 1
+        fi
+        DEVICE="$2"
+        shift 2
+        ;;
+    -i)
+        if [[ -n "$SCANTYPE" ]]; then
+            echo "ERROR: only one scan type may be selected: -i or -d"
+            exit 1
+        fi
+        SCANTYPE="image"
+        shift
+        ;;
+    -d)
+        if [[ -n "$SCANTYPE" ]]; then
+            echo "ERROR: only one scan type may be selected: -i or -d"
+            exit 1
+        fi
+        SCANTYPE="document"
+        shift
+        ;;
+    *)
+        echo "ERROR: unknown option: $1"
+        exit 1
+        ;;
     esac
 done
 
@@ -80,11 +79,10 @@ elif [[ "$SCANTYPE" == "document" ]]; then
     echo "Scanning document..."
     scanimage -d "$DEVICE" --format=tiff --resolution 300 |
         magick tiff:- \
-        -colorspace Gray \
-        -auto-level \
-        -contrast-stretch 1%x1% \
-        -sharpen 0x1 \
-        "$FILENAME"
+            -colorspace Gray \
+            -auto-level \
+            -contrast-stretch 1%x1% \
+            -sharpen 0x1 \
+            "$FILENAME"
     echo "Document scan saved to: $FILENAME"
 fi
-

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # ~/.local/bin/btt
 
-set -euo pipefail
-
 target_mac="50:5E:5C:07:3C:D3"
 
 error() {
     local msg="$1"
-    local date_time=$(date '+%b %d  %T.%3N')
+    local date_time
+
+    date_time=$(date '+%b %d  %T.%3N')
     printf '%s: %s\n' "$date_time" "$msg" >&2
     notify-send -t 5000 -u critical "$date_time: $msg"
     exit 1

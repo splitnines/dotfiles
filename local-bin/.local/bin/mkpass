@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
 dep_check() {
     local cmd
     for cmd in "$@"; do
@@ -28,7 +26,6 @@ usage() {
     exit 1
 }
 
-
 NUM=12
 LEN=16
 INCLUDE_SYMBOLS=1
@@ -42,16 +39,16 @@ NUMBERS="0-9"
 
 while getopts :su0hyn:l: OPTIONS; do
     case $OPTIONS in
-        n)  NUM=$OPTARG ;;
-        l)  LEN=$OPTARG ;;
-        s)  INCLUDE_SYMBOLS=0 ;;
-        u)  INCLUDE_UPPER=0 ;;
-        0)  INCLUDE_NUMBERS=0 ;;
-        y)  COPY=1 ;;
-        h)  usage ;;
-        \?) usage ;;
-        :)  usage ;;
-        *)  usage ;;
+    n) NUM=$OPTARG ;;
+    l) LEN=$OPTARG ;;
+    s) INCLUDE_SYMBOLS=0 ;;
+    u) INCLUDE_UPPER=0 ;;
+    0) INCLUDE_NUMBERS=0 ;;
+    y) COPY=1 ;;
+    h) usage ;;
+    \?) usage ;;
+    :) usage ;;
+    *) usage ;;
     esac
 done
 shift $((OPTIND - 1))
@@ -95,16 +92,15 @@ check_string() {
 
 if [[ $COPY == 1 ]]; then
     dep_check xclip
-    password="$(tr -dc "$CHARS" < /dev/urandom | head -c "$LEN" || true)"
+    password="$(tr -dc "$CHARS" </dev/urandom | head -c "$LEN" || true)"
     while ! check_string "$password"; do
-        password="$(tr -dc "$CHARS" < /dev/urandom | head -c "$LEN" || true)"
+        password="$(tr -dc "$CHARS" </dev/urandom | head -c "$LEN" || true)"
     done
     printf "%s" "$password" | xclip -selection clipboard -in
     exit 0
 fi
 
-for ((n=1; n<=NUM; n++)); do
-    tr -dc "$CHARS" < /dev/urandom | head -c $LEN || true
+for ((n = 1; n <= NUM; n++)); do
+    tr -dc "$CHARS" </dev/urandom | head -c "$LEN" || true
     echo
 done | column -c "$(tput cols)"
-

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 usage() {
     echo "Usage: $(basename "$0") [--landscape] <input.md> [output.pdf]" >&2
@@ -18,7 +17,10 @@ fi
 in="$1"
 out="${2:-}"
 
-[[ -f "$in" ]] || { echo "Error: file not found: $in" >&2; exit 1; }
+[[ -f "$in" ]] || {
+    echo "Error: file not found: $in" >&2
+    exit 1
+}
 
 indir="$(cd "$(dirname "$in")" && pwd)"
 infile="$(basename "$in")"
@@ -41,7 +43,7 @@ tmp_header="$(mktemp)"
 tmp_filter="$(mktemp)"
 trap 'rm -rf "$tmp_header" "$tmp_filter"' EXIT
 
-cat > "$tmp_header" <<'LATEX'
+cat >"$tmp_header" <<'LATEX'
 \usepackage{xurl}
 \usepackage{fvextra}
 \usepackage{xcolor}
@@ -118,7 +120,7 @@ cat > "$tmp_header" <<'LATEX'
 }
 LATEX
 
-cat > "$tmp_filter" << 'LUA'
+cat >"$tmp_filter" <<'LUA'
 function HorizontalRule()
     return pandoc.RawBlock('latex', '\\noindent\\rule{\\linewidth}{0.6pt}')
 end
@@ -130,7 +132,7 @@ if [[ "$landscape" -eq 1 ]]; then
 fi
 
 (
-    cd "$indir"
+    cd "$indir" || exit 1
     pandoc "$infile" \
         -o "$outpath" \
         --from=markdown+raw_tex \
@@ -144,6 +146,6 @@ fi
         -V monofont="JetBrains Mono" \
         -V linestretch=1.3 \
         -H "$tmp_header"
-    )
+)
 
-    echo "Created: $outpath"
+echo "Created: $outpath"
