@@ -178,7 +178,7 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+t focus parent, layout toggle tabbed splith, focus child
 
 # Toggle tiling / floating
-bindsym $mod+s floating toggle, resize set 1000 px 700 px, move position center
+bindsym $mod+s floating toggle, resize set 1100 px 700 px, move position center
 
 # Change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
