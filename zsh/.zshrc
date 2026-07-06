@@ -53,7 +53,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-
 # ===========================
 # Prioritize local fzf install
 # ===========================
@@ -224,8 +223,6 @@ ENABLE_CORRECTION="true"
 # pager and man page settings
 PAGER="less"
 export LESS="-R --use-color"
-# export MANPAGER="less -R --use-color"
-# export MANROFFOPT="-c"
 export LESS_TERMCAP_me=$'\e[0m'
 export LESS_TERMCAP_se=$'\e[0m'
 export LESS_TERMCAP_ue=$'\e[0m'
@@ -566,3 +563,7 @@ if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
     export GPG_TTY="$(tty)"
     gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
 fi
+
+# CML environment variables
+export CISCO_USER=cisco
+export CISCO_PASS=cisco

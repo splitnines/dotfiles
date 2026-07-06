@@ -1,8 +1,8 @@
 set -o vi
 
 case $- in
-    *i*) ;;
-    *) return ;;
+*i*) ;;
+*) return ;;
 esac
 
 # Turn off ctrl-c echo
@@ -25,23 +25,23 @@ shopt -s checkwinsize
 # Path
 # ===========================
 PATH="/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
-[[ -d "$HOME/.local/bin" ]] && \
+[[ -d "$HOME/.local/bin" ]] &&
     PATH="$PATH:$HOME/.local/bin"
 [[ -d "$HOME/bin" ]] && PATH=$PATH:"$HOME/bin"
 # Ubuntu
-[[ -d "/snap/bin" ]] && \
+[[ -d "/snap/bin" ]] &&
     PATH="$PATH:/snap/bin"
-[[ -d "$HOME/.cargo/bin" ]] && \
+[[ -d "$HOME/.cargo/bin" ]] &&
     PATH="$PATH:$HOME/.cargo/bin"
-[[ -d "/usr/local/go/bin" ]] && \
+[[ -d "/usr/local/go/bin" ]] &&
     PATH="$PATH:/usr/local/go/bin"
-[[ -d "$HOME/.opencode/bin" ]] && \
+[[ -d "$HOME/.opencode/bin" ]] &&
     PATH="$PATH:$HOME/.opencode/bin"
 # Pi on Arch
-[[ -d "$HOME/.local/share/npm/bin" ]] && \
+[[ -d "$HOME/.local/share/npm/bin" ]] &&
     PATH="$PATH:$HOME/.local/share/npm/bin"
 # Pi on Ubuntu
-[[ -d "$HOME/.local/share/pi-node/current/bin" ]] && \
+[[ -d "$HOME/.local/share/pi-node/current/bin" ]] &&
     PATH="$PATH:$HOME/.local/share/pi-node/current/bin"
 
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
@@ -113,23 +113,23 @@ __auto_venv() {
 
     if [[ -n "$__auto_venv_path" ]]; then
         if [[ -z "$found_venv" ]]; then
-           if command -v deactivate >/dev/null 2>&1; then
-               deactivate >/dev/null 2>&1 || true
-           else
-               PATH=$(printf '%s' "$PATH" | tr ':' '\n' | grep -v "^$__auto_venv_path/bin$" | paste -sd:)
-               export PATH
-               unset VIRTUAL_ENV
-           fi
-           __auto_venv_path=''
-           return 0
-       fi
+            if command -v deactivate >/dev/null 2>&1; then
+                deactivate >/dev/null 2>&1 || true
+            else
+                PATH=$(printf '%s' "$PATH" | tr ':' '\n' | grep -v "^$__auto_venv_path/bin$" | paste -sd:)
+                export PATH
+                unset VIRTUAL_ENV
+            fi
+            __auto_venv_path=''
+            return 0
+        fi
 
-       if [[ "$found_venv" != "$__auto_venv_path" ]]; then
-           if command -v deactivate >/dev/null 2>&1; then
-               deactivate >/dev/null 2>&1 || true
-           fi
-           __auto_venv_path=''
-       fi
+        if [[ "$found_venv" != "$__auto_venv_path" ]]; then
+            if command -v deactivate >/dev/null 2>&1; then
+                deactivate >/dev/null 2>&1 || true
+            fi
+            __auto_venv_path=''
+        fi
     fi
 
     if [[ -n "$found_venv" ]]; then
@@ -149,20 +149,20 @@ __auto_venv() {
 # ===========================
 # identify the os for building the prompt
 __os_icon() {
-  local os=""
+    local os=""
 
-  if [[ -r /etc/os-release ]]; then
-    . /etc/os-release
-    os="$ID"
-  fi
+    if [[ -r /etc/os-release ]]; then
+        . /etc/os-release
+        os="$ID"
+    fi
 
-  if [[ "$os" == "arch" ]]; then
-    printf ""
-  elif [[ "$os" == "ubuntu" ]]; then
-    printf ""
-  else
-    printf "@"
-  fi
+    if [[ "$os" == "arch" ]]; then
+        printf ""
+    elif [[ "$os" == "ubuntu" ]]; then
+        printf ""
+    else
+        printf "@"
+    fi
 }
 
 __git_branch_name() {
@@ -174,9 +174,9 @@ __git_is_dirty() {
     git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 1
     git update-index -q --refresh >/dev/null 2>&1
 
-    ! git diff --quiet --ignore-submodules --cached 2>/dev/null || \
-    ! git diff --quiet --ignore-submodules 2>/dev/null || \
-    [[ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]]
+    ! git diff --quiet --ignore-submodules --cached 2>/dev/null ||
+        ! git diff --quiet --ignore-submodules 2>/dev/null ||
+        [[ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]]
 }
 
 __set_prompt() {
@@ -222,9 +222,9 @@ __set_prompt() {
     PS1="${prompt_color}\n${venv_segment}${info_color}\u${prompt_symbol}\h ${prompt_color}${info_color}\w${prompt_color}${git_segment}\n${info_color}${dollar}\[\033[0m\] "
 
     case "$TERM" in
-        xterm*|rxvt*)
-            PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]${PS1}"
-            ;;
+    xterm* | rxvt*)
+        PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]${PS1}"
+        ;;
     esac
 }
 
@@ -341,11 +341,11 @@ fi
 # fzf integration and functiions
 # ===========================
 if [[ -f ~/.fzf/shell/key-bindings.bash ]]; then
-  source ~/.fzf/shell/key-bindings.bash
+    source ~/.fzf/shell/key-bindings.bash
 fi
 
 if [[ -f ~/.fzf/shell/completion.bash ]]; then
-  source ~/.fzf/shell/completion.bash
+    source ~/.fzf/shell/completion.bash
 fi
 
 # ===========================
@@ -362,26 +362,26 @@ export FZF_DEFAULT_OPTS="
 "
 # Search command history
 fh() {
-  local cmd
-  cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' | sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
-  eval "$cmd"
+    local cmd
+    cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' | sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
+    eval "$cmd"
 }
 
 # Search with preview
 fv() {
-  local file
-  file=$(find . -type f | fzf \
-    --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-    --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0)
-  [[ -n "$file" ]] && nvim "$file"
+    local file
+    file=$(find . -type f | fzf \
+        --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
+        --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0)
+    [[ -n "$file" ]] && nvim "$file"
 }
 
 # Search cd history
 cdh() {
-  local dir
-  dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
-  [[ -z "$dir" ]] && return
-  [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
+    local dir
+    dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
+    [[ -z "$dir" ]] && return
+    [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
 }
 
 fcd() {
@@ -406,48 +406,48 @@ fcd() {
 
 # Search and kill processes
 fk() {
-  ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
+    ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
 }
 
 # ===========================
 # Python environment helpers
 # ===========================
 pyon() {
-  local venv_dir
-  if [[ -n "$1" ]]; then
-    venv_dir="$1"
-  elif [[ -d .venv ]]; then
-    venv_dir=".venv"
-  elif [[ -d venv ]]; then
-    venv_dir="venv"
-  else
-    echo "${E_RED:-}No virtual environment found.${E_RESET:-}"
-    return 1
-  fi
+    local venv_dir
+    if [[ -n "$1" ]]; then
+        venv_dir="$1"
+    elif [[ -d .venv ]]; then
+        venv_dir=".venv"
+    elif [[ -d venv ]]; then
+        venv_dir="venv"
+    else
+        echo "${E_RED:-}No virtual environment found.${E_RESET:-}"
+        return 1
+    fi
 
-  if [[ ! -f "$venv_dir/bin/activate" ]]; then
-    echo "${E_RED:-}No activate script found in $venv_dir/bin.${E_RESET:-}"
-    return 1
-  fi
+    if [[ ! -f "$venv_dir/bin/activate" ]]; then
+        echo "${E_RED:-}No activate script found in $venv_dir/bin.${E_RESET:-}"
+        return 1
+    fi
 
-  echo "${E_GREEN:-}Activating Python environment: ${E_BLUE:-}${venv_dir}${E_RESET:-}"
-  source "$venv_dir/bin/activate"
+    echo "${E_GREEN:-}Activating Python environment: ${E_BLUE:-}${venv_dir}${E_RESET:-}"
+    source "$venv_dir/bin/activate"
 }
 
 pyoff() {
-  if [[ -z "$VIRTUAL_ENV" ]]; then
-    echo "${E_RED:-}No virtual environment active.${E_RESET:-}"
-    return 1
-  fi
-  if type deactivate &>/dev/null; then
-    deactivate
-    echo "${E_ORANGE:-}Python environment deactivated.${E_RESET:-}"
-  else
-    PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$VIRTUAL_ENV/bin" | paste -sd:)
-    export PATH
-    unset VIRTUAL_ENV
-    echo "${E_ORANGE:-}Python environment deactivated (manual cleanup).${E_RESET:-}"
-  fi
+    if [[ -z "$VIRTUAL_ENV" ]]; then
+        echo "${E_RED:-}No virtual environment active.${E_RESET:-}"
+        return 1
+    fi
+    if type deactivate &>/dev/null; then
+        deactivate
+        echo "${E_ORANGE:-}Python environment deactivated.${E_RESET:-}"
+    else
+        PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$VIRTUAL_ENV/bin" | paste -sd:)
+        export PATH
+        unset VIRTUAL_ENV
+        echo "${E_ORANGE:-}Python environment deactivated (manual cleanup).${E_RESET:-}"
+    fi
 }
 
 # ===========================
@@ -458,56 +458,56 @@ WEATHER_CITIES_FILE="$HOME/.config/zsh/weather_cities.zsh"
 [[ -f $WEATHER_CITIES_FILE ]] && source "$WEATHER_CITIES_FILE"
 
 weather() {
-  local city="$1"
-  local state="$2"
-  local country="${3:-usa}"
+    local city="$1"
+    local state="$2"
+    local country="${3:-usa}"
 
-  if [[ -z "$city" ]]; then
-    echo "usage: weather <city> [state] [country]"
-    return 1
-  fi
+    if [[ -z "$city" ]]; then
+        echo "usage: weather <city> [state] [country]"
+        return 1
+    fi
 
-  city="${city// /+}"
-  state=${state// /+}
+    city="${city// /+}"
+    state=${state// /+}
 
-  curl "http://wttr.in/${city}${state:+,+$state}+${country}?u"
+    curl "http://wttr.in/${city}${state:+,+$state}+${country}?u"
 }
 
 _weather() {
-  local cur cword
-  COMPREPLY=()
-  cur="${COMP_WORDS[COMP_CWORD]}"
-  cword=$COMP_CWORD
+    local cur cword
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    cword=$COMP_CWORD
 
-  local states="al ak az ar ca co ct de fl ga hi id il in ia ks ky la me md ma mi mn ms mo mt ne nv nh nj nm ny nc nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy"
-  local countries="usa"
+    local states="al ak az ar ca co ct de fl ga hi id il in ia ks ky la me md ma mi mn ms mo mt ne nv nh nj nm ny nc nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy"
+    local countries="usa"
 
-  case "$cword" in
-    1) COMPREPLY=( $(compgen -W "${WEATHER_CITIES[*]}" -- "$cur") ) ;;
-    2) COMPREPLY=( $(compgen -W "$states" -- "$cur") ) ;;
-    3) COMPREPLY=( $(compgen -W "$countries" -- "$cur") ) ;;
-  esac
+    case "$cword" in
+    1) COMPREPLY=($(compgen -W "${WEATHER_CITIES[*]}" -- "$cur")) ;;
+    2) COMPREPLY=($(compgen -W "$states" -- "$cur")) ;;
+    3) COMPREPLY=($(compgen -W "$countries" -- "$cur")) ;;
+    esac
 }
 complete -F _weather weather
 
 # copy command output to clipboard
 y() {
-  xclip -selection clipboard
+    xclip -selection clipboard
 }
 
 # Run fastfetch or neofetch
 ff() {
-  command -v fastfetch >/dev/null 2>&1 && fastfetch
-  command -v neofetch >/dev/null 2>&1 && neofetch
+    command -v fastfetch >/dev/null 2>&1 && fastfetch
+    command -v neofetch >/dev/null 2>&1 && neofetch
 }
 
 # Screenkey
 sk() {
-  if pgrep -x screenkey > /dev/null; then
-    pkill -x screenkey
-  else
-    screenkey -g '1920x300+1900+20' -s large >/dev/null 2>&1 &
-  fi
+    if pgrep -x screenkey >/dev/null; then
+        pkill -x screenkey
+    else
+        screenkey -g '1920x300+1900+20' -s large >/dev/null 2>&1 &
+    fi
 }
 
 # ===========================
@@ -566,15 +566,19 @@ alias z='zathura'
 [[ -f "$HOME/.config/shell/myenv" ]] && source "$HOME/.config/shell/myenv"
 
 case $TERM in
-  xterm*|tmux*|screen*) printf '\e]0;%s@%s\a' "$USER" "${HOSTNAME%%.*}" ;;
+xterm* | tmux* | screen*) printf '\e]0;%s@%s\a' "$USER" "${HOSTNAME%%.*}" ;;
 esac
 
 export NVM_DIR="$HOME/.nvm"
-[[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 
 # Use pinentry-tty if in a terminal and the GUI if not
 if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
     export GPG_TTY="$(tty)"
     gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
 fi
+
+# CML environment variables
+export CISCO_USER=cisco
+export CISCO_PASS=cisco
