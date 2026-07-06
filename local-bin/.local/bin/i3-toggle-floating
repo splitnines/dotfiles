@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+state="$(i3-msg -t get_tree | jq -r '
+    recurse(.nodes[]?, .floating_nodes[]?)
+    | select(.focused == true)
+    | .floating
+')"
+
+case "$state" in
+    user_on|auto_on)
+        i3-msg 'floating disable' >/dev/null 2&>1
+        ;;
+    *)
+        i3-msg 'floating enable, resize set 1100 px 700 px, move position center' \
+            >/dev/null 2&>1
+        ;;
+esac
