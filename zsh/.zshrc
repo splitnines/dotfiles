@@ -295,7 +295,7 @@ alias rs="rsync -avzr"
 alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
 alias t="telnet"
 alias ta="tmux attach -t"
-alias tl="tmux ls"
+alias tl="tmux ls | column -t"
 alias ts="tailscale"
 alias z='zathura'
 [ -f "$HOME/.config/shell/local_aliases" ] && source "$HOME/.config/shell/local_aliases"
