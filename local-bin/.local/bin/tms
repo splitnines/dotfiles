@@ -2,16 +2,10 @@
 # TMUX startup script
 
 SESSION_MAIN="main"
-SESSION_DOTFILES="dotfiles"
 SESSION_PI="pi"
 
 if ! tmux has-session -t "$SESSION_MAIN" 2>/dev/null; then
-   tmux new-session -d -s "$SESSION_MAIN" 2>/dev/null
-fi
-
-if ! tmux has-session -t "$SESSION_DOTFILES" 2>/dev/null; then
-    tmux new-session -d -s "$SESSION_DOTFILES" -n dotfiles 2>/dev/null
-    tmux send-keys -t "$SESSION_DOTFILES":dotfiles 'cd ~/dotfiles/ && clear' C-m 2>/dev/null
+    tmux new-session -d -s "$SESSION_MAIN" 2>/dev/null
 fi
 
 if ! tmux has-session -t "$SESSION_PI" 2>/dev/null; then
