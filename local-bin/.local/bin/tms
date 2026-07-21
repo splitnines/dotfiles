@@ -2,16 +2,16 @@
 # TMUX startup script
 
 SESSION_MAIN="main"
-SESSION_PI="pi"
+# SESSION_PI="pi"
 
 if ! tmux has-session -t "$SESSION_MAIN" 2>/dev/null; then
     tmux new-session -d -s "$SESSION_MAIN" 2>/dev/null
 fi
 
-if ! tmux has-session -t "$SESSION_PI" 2>/dev/null; then
-    tmux new-session -d -s "$SESSION_PI" -n pi 2>/dev/null
-    tmux send-keys -t "$SESSION_PI":pi 'pi' C-m 2>/dev/null
-fi
+# if ! tmux has-session -t "$SESSION_PI" 2>/dev/null; then
+#     tmux new-session -d -s "$SESSION_PI" -n pi 2>/dev/null
+#     tmux send-keys -t "$SESSION_PI":pi 'pi' C-m 2>/dev/null
+# fi
 
 if tmux has-session -t "$SESSION_MAIN" 2>/dev/null; then
     tmux attach-session -t "$SESSION_MAIN" 2>/dev/null

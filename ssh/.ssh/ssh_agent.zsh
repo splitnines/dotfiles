@@ -22,7 +22,9 @@ start_agent() {
 
 if [[ -f "$SSH_ENV" ]]; then
     source "$SSH_ENV" >/dev/null
-    if ! kill -0 "$SSH_AGENT_PID" 2>/dev/null; then
+    ssh-add -l >/dev/null 2>&1
+    atent_status=$?
+    if (( agent_status == 2 )); then
         start_agent
     fi
 else
