@@ -44,6 +44,7 @@ return {
       { "<leader>m", group = "Misc" },
       { "<leader>s", group = "Search" },
       { "<leader>t", group = "Toggle" },
+      { "<leader>p", group = "Python Debugger",                  mode = { "n" } },
       { '"',         group = "Registers" },
       { "'",         group = "Marks" },
       { "`",         group = "Marks" },
