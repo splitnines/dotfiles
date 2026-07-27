@@ -583,3 +583,4 @@ fi
 # CML environment variables
 export CISCO_USER=cisco
 export CISCO_PASS=cisco
+export BREAK_PASSWORD=cisco
