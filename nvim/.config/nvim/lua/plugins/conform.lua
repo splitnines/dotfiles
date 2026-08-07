@@ -5,7 +5,6 @@ return {
   opts = {
     formatters_by_ft = {
       lua = { "stylua" },
-      -- python = { "ruff_fix", "isort", "yapf" },
     },
     formatters = {
       stylua = { prepend_args = { "--indent-type", "Spaces", "--indent-width", "2" } },

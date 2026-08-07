@@ -28,7 +28,6 @@ return {
 
         -- Floating windows MUST have contrast
         vim.api.nvim_set_hl(0, "NormalFloat", {
-          -- bg = "#1e1e1e", -- this is the key fix
           bg = "NONE", -- this is the key fix
         })
 
@@ -114,10 +113,20 @@ return {
       local sections = cfg.sections or {}
 
       sections = vim.tbl_extend("force", sections, {
+        lualine_a = {
+          {
+            "mode", color = { gui = "bold,reverse" }
+          },
+        },
         lualine_y = {
           function()
             return string.format("%d", vim.api.nvim_buf_line_count(0))
           end,
+        },
+        lualine_z = {
+          {
+            "location", color = { gui = "bold,reverse" },
+          },
         },
       })
 
