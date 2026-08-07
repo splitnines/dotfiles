@@ -115,7 +115,7 @@ return {
       sections = vim.tbl_extend("force", sections, {
         lualine_a = {
           {
-            "mode", color = { gui = "bold,reverse" }
+            "mode", color = { gui = "reverse" }
           },
         },
         lualine_y = {
@@ -125,7 +125,7 @@ return {
         },
         lualine_z = {
           {
-            "location", color = { gui = "bold,reverse" },
+            "location", color = { gui = "reverse" },
           },
         },
       })
