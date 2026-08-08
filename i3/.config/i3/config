@@ -72,8 +72,9 @@ client.placeholder      $bg       $bg       $fg    $bg       $bg
 
 # Gaps
 gaps inner 10
-gaps outer 6
-gaps top 32
+gaps outer 2
+gaps top 24
+gaps bottom 2
 
 # Autotiling
 exec_always --no-startup-id ~/.config/autotiling/autotiling
