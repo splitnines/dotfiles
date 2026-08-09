@@ -113,21 +113,47 @@ return {
       local sections = cfg.sections or {}
 
       sections = vim.tbl_extend("force", sections, {
+
         lualine_a = {
           {
             "mode", color = { gui = "reverse" }
           },
         },
-        lualine_y = {
-          function()
-            return string.format("%d", vim.api.nvim_buf_line_count(0))
-          end,
+
+        lualine_b = {},
+        lualine_c = {},
+
+        lualine_x = {
+          "filename",
         },
+
+        lualine_y = {
+          {
+            "branch",
+            padding = { left = 1, right = 0 },
+          },
+          "diff",
+        },
+
         lualine_z = {
           {
-            "location", color = { gui = "reverse" },
+            function()
+              return tostring(vim.api.nvim_buf_line_count(0))
+            end,
+            color = {
+              bg = "abb2bf",
+              gui = "reverse"
+            },
+            padding = { left = 1, right = 0 },
+          },
+          {
+            "location",
+            color = {
+              gui = "reverse"
+            },
           },
         },
+
       })
 
       lualine.setup({
