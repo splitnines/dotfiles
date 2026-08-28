@@ -20,7 +20,6 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 - SSH
 - tmux
 - WirePlumber
-- YARA
 - Zathura
 - Zsh
 
@@ -47,7 +46,6 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 - `themes/`
 - `tmux/`
 - `wireplumber/`
-- `yara/`
 - `zathura/`
 - `zsh/`
 
