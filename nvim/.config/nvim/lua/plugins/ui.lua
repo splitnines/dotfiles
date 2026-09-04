@@ -116,7 +116,7 @@ return {
 
         lualine_a = {
           {
-            "mode", color = { gui = "reverse" }
+            "mode", color = { gui = "reverse" },
           },
         },
 
@@ -124,13 +124,16 @@ return {
         lualine_c = {},
 
         lualine_x = {
-          "filename",
+          {
+            "filename", color = { bg = "#2a2a3a", fg = "#abb2bf" },
+          },
         },
 
         lualine_y = {
           {
             "branch",
-            padding = { left = 1, right = 0 },
+            padding = { left = 1, right = 1 },
+            color = { fg = "#abb2bf" }
           },
           "diff",
         },
@@ -141,24 +144,24 @@ return {
               return tostring(vim.api.nvim_buf_line_count(0))
             end,
             color = {
-              bg = "abb2bf",
+              bg = "#abb2bf",
               gui = "reverse"
             },
-            padding = { left = 1, right = 0 },
+            padding = { left = 1, right = 1 },
           },
           {
             "location",
             color = {
+              bg = "#abb2bf",
               gui = "reverse"
             },
           },
         },
-
       })
 
       lualine.setup({
         options = {
-          icons_enabled        = true,
+          icons_enabled        = false,
           theme                = "auto",
           globalstatus         = true,
           component_separators = { left = "", right = "" },
