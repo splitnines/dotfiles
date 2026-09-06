@@ -19,10 +19,19 @@ if [[ -s "$station_file" ]]; then
   IFS=',' read -r latitude longitude <"$station_file"
 fi
 
-if [[ ! -z "$latitude" && ! -z "$longitude" ]]; then
-  url="https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles"
+if [[ -n "$latitude" && -n "$longitude" ]]; then
+  url="https://api.open-meteo.com/v1/forecast\
+?latitude=${latitude}\
+&longitude=${longitude}\
+&current=temperature_2m\
+&temperature_unit=fahrenheit\
+&timezone=America%2FLos_Angeles"
 fi
 
 current_temp=$(curl -sf "${url:-}" | jq -r "$FIELD")
 
-printf "%.0f%s" "$current_temp" "°F"
+if [[ -n "$current_temp" ]]; then
+  printf "%.0f%s" "$current_temp" "°F"
+else
+  echo "--"
+fi

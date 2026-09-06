@@ -8,11 +8,20 @@ get_temp() {
   local latitude="$1"
   local longitude="$2"
 
-  url="https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles"
+  url="https://api.open-meteo.com/v1/forecast\
+?latitude=${latitude}\
+&longitude=${longitude}\
+&current=temperature_2m\
+&temperature_unit=fahrenheit\
+&timezone=America%2FLos_Angeles"
 
   current_temp=$(curl -sf "${url:-}" | jq -r "$FIELD")
 
-  printf "%.0f%s" "$current_temp" "°F"
+  if [[ -n "$current_temp" ]]; then
+    printf "%.0f%s" "$current_temp" "°F"
+  else
+    echo "--"
+  fi
 }
 
 menu="$(
@@ -41,8 +50,6 @@ selected_coords="$(
   printf "%s\n" "$menu" |
     awk -F'|' -v name="$selected_location" '$1 == name {print $3; exit}'
 )"
-
-echo "$menu"
 
 [ -z "$selected_coords" ] && exit 1
 
