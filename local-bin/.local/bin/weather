@@ -1,31 +1,28 @@
 #!/usr/bin/env bash
 
-USER_AGENT="polybar-weather (you@example.com)"
+FIELD='"\(.current.temperature_2m // "--")"'
 station_file="$HOME/.cache/polybar/weather-stations"
 location_file="$HOME/.cache/polybar/weather-locations"
 
-default_station="$(
+default_coords="$(
   awk -F'|' '$1 == "Home" {print $2; exit}' "$location_file"
 )"
 
-if [ -z "$default_station" ]; then
+if [[ -z "$default_coords" ]]; then
   echo "--"
   exit 0
 fi
 
-station="$default_station"
+IFS=',' read -r latitude longitude <<<"$default_coords"
 
-if [ -s "$station_file" ]; then
-  station="$(cat "$station_file")"
+if [[ -s "$station_file" ]]; then
+  IFS=',' read -r latitude longitude <"$station_file"
 fi
 
-curl -sf \
-  -H "User-Agent: ${USER_AGENT}" \
-  "https://api.weather.gov/stations/${station}/observations/latest" \
-| jq -r '
-    if .properties.temperature.value == null
-    then "--"
-    else ((.properties.temperature.value * 9/5 + 32) | round | tostring + "°")
-    end
-  '
+if [[ ! -z "$latitude" && ! -z "$longitude" ]]; then
+  url="https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles"
+fi
 
+current_temp=$(curl -sf "${url:-}" | jq -r "$FIELD")
+
+printf "%.0f%s" "$current_temp" "°F"
