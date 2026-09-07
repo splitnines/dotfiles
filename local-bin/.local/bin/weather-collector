@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# This script is run from crontab and collects the temperature
+# for the coordinates listed in $HOME/.cache/polybar/weather-locations
+# and write the temperture to $HOME/.cache/polybar/weather-cache
+
+FIELD='"\(.current.temperature_2m // "--")"'
+locations_file="$HOME/.cache/polybar/weather-locations"
+weather_cache="$HOME/.cache/polybar/weather-cache"
+
+# Pull the temperture from the API
+# return temperture
+get_temp() {
+    local latitude="$1"
+    local longitude="$2"
+
+    url="https://api.open-meteo.com/v1/forecast\
+?latitude=${latitude}\
+&longitude=${longitude}\
+&current=temperature_2m\
+&temperature_unit=fahrenheit\
+&timezone=America%2FLos_Angeles"
+
+    current_temp=$(curl -sf "${url:-}" | jq -r "$FIELD")
+
+    if [[ -n "$current_temp" ]]; then
+        printf "%.0f%s" "$current_temp" "°F"
+    else
+        echo "--"
+    fi
+}
+
+# Write the location name, temperature and coordinates to cache file
+while IFS='|' read -r name coords; do
+    [[ -z "$name" ]] && continue
+    [[ -z "$coords" ]] && continue
+
+    IFS=',' read -r latitude longitude <<<"$coords"
+
+    temp="$(get_temp "$latitude" "$longitude")"
+    printf "%s|%s|%s\n" "$name" "$temp" "$coords"
+done <"$locations_file" >"$weather_cache"

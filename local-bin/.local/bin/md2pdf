@@ -51,6 +51,11 @@ cat >"$tmp_header" <<'LATEX'
 \usepackage{tikz}
 \usepackage{everypage}
 \usepackage{enumitem}
+\usepackage{longtable}
+
+% Left-align Pandoc tables instead of centering them on the page
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{\fill}
 
 % Better Pandoc task-list checkboxes
 \newcommand{\mdUncheckedBox}{%

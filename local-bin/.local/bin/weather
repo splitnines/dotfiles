@@ -1,37 +1,46 @@
 #!/usr/bin/env bash
 
-FIELD='"\(.current.temperature_2m // "--")"'
 station_file="$HOME/.cache/polybar/weather-stations"
-location_file="$HOME/.cache/polybar/weather-locations"
+locations_file="$HOME/.cache/polybar/weather-locations"
+weather_cache="$HOME/.cache/polybar/weather-cache"
 
-default_coords="$(
-  awk -F'|' '$1 == "Home" {print $2; exit}' "$location_file"
+get_temp_from_cache() {
+  local name="$1"
+  local current_temp
+  local location
+
+  while IFS='|' read -r location current_temp _; do
+    if [[ "$name" == "$location" ]]; then
+      if [[ -n "$current_temp" ]]; then
+        printf "%s" "$current_temp"
+      else
+        echo "--"
+      fi
+    fi
+  done <"$weather_cache"
+}
+
+default_location="$(
+  awk -F'|' '$1 == "Home" {print $1; exit}' "$locations_file"
 )"
 
-if [[ -z "$default_coords" ]]; then
+if [[ -z "$default_location" ]]; then
   echo "--"
   exit 0
 fi
 
-IFS=',' read -r latitude longitude <<<"$default_coords"
-
 if [[ -s "$station_file" ]]; then
-  IFS=',' read -r latitude longitude <"$station_file"
+  IFS=',' read -r location <"$station_file"
 fi
 
-if [[ -n "$latitude" && -n "$longitude" ]]; then
-  url="https://api.open-meteo.com/v1/forecast\
-?latitude=${latitude}\
-&longitude=${longitude}\
-&current=temperature_2m\
-&temperature_unit=fahrenheit\
-&timezone=America%2FLos_Angeles"
-fi
-
-current_temp=$(curl -sf "${url:-}" | jq -r "$FIELD")
+while IFS='|' read -r name temp _; do
+  if [[ "$name" == "$location" ]]; then
+    current_temp="$temp" && break
+  fi
+done <"$weather_cache"
 
 if [[ -n "$current_temp" ]]; then
-  printf "%.0f%s" "$current_temp" "°F"
+  printf "%s" "$current_temp"
 else
   echo "--"
 fi

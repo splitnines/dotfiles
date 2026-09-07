@@ -1,37 +1,32 @@
 #!/usr/bin/env bash
 
-FIELD='"\(.current.temperature_2m // "--")"'
 locations_file="$HOME/.cache/polybar/weather-locations"
 station_file="$HOME/.cache/polybar/weather-stations"
+weather_cache="$HOME/.cache/polybar/weather-cache"
 
-get_temp() {
-  local latitude="$1"
-  local longitude="$2"
+get_temp_from_cache() {
+  local name="$1"
+  local current_temp
+  local location
 
-  url="https://api.open-meteo.com/v1/forecast\
-?latitude=${latitude}\
-&longitude=${longitude}\
-&current=temperature_2m\
-&temperature_unit=fahrenheit\
-&timezone=America%2FLos_Angeles"
-
-  current_temp=$(curl -sf "${url:-}" | jq -r "$FIELD")
-
-  if [[ -n "$current_temp" ]]; then
-    printf "%.0f%s" "$current_temp" "°F"
-  else
-    echo "--"
-  fi
+  while IFS='|' read -r location current_temp _; do
+    if [[ "$name" == "$location" ]]; then
+      if [[ -n "$current_temp" ]]; then
+        printf "%s" "$current_temp"
+      else
+        echo "--"
+      fi
+    fi
+  done <"$weather_cache"
 }
 
+# Example: Sacramento|67°F|38.5816,-121.4944
 menu="$(
   while IFS='|' read -r name coords; do
-    [ -z "$name" ] && continue
-    [ -z "$coords" ] && continue
+    [[ -z "$name" ]] && continue
+    [[ -z "$coords" ]] && continue
 
-    IFS=',' read -r latitude longitude <<<"$coords"
-
-    temp="$(get_temp "$latitude" "$longitude")"
+    temp="$(get_temp_from_cache "$name")"
     printf "%s|%s|%s\n" "$name" "$temp" "$coords"
   done <"$locations_file"
 )"
@@ -46,13 +41,13 @@ choice="$(
 
 selected_location="$(printf "%s\n" "$choice" | awk '{print $1}')"
 
-selected_coords="$(
-  printf "%s\n" "$menu" |
-    awk -F'|' -v name="$selected_location" '$1 == name {print $3; exit}'
-)"
+[[ -z "$selected_location" ]] && exit 1
 
-[ -z "$selected_coords" ] && exit 1
+# echo "$selected_location" >"$station_file"
 
-echo "$selected_coords" >"$station_file"
+(
+  flock -x 200
+  printf "%s\n" "$selected_location" >"$station_file"
+) 200>"${station_file}.lock"
 
 polybar-msg cmd restart >/dev/null 2>&1
