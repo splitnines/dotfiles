@@ -51,4 +51,5 @@ selected_location="$(printf "%s\n" "$choice" | awk '{print $1}')"
   printf "%s\n" "$selected_location" >"$station_file"
 ) 200>"${station_file}.lock"
 
-polybar-msg cmd restart >/dev/null 2>&1
+"$HOME"/.local/bin/polybar-launch
+# polybar-msg cmd restart >/dev/null 2>&1

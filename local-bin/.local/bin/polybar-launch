@@ -1,17 +1,14 @@
 #!/usr/bin/env sh
 
-killall -q polybar
-
-# while pgrep -u "$UID" -x polybar >/dev/null; do
-#     sleep 0.2
-# done
+killall -q polybar main
+killall -q polybar main-secondary
 
 PRIMARY="$(polybar --list-monitors | awk '/ \(primary\)/ {print $1}' | cut -d: -f1)"
 
 for m in $(polybar --list-monitors | cut -d":" -f1); do
     if [ "$m" = "$PRIMARY" ]; then
-        MONITOR="$m" polybar main > /dev/null 2>&1 &
+        MONITOR="$m" polybar main >/dev/null 2>&1 &
     else
-        MONITOR="$m" polybar main-secondary > /dev/null 2>&1 & 
+        MONITOR="$m" polybar main-secondary >/dev/null 2>&1 &
     fi
 done

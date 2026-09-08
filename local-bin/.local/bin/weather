@@ -9,7 +9,7 @@ get_temp_from_cache() {
   local current_temp
   local location
 
-  while IFS='|' read -r location current_temp _; do
+  while IFS='|' read -r location current_temp _ _; do
     if [[ "$name" == "$location" ]]; then
       if [[ -n "$current_temp" ]]; then
         printf "%s" "$current_temp"
@@ -30,7 +30,7 @@ if [[ -z "$default_location" ]]; then
 fi
 
 if [[ -s "$station_file" ]]; then
-  IFS=',' read -r location <"$station_file"
+  IFS= read -r location <"$station_file"
 fi
 
 while IFS='|' read -r name temp _; do
