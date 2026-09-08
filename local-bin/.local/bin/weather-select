@@ -6,34 +6,37 @@ weather_cache="$HOME/.cache/polybar/weather-cache"
 
 get_temp_from_cache() {
   local name="$1"
-  local current_temp
   local location
+  local current_temp
+  local daily_min
+  local daily_max
 
-  while IFS='|' read -r location current_temp _; do
+  while IFS='|' read -r location current_temp daily_min daily_max; do
     if [[ "$name" == "$location" ]]; then
       if [[ -n "$current_temp" ]]; then
-        printf "%s" "$current_temp"
+        printf "%s|%s|%s" "$current_temp" "$daily_min" "$daily_max"
       else
-        echo "--"
+        echo "--|--|--"
       fi
     fi
   done <"$weather_cache"
 }
 
-# Example: Sacramento|67°F|38.5816,-121.4944
 menu="$(
-  while IFS='|' read -r name coords; do
+  while IFS='|' read -r name _; do
     [[ -z "$name" ]] && continue
-    [[ -z "$coords" ]] && continue
 
-    temp="$(get_temp_from_cache "$name")"
-    printf "%s|%s|%s\n" "$name" "$temp" "$coords"
+    temps="$(get_temp_from_cache "$name")"
+
+    IFS='|' read -r current_temp daily_min daily_max <<<"$temps"
+
+    printf "%s|%s|%s|%s\n" "$name" "$current_temp" "$daily_min" "$daily_max"
   done <"$locations_file"
 )"
 
 choice="$(
   printf "%s\n" "$menu" |
-    awk -F'|' '{printf "%-20s %s\n", $1, $2}' |
+    awk -F'|' '{printf "%-20s %-8s %-8s %s\n", $1, $2, $3, $4}' |
     rofi -dmenu -p "Weather"
 )"
 
@@ -42,8 +45,6 @@ choice="$(
 selected_location="$(printf "%s\n" "$choice" | awk '{print $1}')"
 
 [[ -z "$selected_location" ]] && exit 1
-
-# echo "$selected_location" >"$station_file"
 
 (
   flock -x 200

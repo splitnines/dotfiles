@@ -4,7 +4,7 @@
 # for the coordinates listed in $HOME/.cache/polybar/weather-locations
 # and write the temperture to $HOME/.cache/polybar/weather-cache
 
-FIELD='"\(.current.temperature_2m // "--")"'
+FIELDS='"\(.current.temperature_2m // "--")|\(.daily.temperature_2m_min[0] // "--")|\(.daily.temperature_2m_max[0] // "--")"'
 locations_file="$HOME/.cache/polybar/weather-locations"
 weather_cache="$HOME/.cache/polybar/weather-cache"
 
@@ -13,20 +13,24 @@ weather_cache="$HOME/.cache/polybar/weather-cache"
 get_temp() {
     local latitude="$1"
     local longitude="$2"
+    local readings
 
     url="https://api.open-meteo.com/v1/forecast\
 ?latitude=${latitude}\
 &longitude=${longitude}\
+&daily=temperature_2m_max,temperature_2m_min\
 &current=temperature_2m\
 &temperature_unit=fahrenheit\
 &timezone=America%2FLos_Angeles"
 
-    current_temp=$(curl -sf "${url:-}" | jq -r "$FIELD")
+    readings=$(curl -sf "${url:-}" | jq -r "$FIELDS")
 
-    if [[ -n "$current_temp" ]]; then
-        printf "%.0f%s" "$current_temp" "°F"
+    if [[ -n "$readings" ]]; then
+        IFS="|" read -r current_temp daily_min daily_max <<<"$readings"
+        printf "%.0f%s|%.0f%s|%.0f%s" \
+            "$current_temp" "°F" "$daily_min" "°F" "$daily_max" "°F"
     else
-        echo "--"
+        echo "--|--|--"
     fi
 }
 
@@ -37,6 +41,6 @@ while IFS='|' read -r name coords; do
 
     IFS=',' read -r latitude longitude <<<"$coords"
 
-    temp="$(get_temp "$latitude" "$longitude")"
-    printf "%s|%s|%s\n" "$name" "$temp" "$coords"
+    temps="$(get_temp "$latitude" "$longitude")"
+    printf "%s|%s\n" "$name" "$temps"
 done <"$locations_file" >"$weather_cache"
