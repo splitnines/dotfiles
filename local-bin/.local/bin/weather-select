@@ -3,42 +3,45 @@
 locations_file="$HOME/.cache/polybar/weather-locations"
 station_file="$HOME/.cache/polybar/weather-stations"
 weather_cache="$HOME/.cache/polybar/weather-cache"
+polybar_launch="$HOME/.local/bin/polybar-launch"
 
 get_temp_from_cache() {
-  local name="$1"
-  local location
-  local current_temp
-  local daily_min
-  local daily_max
+    local name="$1"
+    local location
+    local current_temp
+    local daily_min
+    local daily_max
 
-  while IFS='|' read -r location current_temp daily_min daily_max; do
-    if [[ "$name" == "$location" ]]; then
-      if [[ -n "$current_temp" ]]; then
-        printf "%s|%s|%s" "$current_temp" "$daily_min" "$daily_max"
-      else
-        echo "--|--|--"
-      fi
-    fi
-  done <"$weather_cache"
+    while IFS='|' read -r location current_temp daily_min daily_max; do
+        if [[ "$name" == "$location" ]]; then
+            if [[ -n "$current_temp" ]]; then
+                printf "%s|%s|%s" "$current_temp" "$daily_min" "$daily_max"
+            else
+                echo "--|--|--"
+            fi
+        fi
+    done <"$weather_cache"
 }
 
 menu="$(
-  while IFS='|' read -r name _; do
-    [[ -z "$name" ]] && continue
+    while IFS='|' read -r name _; do
+        [[ -z "$name" ]] && continue
 
-    temps="$(get_temp_from_cache "$name")"
+        temps="$(get_temp_from_cache "$name")"
 
-    IFS='|' read -r current_temp daily_min daily_max <<<"$temps"
+        IFS='|' read -r current_temp daily_min daily_max <<<"$temps"
 
-    printf "%s|%s|%s|%s\n" "$name" "$current_temp" "$daily_min" "$daily_max"
-  done <"$locations_file"
+        printf "%s|%s|%s|%s\n" "$name" "$current_temp" "$daily_min" "$daily_max"
+    done <"$locations_file"
 )"
 
-choice="$(
-  printf "%s\n" "$menu" |
-    awk -F'|' '{printf "%-20s %-8s %-8s %s\n", $1, $2, $3, $4}' |
-    rofi -dmenu -p "Weather"
-)"
+if [[ -n "$menu" ]]; then
+    choice="$(
+        printf "%s\n" "$menu" |
+            awk -F'|' '{printf "%-20s %-8s %-8s %s\n", $1, $2, $3, $4}' |
+            rofi -dmenu -p "Weather"
+    )"
+fi
 
 [[ -z "$choice" ]] && exit 0
 
@@ -47,9 +50,10 @@ selected_location="$(printf "%s\n" "$choice" | awk '{print $1}')"
 [[ -z "$selected_location" ]] && exit 1
 
 (
-  flock -x 200
-  printf "%s\n" "$selected_location" >"$station_file"
+    flock -x 200
+    printf "%s\n" "$selected_location" >"$station_file"
 ) 200>"${station_file}.lock"
 
-"$HOME"/.local/bin/polybar-launch
-# polybar-msg cmd restart >/dev/null 2>&1
+if [[ -f "$polybar_launch" && -x "$polybar_launch" ]]; then
+    "$polybar_launch"
+fi
