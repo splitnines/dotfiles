@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-station_file="$HOME/.cache/polybar/weather-stations"
-locations_file="$HOME/.cache/polybar/weather-locations"
-weather_cache="$HOME/.cache/polybar/weather-cache"
+selected_location_file="$HOME/.cache/polybar/weather-selected-location"
+config_file="$HOME/.cache/polybar/weather-config"
+cache_file="$HOME/.cache/polybar/weather-cache"
 
 get_temp_from_cache() {
     local name="$1"
@@ -17,27 +17,30 @@ get_temp_from_cache() {
                 echo "--"
             fi
         fi
-    done <"$weather_cache"
+    done <"$cache_file"
 }
 
-default_location="$(
-    awk -F'|' '$1 == "Home" {print $1; exit}' "$locations_file"
-)"
+while IFS='|' read -r location _; do
+    if [[ "$location" == "Home" ]]; then
+        default_location="$location"
+    fi
+done <"$config_file"
 
 if [[ -z "$default_location" ]]; then
     echo "--"
     exit 0
 fi
 
-if [[ -s "$station_file" ]]; then
-    IFS= read -r location <"$station_file"
+if [[ -s "$selected_location_file" ]]; then
+    IFS= read -r location <"$selected_location_file"
 fi
 
 while IFS='|' read -r name temp _; do
     if [[ "$name" == "$location" ]]; then
-        current_temp="$temp" && break
+        current_temp="$temp"
+        break
     fi
-done <"$weather_cache"
+done <"$cache_file"
 
 if [[ -n "$current_temp" ]]; then
     printf "%s" "$current_temp"

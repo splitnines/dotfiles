@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
 # This script is run from crontab and collects the temperature
-# for the coordinates listed in $HOME/.cache/polybar/weather-locations
-# and write the temperture to $HOME/.cache/polybar/weather-cache
+# for the coordinates listed in $HOME/.cache/polybar/weather-config
+# and write the temperature to $HOME/.cache/polybar/weather-cache
+#
+# Dependencies: curl, jq
 
 FIELDS='"\(.current.temperature_2m // "--")|\(.daily.temperature_2m_min[0] // "--")|\(.daily.temperature_2m_max[0] // "--")"'
-locations_file="$HOME/.cache/polybar/weather-locations"
-weather_cache="$HOME/.cache/polybar/weather-cache"
+config_file="$HOME/.cache/polybar/weather-config"
+cache_file="$HOME/.cache/polybar/weather-cache"
 
-# Pull the temperture from the API
-# return temperture
+# Pull the temperature from the API
+# return temperature
 get_temp() {
     local latitude="$1"
     local longitude="$2"
@@ -43,4 +45,4 @@ while IFS='|' read -r name coords; do
 
     temps="$(get_temp "$latitude" "$longitude")"
     printf "%s|%s\n" "$name" "$temps"
-done <"$locations_file" >"$weather_cache"
+done <"$config_file" >"$cache_file"

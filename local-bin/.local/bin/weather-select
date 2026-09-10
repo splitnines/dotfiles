@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-locations_file="$HOME/.cache/polybar/weather-locations"
-station_file="$HOME/.cache/polybar/weather-stations"
-weather_cache="$HOME/.cache/polybar/weather-cache"
+# Dependencies: rofi, polybar, flock
+
+config_file="$HOME/.cache/polybar/weather-config"
+selected_location_file="$HOME/.cache/polybar/weather-selected-location"
+cache_file="$HOME/.cache/polybar/weather-cache"
 polybar_launch="$HOME/.local/bin/polybar-launch"
 
 get_temp_from_cache() {
@@ -11,48 +13,61 @@ get_temp_from_cache() {
     local current_temp
     local daily_min
     local daily_max
+    local default="--"
 
     while IFS='|' read -r location current_temp daily_min daily_max; do
         if [[ "$name" == "$location" ]]; then
             if [[ -n "$current_temp" ]]; then
-                printf "%s|%s|%s" "$current_temp" "$daily_min" "$daily_max"
+                printf "%s|%s|%s" \
+                    "$current_temp" "${daily_min:-$default}" "${daily_max:-$default}"
             else
                 echo "--|--|--"
             fi
         fi
-    done <"$weather_cache"
+    done <"$cache_file"
 }
 
 menu="$(
     while IFS='|' read -r name _; do
-        [[ -z "$name" ]] && continue
+        if [[ -z "$name" ]]; then
+            continue
+        fi
 
         temps="$(get_temp_from_cache "$name")"
 
         IFS='|' read -r current_temp daily_min daily_max <<<"$temps"
 
         printf "%s|%s|%s|%s\n" "$name" "$current_temp" "$daily_min" "$daily_max"
-    done <"$locations_file"
+    done <"$config_file"
 )"
 
 if [[ -n "$menu" ]]; then
     choice="$(
-        printf "%s\n" "$menu" |
-            awk -F'|' '{printf "%-20s %-8s %-8s %s\n", $1, $2, $3, $4}' |
+        while IFS='|' read -r -a cols; do
+            printf '%-20s %-8s %-8s %s\n' \
+                "${cols[0]}" "${cols[1]}" "${cols[2]}" "${cols[3]}"
+        done <<<"$menu" |
             rofi -dmenu -p "Weather"
     )"
 fi
 
-[[ -z "$choice" ]] && exit 0
+if [[ -z "$choice" ]]; then
+    exit 0
+fi
 
-selected_location="$(printf "%s\n" "$choice" | awk '{print $1}')"
+selected_location="$(
+    IFS=' ' read -r loc _ <<<"$choice"
+    printf '%s' "$loc"
+)"
 
-[[ -z "$selected_location" ]] && exit 1
+if [[ -z "$selected_location" ]]; then
+    exit 1
+fi
 
 (
     flock -x 200
-    printf "%s\n" "$selected_location" >"$station_file"
-) 200>"${station_file}.lock"
+    printf "%s\n" "$selected_location" >"$selected_location_file"
+) 200>"${selected_location_file}.lock"
 
 if [[ -f "$polybar_launch" && -x "$polybar_launch" ]]; then
     "$polybar_launch"
