@@ -48,7 +48,17 @@ return {
 
     cfg("bashls", {
       cmd = { "bash-language-server", "start" },
+      cmd_env = {
+        SHELLCHECK_PATH = "",
+        BACKGROUND_ANALYSIS_MAX_FILES = "0",
+      },
       capabilities = capabilities,
+      settings = {
+        bashIde = {
+          shellcheckPath = "",
+          backgroundAnalysisMaxFiles = 0,
+        },
+      },
     })
     vim.lsp.enable("bashls")
 

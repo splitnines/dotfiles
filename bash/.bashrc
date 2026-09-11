@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+# shellcheck disable=SC1091
 set -o vi
 
 case $- in
@@ -75,16 +77,14 @@ fi
 # ===========================
 # OneDark Color Scheme
 # ===========================
-if [[ -f "$HOME/.config/shell/onedark-colors.sh" ]]; then
-    . "$HOME/.config/shell/onedark-colors.sh"
-# else
-#     printf 'Warning: ~/.config/shell/onedark-colors.sh not found\n' >&2
+if [[ -s "$HOME/.config/shell/onedark-colors.sh" ]]; then
+    source "$HOME/.config/shell/onedark-colors.sh"
 fi
 
 # ===========================
 # Python venv auto-activation
 # ===========================
-VIRTUAL_ENV_DISABLE_PROMPT=1
+# VIRTUAL_ENV_DISABLE_PROMPT=1
 __auto_venv_path=''
 
 __find_venv_dir() {
@@ -201,7 +201,6 @@ __set_prompt() {
 
     venv_segment=''
     if [[ -n "$VIRTUAL_ENV" ]]; then
-        # venv_segment="${prompt_color}${venv_color}$(basename "$VIRTUAL_ENV") ${prompt_color}"
         venv_segment="${prompt_color}${venv_color}π ${prompt_color}"
     fi
 
@@ -213,7 +212,7 @@ __set_prompt() {
             if [[ "$prompt_symbol" == "@" ]]; then
                 git_segment+=" ${dirty_color} !! "
             else
-                git_segment+=" ${dirty_color}"$prompt_symbol" "
+                git_segment+=" ${dirty_color}$prompt_symbol "
             fi
         fi
         git_segment+="\[\033[0m\]"
@@ -259,8 +258,6 @@ if ! shopt -oq posix; then
 
     if [[ -f /usr/share/bash-completion/bash_completion ]]; then
         . /usr/share/bash-completion/bash_completion
-    elif [[ -f /etc/bash_completion ]]; then
-        . /etc/bash_completion
     fi
 fi
 
@@ -269,8 +266,6 @@ if command -v git >/dev/null 2>&1; then
         . /usr/share/bash-completion/completions/git
     elif [[ -f /usr/share/git/completion/git-completion.bash ]]; then
         . /usr/share/git/completion/git-completion.bash
-    elif [[ -f /etc/bash_completion.d/git ]]; then
-        . /etc/bash_completion.d/git
     fi
 
     # Apply git completion to the `g` alias too.
@@ -282,12 +277,10 @@ if command -v git >/dev/null 2>&1; then
 fi
 
 # ===========================
-# Misc settings
+# Pager settings
 # ===========================
-PAGER="less"
+export PAGER="less"
 export LESS="-R -X -F --use-color"
-# export MANPAGER="less -R -X -F --use-color"
-# export MANROFFOPT="-c"
 export LESS_TERMCAP_me=$'\e[0m'
 export LESS_TERMCAP_se=$'\e[0m'
 export LESS_TERMCAP_ue=$'\e[0m'
@@ -331,21 +324,9 @@ SSH_ENV="$HOME/.ssh/agent_env"
 SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.zsh"
 
 if [[ -x "$SSH_BOOTSTRAP" ]]; then
-    # Run the bootstrap script to ensure the agent is started/reused
     "$SSH_BOOTSTRAP"
-    # Then load its environment variables into this shell
+    # shellcheck source=/home/rickey/.ssh/agent_env
     [[ -f "$SSH_ENV" ]] && source "$SSH_ENV" >/dev/null
-fi
-
-# ===========================
-# fzf integration and functiions
-# ===========================
-if [[ -f ~/.fzf/shell/key-bindings.bash ]]; then
-    source ~/.fzf/shell/key-bindings.bash
-fi
-
-if [[ -f ~/.fzf/shell/completion.bash ]]; then
-    source ~/.fzf/shell/completion.bash
 fi
 
 # ===========================
@@ -353,7 +334,7 @@ fi
 # ===========================
 export FZF_DEFAULT_OPTS="
   --height=100%
-  --border=rounded
+  --border=sharp
   --margin=1,3
   --padding=1
   --color=fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
@@ -398,9 +379,10 @@ fcd() {
     local dir
     local prompt="Search in $search_path → "
 
-    dir=$(find $search_path -type d -print 2>/dev/null |
+    dir=$(find "$search_path" -type d -print 2>/dev/null |
         fzf --prompt="$prompt")
 
+    # shellcheck disable=SC2164
     [[ -d "$dir" ]] && cd "$dir"
 }
 
@@ -450,46 +432,6 @@ pyoff() {
     fi
 }
 
-# ===========================
-# Weather
-# ===========================
-WEATHER_CITIES=()
-WEATHER_CITIES_FILE="$HOME/.config/zsh/weather_cities.zsh"
-[[ -f $WEATHER_CITIES_FILE ]] && source "$WEATHER_CITIES_FILE"
-
-weather() {
-    local city="$1"
-    local state="$2"
-    local country="${3:-usa}"
-
-    if [[ -z "$city" ]]; then
-        echo "usage: weather <city> [state] [country]"
-        return 1
-    fi
-
-    city="${city// /+}"
-    state=${state// /+}
-
-    curl "http://wttr.in/${city}${state:+,+$state}+${country}?u"
-}
-
-_weather() {
-    local cur cword
-    COMPREPLY=()
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    cword=$COMP_CWORD
-
-    local states="al ak az ar ca co ct de fl ga hi id il in ia ks ky la me md ma mi mn ms mo mt ne nv nh nj nm ny nc nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy"
-    local countries="usa"
-
-    case "$cword" in
-    1) COMPREPLY=($(compgen -W "${WEATHER_CITIES[*]}" -- "$cur")) ;;
-    2) COMPREPLY=($(compgen -W "$states" -- "$cur")) ;;
-    3) COMPREPLY=($(compgen -W "$countries" -- "$cur")) ;;
-    esac
-}
-complete -F _weather weather
-
 # copy command output to clipboard
 y() {
     xclip -selection clipboard
@@ -537,11 +479,14 @@ alias grep='grep --color=auto'
 alias gs='git status'
 alias h='fc -l 1'
 alias hl='rg --passthru'
-alias i3keys='grep -hE '^[[:space:]]*bindsym' ~/.config/i3/config ~/.i3/config 2>/dev/null'
 alias l='ls --color=auto'
 alias la='ls -A'
 alias le='less -X'
-alias ll='ls -Alh'
+if command -v >/dev/null 2>&1; then
+    alias ll='eza -lA --git'
+else
+    alias ll='ls -Alh'
+fi
 alias ls='ls --color=auto'
 alias md="mkdir -p"
 alias micc='arecord -f cd -vv -D default /dev/null'
@@ -562,7 +507,14 @@ alias t="telnet"
 alias ts="tailscale"
 alias z='zathura'
 
-[[ -f "$HOME/.config/shell/local_aliases" ]] && source "$HOME/.config/shell/local_aliases"
+if [[ -f "$HOME/.config/shell/local_aliases" ]]; then
+    source "$HOME/.config/shell/local_aliases"
+fi
+
+i3keys() {
+    grep -hE '^[[:space:]]*bindsym' \
+        ~/.config/i3/config 2>/dev/null
+}
 
 # Load any local env vars
 [[ -f "$HOME/.config/shell/myenv" ]] && source "$HOME/.config/shell/myenv"
@@ -572,12 +524,15 @@ xterm* | tmux* | screen*) printf '\e]0;%s@%s\a' "$USER" "${HOSTNAME%%.*}" ;;
 esac
 
 export NVM_DIR="$HOME/.nvm"
-[[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-[[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+    \. "$NVM_DIR/nvm.sh"
+fi
+[[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"
 
 # Use pinentry-tty if in a terminal and the GUI if not
 if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
-    export GPG_TTY="$(tty)"
+    GPG_TTY="$(tty)"
+    export GPG_TTY
     gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
 fi
 
