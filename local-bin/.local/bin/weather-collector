@@ -13,9 +13,12 @@ cache_file="$HOME/.cache/polybar/weather-cache"
 # Pull the temperature from the API
 # return temperature
 get_temp() {
-    local latitude="$1"
-    local longitude="$2"
+    local latitude
+    local longitude
     local readings
+
+    latitude="$1"
+    longitude="$2"
 
     url="https://api.open-meteo.com/v1/forecast\
 ?latitude=${latitude}\
@@ -27,9 +30,9 @@ get_temp() {
 
     readings=$(curl -sf "${url:-}" | jq -r "$FIELDS")
 
-    if [[ -n "$readings" ]]; then
+    if [[ -n $readings ]]; then
         IFS="|" read -r current_temp daily_min daily_max <<<"$readings"
-        printf "%.0f%s|%.0f%s|%.0f%s" \
+        printf '%.0f%s|%.0f%s|%.0f%s' \
             "$current_temp" "°F" "$daily_min" "°F" "$daily_max" "°F"
     else
         echo "--|--|--"
@@ -38,8 +41,9 @@ get_temp() {
 
 # Write the location name, temperature and coordinates to cache file
 while IFS='|' read -r name coords; do
-    [[ -z "$name" ]] && continue
-    [[ -z "$coords" ]] && continue
+    if [[ -z $name || -z $coords ]]; then
+        continue
+    fi
 
     IFS=',' read -r latitude longitude <<<"$coords"
 

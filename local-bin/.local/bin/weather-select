@@ -8,17 +8,20 @@ cache_file="$HOME/.cache/polybar/weather-cache"
 polybar_launch="$HOME/.local/bin/polybar-launch"
 
 get_temp_from_cache() {
-    local name="$1"
+    local name
     local location
     local current_temp
     local daily_min
     local daily_max
-    local default="--"
+    local default
+
+    name="$1"
+    default="--"
 
     while IFS='|' read -r location current_temp daily_min daily_max; do
-        if [[ "$name" == "$location" ]]; then
-            if [[ -n "$current_temp" ]]; then
-                printf "%s|%s|%s" \
+        if [[ $name == "$location" ]]; then
+            if [[ -n $current_temp ]]; then
+                printf '%s|%s|%s' \
                     "$current_temp" "${daily_min:-$default}" "${daily_max:-$default}"
             else
                 echo "--|--|--"
@@ -29,7 +32,7 @@ get_temp_from_cache() {
 
 menu="$(
     while IFS='|' read -r name _; do
-        if [[ -z "$name" ]]; then
+        if [[ -z $name ]]; then
             continue
         fi
 
@@ -37,11 +40,11 @@ menu="$(
 
         IFS='|' read -r current_temp daily_min daily_max <<<"$temps"
 
-        printf "%s|%s|%s|%s\n" "$name" "$current_temp" "$daily_min" "$daily_max"
+        printf '%s|%s|%s|%s\n' "$name" "$current_temp" "$daily_min" "$daily_max"
     done <"$config_file"
 )"
 
-if [[ -n "$menu" ]]; then
+if [[ -n $menu ]]; then
     choice="$(
         while IFS='|' read -r -a cols; do
             printf '%-20s %-8s %-8s %s\n' \
@@ -51,7 +54,7 @@ if [[ -n "$menu" ]]; then
     )"
 fi
 
-if [[ -z "$choice" ]]; then
+if [[ -z $choice ]]; then
     exit 0
 fi
 
@@ -60,7 +63,7 @@ selected_location="$(
     printf '%s' "$loc"
 )"
 
-if [[ -z "$selected_location" ]]; then
+if [[ -z $selected_location ]]; then
     exit 1
 fi
 
@@ -69,6 +72,6 @@ fi
     printf "%s\n" "$selected_location" >"$selected_location_file"
 ) 200>"${selected_location_file}.lock"
 
-if [[ -f "$polybar_launch" && -x "$polybar_launch" ]]; then
+if [[ -f $polybar_launch && -x $polybar_launch ]]; then
     "$polybar_launch"
 fi

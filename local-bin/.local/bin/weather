@@ -5,14 +5,16 @@ config_file="$HOME/.cache/polybar/weather-config"
 cache_file="$HOME/.cache/polybar/weather-cache"
 
 get_temp_from_cache() {
-    local name="$1"
+    local name
     local current_temp
     local location
 
+    name="$1"
+
     while IFS='|' read -r location current_temp _ _; do
-        if [[ "$name" == "$location" ]]; then
-            if [[ -n "$current_temp" ]]; then
-                printf "%s" "$current_temp"
+        if [[ $name == "$location" ]]; then
+            if [[ -n $current_temp ]]; then
+                printf '%s' "$current_temp"
             else
                 echo "--"
             fi
@@ -21,29 +23,29 @@ get_temp_from_cache() {
 }
 
 while IFS='|' read -r location _; do
-    if [[ "$location" == "Home" ]]; then
+    if [[ $location == "Home" ]]; then
         default_location="$location"
     fi
 done <"$config_file"
 
-if [[ -z "$default_location" ]]; then
+if [[ -z $default_location ]]; then
     echo "--"
     exit 0
 fi
 
-if [[ -s "$selected_location_file" ]]; then
+if [[ -s $selected_location_file ]]; then
     IFS= read -r location <"$selected_location_file"
 fi
 
 while IFS='|' read -r name temp _; do
-    if [[ "$name" == "$location" ]]; then
+    if [[ $name == "$location" ]]; then
         current_temp="$temp"
         break
     fi
 done <"$cache_file"
 
-if [[ -n "$current_temp" ]]; then
-    printf "%s" "$current_temp"
+if [[ -n $current_temp ]]; then
+    printf '%s' "$current_temp"
 else
     echo "--"
 fi

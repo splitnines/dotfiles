@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 
 killall -q polybar main
-killall -q polybar main-secondary
 
 PRIMARY="$(polybar --list-monitors | awk '/ \(primary\)/ {print $1}' | cut -d: -f1)"
 
