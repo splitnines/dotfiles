@@ -40,7 +40,11 @@ require_cmd readlink find fzf xdg-open
 
 path="${1:-$HOME}"
 if [[ -d $path ]]; then
-    fs "$(readlink -f -- "$path")"
+    resolved="$(readlink -f -- "$path")" || {
+        echo "error: cannot resolve path: $path" >&2
+        exit 1
+    }
+    fs "$resolved"
 else
     printf 'error: path %s not found\n' "$path"
 fi

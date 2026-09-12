@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+# set the default parameters
+NUM=12
+LEN=16
+INCLUDE_SYMBOLS=1
+INCLUDE_UPPER=1
+INCLUDE_NUMBERS=1
+COPY=0
+
+SYMBOLS="!@#$%^&*()_+="
+UPPER="A-Z"
+NUMBERS="0-9"
+
 dep_check() {
     local cmd
     for cmd in "$@"; do
@@ -26,16 +38,23 @@ usage() {
     exit 1
 }
 
-NUM=12
-LEN=16
-INCLUDE_SYMBOLS=1
-INCLUDE_UPPER=1
-INCLUDE_NUMBERS=1
-COPY=0
+check_string() {
+    local string=$1
 
-SYMBOLS="!@#$%^&*()_+="
-UPPER="A-Z"
-NUMBERS="0-9"
+    if [[ $INCLUDE_NUMBERS == 1 && $string != *[0-9]* ]]; then
+        return 1
+    fi
+
+    if [[ $INCLUDE_UPPER == 1 && $string != *[A-Z]* ]]; then
+        return 1
+    fi
+
+    if [[ $INCLUDE_SYMBOLS == 1 && $string != *[!@#\$%^\&\*\(\)_+]* ]]; then
+        return 1
+    fi
+
+    return 0
+}
 
 while getopts :su0hyn:l: OPTIONS; do
     case $OPTIONS in
@@ -52,7 +71,7 @@ while getopts :su0hyn:l: OPTIONS; do
     esac
 done
 shift $((OPTIND - 1))
-if [[ "$#" -gt 0 ]]; then
+if [[ $# -gt 0 ]]; then
     usage
 fi
 
@@ -71,24 +90,6 @@ fi
 if [[ $INCLUDE_NUMBERS == 1 ]]; then
     CHARS+=$NUMBERS
 fi
-
-check_string() {
-    local string="$1"
-
-    if [[ $INCLUDE_NUMBERS == 1 && "$string" != *[0-9]* ]]; then
-        return 1
-    fi
-
-    if [[ $INCLUDE_UPPER == 1 && "$string" != *[A-Z]* ]]; then
-        return 1
-    fi
-
-    if [[ $INCLUDE_SYMBOLS == 1 && "$string" != *[!@#\$%^\&\*\(\)_+]* ]]; then
-        return 1
-    fi
-
-    return 0
-}
 
 if [[ $COPY == 1 ]]; then
     dep_check xclip
