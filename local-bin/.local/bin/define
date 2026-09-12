@@ -2,19 +2,21 @@
 
 word=${1:-$(xclip -o -selection clipboard 2>/dev/null || wl-paste 2>/dev/null)}
 
-[[ -z "$word" || "$word" =~ [\/] ]] && \
-    notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid input." && \
-    exit 0
+[[ -z "$word" || "$word" =~ [\/] ]] &&
+    notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid input." &&
+    exit 1
 
-query=$(curl -s --connect-timeout 5 --max-time 10 "https://api.dictionaryapi.dev/api/v2/entries/en_US/$word")
-[ $? -ne 0 ] && notify-send -h string:bgcolor:#bf616a -t 3000 "Connection error." && exit 1
+URL="https://api.dictionaryapi.dev/api/v2/entries/en"
+if ! query=$(curl -s --connect-timeout 5 --max-time 10 "$URL/$word"); then
+    notify-send -h string:bgcolor:#bf616a -t 3000 "Connection error." && exit 1
+fi
 
-[[ "$query" == *"No Definitions Found"* ]] && notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid word." && exit 0
-
-# Show first 3 definitions
-# def=$(echo "$query" | jq -r '[.[].meanings[] | {pos: .partOfSpeech, def: .definitions[].definition}] | .[:3].[] | "\n\(.pos). \(.def)"')
+[[ "$query" == *"No Definitions Found"* ]] && notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid word." && exit 1
 
 # All definations, no limit
-def=$(echo "$query" | jq -r '[.[].meanings[] | {pos: .partOfSpeech, def: .definitions[].definition}] | .[] | "\n\(.pos). \(.def)"')
+def=$(
+    echo "$query" |
+        jq -r '[.[].meanings[] | {pos: .partOfSpeech, def: .definitions[].definition}] | .[] | "\n\(.pos). \(.def)"'
+)
 
 notify-send -t 60000 "$word -" "$def"

@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# ~/.local/bin/btt
 
 target_mac="50:5E:5C:07:3C:D3"
 
 error() {
-    local msg="$1"
+    local msg=$1
     local date_time
 
     date_time=$(date '+%b %d  %T.%3N')
@@ -23,12 +22,12 @@ require_cmd() {
 }
 
 bt_cmd() {
-    timeout 10s bluetoothctl "$@"
+    timeout 10s bluetoothctl "$@" >/dev/null 2>&1
 }
 
 main() {
     require_cmd bluetoothctl timeout notify-send
-    bt_cmd power on >/dev/null || {
+    bt_cmd power on || {
         error "%BLUETOOTH-3-ERROR: failed to power on bluetooth."
     }
 
