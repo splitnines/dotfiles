@@ -1,22 +1,41 @@
 #!/usr/bin/env bash
 
-word=${1:-$(xclip -o -selection clipboard 2>/dev/null || wl-paste 2>/dev/null)}
+word=${1:-$(xclip -o -selection clipboard 2>/dev/null)}
+
+re="^[a-zA-Z]+([-'][a-zA-Z]+)*$"
+if [[ ! $word =~ $re ]]; then
+    notify-send -h string:bgcolor:#bf616a -t 3000 "Not a valid word"
+    exit 1
+fi
 
 [[ -z "$word" || "$word" =~ [\/] ]] &&
     notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid input." &&
     exit 1
 
-URL="https://api.dictionaryapi.dev/api/v2/entries/en"
-if ! query=$(curl -s --connect-timeout 5 --max-time 10 "$URL/$word"); then
-    notify-send -h string:bgcolor:#bf616a -t 3000 "Connection error." && exit 1
+URL="https://freedictionaryapi.com/api/v1/entries/en"
+if ! query=$(curl -sf --connect-timeout 5 --max-time 10 "$URL/$word"); then
+    notify-send -h string:bgcolor:#bf616a -t 3000 "Connection error."
+    exit 1
 fi
 
-[[ "$query" == *"No Definitions Found"* ]] && notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid word." && exit 1
+# All definitions no limit
+mapfile -t defs <<<"$(
+    printf '%s' "$query" |
+        jq -r '.entries[0].senses[].definition' 2>/dev/null |
+        sed 's/^([^)]*)[[:space:]]//g'
+)"
 
-# All definations, no limit
-def=$(
-    echo "$query" |
-        jq -r '[.[].meanings[] | {pos: .partOfSpeech, def: .definitions[].definition}] | .[] | "\n\(.pos). \(.def)"'
+if [[ -z ${defs[0]} ]]; then
+    notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid word."
+    exit 1
+fi
+
+definitions=$(
+    printf '\n'
+    for ((i = 0; i < "${#defs[@]}"; i++)); do
+        count=$((i + 1))
+        printf '%s) %s\n\n' "$count" "${defs[$i]}"
+    done
 )
 
-notify-send -t 60000 "$word -" "$def"
+notify-send -t 60000 "$word -" "$definitions"
