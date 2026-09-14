@@ -29,7 +29,7 @@ exec --no-startup-id xset dpms 0 0 915
 exec --no-startup-id xset +dpms
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -c 04090e --nofork
 
-# NetwoekManager in the tray
+# NetworkManager in the tray
 exec --no-startup-id nm-applet
 
 # Clipboard manager
