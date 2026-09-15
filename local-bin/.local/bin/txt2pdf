@@ -4,7 +4,7 @@ txt2pdf() {
     local in out width rc header_file
 
     in="$1"
-    width="${3:-80}"
+    width="${3:-120}"
 
     if [[ -z "$in" ]]; then
         echo "Usage: txt2pdf.sh <input.txt> [output.pdf] [wrap_width]" >&2
@@ -26,7 +26,7 @@ txt2pdf() {
     fi
 
     header_file="$(mktemp)"
-    cat > "$header_file" <<'LATEX'
+    cat >"$header_file" <<'LATEX'
 \usepackage{xurl}
 \usepackage{fvextra}
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{
@@ -46,7 +46,7 @@ LATEX
         printf '~~~~\n'
     } | pandoc -f markdown -o "$out" \
         --pdf-engine=xelatex \
-        -V geometry:margin=1in \
+        -V geometry:landscape,margin=1in \
         -V mainfont="JetBrainsMono Nerd Font" \
         -V monofont="JetBrainsMono Nerd Font" \
         -V fontsize=10pt \
