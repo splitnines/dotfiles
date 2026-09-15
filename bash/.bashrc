@@ -482,7 +482,7 @@ alias hl='rg --passthru'
 alias l='ls --color=auto'
 alias la='ls -A'
 alias le='less -X'
-if command -v >/dev/null 2>&1; then
+if command -v eza >/dev/null 2>&1; then
     alias ll='eza -lA --git'
 else
     alias ll='ls -Alh'
