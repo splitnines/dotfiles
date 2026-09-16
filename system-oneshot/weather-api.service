@@ -1,0 +1,10 @@
+# /etc/systemd/system/weather-api.service
+
+[Unit]
+Description=Fetch weather API data
+
+[Service]
+Type=oneshot
+User=rickey
+Group=rickey
+ExecStart=/home/rickey/.local/bin/weather-collector
