@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+file=$1
+
+if [[ -z $file ]]; then
+    echo "missing input file name"
+    exit 1
+fi
+
+pdfjam "$file" \
+    --paper letterpaper \
+    --scale 1 \
+    --outfile "$file" >/dev/null 2>&1
+
+if [[ $? == 0 ]]; then
+    echo "$file successfully reformatted."
+else
+    echo "an error occurred."
+fi
