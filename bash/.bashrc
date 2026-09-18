@@ -1,6 +1,7 @@
 # shellcheck shell=bash
 # shellcheck disable=SC1091
 set -o vi
+set -o posix
 
 case $- in
 *i*) ;;
@@ -15,13 +16,17 @@ mkdir -p "${HISTFILE%/*}"
 HISTSIZE=50000
 HISTFILESIZE=50000
 HISTCONTROL=ignoreboth:erasedups
-shopt -s histappend
 export PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
 export XAUTHORITY="$HOME/.Xauthority"
 
+# Enable shopts
 shopt -s cdspell
 shopt -s autocd
 shopt -s checkwinsize
+shopt -s cmdhist
+shopt -s histappend
+shopt -s dotglob globstar extglob
+shopt -s progcomp
 
 [[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 
@@ -119,7 +124,10 @@ __auto_venv() {
             if command -v deactivate >/dev/null 2>&1; then
                 deactivate >/dev/null 2>&1 || true
             else
-                PATH=$(printf '%s' "$PATH" | tr ':' '\n' | grep -v "^$__auto_venv_path/bin$" | paste -sd:)
+                PATH=$(
+                    printf '%s' "$PATH" | tr ':' '\n' |
+                        grep -v "^$__auto_venv_path/bin$" | paste -sd:
+                )
                 export PATH
                 unset VIRTUAL_ENV
             fi
@@ -170,7 +178,8 @@ __os_icon() {
 
 __git_branch_name() {
     git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
-    git symbolic-ref --quiet --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || return 0
+    git symbolic-ref --quiet --short HEAD 2>/dev/null ||
+        git rev-parse --short HEAD 2>/dev/null || return 0
 }
 
 __git_is_dirty() {
@@ -221,7 +230,9 @@ __set_prompt() {
         git_segment+="\[\033[0m\]"
     fi
 
-    PS1="\n${prompt_color}${venv_segment}${info_color}\u${prompt_symbol}\h ${prompt_color}${info_color}\w${prompt_color}${git_segment}\n${info_color}${dollar}\[\033[0m\] "
+    PS1="\n${prompt_color}${venv_segment}${info_color}\u${prompt_symbol}\h "
+    PS1+="${prompt_color}${info_color}\w${prompt_color}${git_segment}\n${info_color}"
+    PS1+="${dollar}\[\033[0m\] "
 
     case "$TERM" in
     xterm* | rxvt*)
@@ -233,7 +244,6 @@ __set_prompt() {
 # ===========================
 # History behavior / completion
 # ===========================
-shopt -s cmdhist
 stty stop undef 2>/dev/null || true
 bind 'set editing-mode vi'
 bind 'set show-mode-in-prompt on'
@@ -250,8 +260,6 @@ bind 'TAB:menu-complete'
 bind '"\e[Z":menu-complete-backward'
 bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
-bind '"\C-p":history-search-backward'
-bind '"\C-n":history-search-forward'
 
 # ===========================
 # Pager settings
@@ -277,7 +285,6 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 
 # Better globbing
-shopt -s dotglob globstar extglob
 
 PROMPT_COMMAND="__auto_venv;__set_prompt${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 
@@ -326,16 +333,21 @@ cd() {
 # Search command history
 fh() {
     local cmd
-    cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' | sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
+    cmd=$(
+        fc -l 1 | fzf --tac --no-sort --prompt='History → ' |
+            sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//'
+    ) || return
     eval "$cmd"
 }
 
 # Search with preview
 fv() {
     local file
-    file=$(find . -type f | fzf \
-        --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-        --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0)
+    file=$(
+        find . -type f | fzf \
+            --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
+            --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0
+    )
     [[ -n "$file" ]] && nvim "$file"
 }
 
@@ -344,7 +356,8 @@ cdh() {
     local dir
     dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
     [[ -z "$dir" ]] && return
-    [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
+    [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" ||
+        cd "$dir" || echo "No such directory: $dir"
 }
 
 # search for and change to directory
@@ -371,7 +384,8 @@ fcd() {
 
 # Search and kill processes
 fk() {
-    ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
+    ps -ef | sed 1d | fzf -m --prompt='Kill process → ' |
+        awk '{print $2}' | xargs -r kill -9
 }
 
 # Python environment helpers
@@ -443,17 +457,18 @@ i3keys() {
 # ===========================
 # Aliases
 # ===========================
-alias bat='/usr/bin/batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
-alias bt='bluetoothctl'
-alias btc='bluetoothctl connect'
-alias btC='bluetoothctl devices Connected'
-alias btd='bluetoothctl disconnect'
-alias btl='bluetoothctl devices'
 alias ....="cd ../../.."
 alias ...="cd ../.."
 alias ..="cd .."
+alias bat='batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
+alias bt='bluetoothctl'
+alias btC='bluetoothctl devices Connected'
+alias btc='bluetoothctl connect'
+alias btd='bluetoothctl disconnect'
+alias btl='bluetoothctl devices'
 alias egrep='egrep --color=auto'
 alias feh='feh --image-bg black --auto-zoom --scale-down'
+alias g='git'
 alias ga='git add .'
 alias gb='git --no-pager branch'
 alias gc='git commit'
@@ -461,10 +476,9 @@ alias gcm='git commit -m'
 alias gco='git checkout'
 alias gd='git diff | nvim -'
 alias gf='git fetch'
-alias g='git'
 alias gm='git merge'
-alias gs='git status'
 alias grep='grep --color=auto'
+alias gs='git status'
 alias h='fc -l 1'
 alias hl='rg --passthru'
 alias l='ls --color=auto'
@@ -475,15 +489,15 @@ if command -v eza >/dev/null 2>&1; then
 else
     alias ll='ls -Alh'
 fi
-command -v xdg-open >/dev/null 2>&1 &&
-    alias open='xdg-open'
 alias ls='ls --color=auto'
 alias md="mkdir -p"
 alias micc='arecord -f cd -vv -D default /dev/null'
 alias montage='feh --image-bg black --montage'
 alias nv='nvim'
-alias path='echo "$PATH" | tr ":" "\n"'
+command -v xdg-open >/dev/null 2>&1 &&
+    alias open='xdg-open'
 alias p="ping"
+alias path='echo "$PATH" | tr ":" "\n"'
 alias pull='git pull'
 alias push='git push'
 alias py='python3'
@@ -491,9 +505,9 @@ alias q='exit'
 alias rcd="script -m advanced"
 alias rs="rsync -avzr"
 alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
+alias t="telnet"
 alias ta="tmux attach -t"
 alias tl="tmux ls | column -t"
-alias t="telnet"
 alias ts="tailscale"
 alias z='zathura'
 
@@ -507,12 +521,8 @@ fi
 # ===========================
 # Bash completion
 # ===========================
-if ! shopt -oq posix; then
-    shopt -s progcomp
-
-    if [[ -f /usr/share/bash-completion/bash_completion ]]; then
-        source /usr/share/bash-completion/bash_completion
-    fi
+if [[ -f /usr/share/bash-completion/bash_completion ]]; then
+    source /usr/share/bash-completion/bash_completion
 fi
 
 # Git autocompletion
