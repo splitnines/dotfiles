@@ -254,17 +254,6 @@ bind '"\C-p":history-search-backward'
 bind '"\C-n":history-search-forward'
 
 # ===========================
-# Bash completion
-# ===========================
-if ! shopt -oq posix; then
-    shopt -s progcomp
-
-    if [[ -f /usr/share/bash-completion/bash_completion ]]; then
-        . /usr/share/bash-completion/bash_completion
-    fi
-fi
-
-# ===========================
 # Pager settings
 # ===========================
 export PAGER="less"
@@ -280,28 +269,15 @@ export LESS_TERMCAP_so=$'\e[48;2;40;44;52m\e[38;2;229;192;123m'
 # Use nvim for viewing man pages
 export MANPAGER='nvim +Man!'
 
+# batcat theme
+export BAT_THEME="OneHalfDark"
+
 # The one, true editor
 export EDITOR="nvim"
 export VISUAL="nvim"
 
-export BAT_THEME="OneHalfDark"
-
-export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
-
 # Better globbing
 shopt -s dotglob globstar extglob
-
-# Push cd history to stack
-cd() {
-    local oldpwd="$PWD"
-
-    builtin cd "$@" || return
-
-    # Keep the previous directory in the stack so popd/fcd work.
-    if [[ "$oldpwd" != "$PWD" ]]; then
-        pushd -n "$oldpwd" >/dev/null || true
-    fi
-}
 
 PROMPT_COMMAND="__auto_venv;__set_prompt${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 
@@ -320,6 +296,7 @@ fi
 # ===========================
 # fzf defaults
 # ===========================
+export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
 export FZF_DEFAULT_OPTS="
   --height=100%
   --border=sharp
@@ -329,6 +306,23 @@ export FZF_DEFAULT_OPTS="
   --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
   --color=border:#3e4451,label:#61afef
 "
+
+# ===========================
+# Functions
+# ===========================
+
+# Push cd history to stack
+cd() {
+    local oldpwd="$PWD"
+
+    builtin cd "$@" || return
+
+    # Keep the previous directory in the stack so popd/fcd work.
+    if [[ "$oldpwd" != "$PWD" ]]; then
+        pushd -n "$oldpwd" >/dev/null || true
+    fi
+}
+
 # Search command history
 fh() {
     local cmd
@@ -353,6 +347,7 @@ cdh() {
     [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" || cd "$dir" || echo "No such directory: $dir"
 }
 
+# search for and change to directory
 fcd() {
     command -v find >/dev/null 2>&1 || {
         echo "required command not found: find"
@@ -379,9 +374,7 @@ fk() {
     ps -ef | sed 1d | fzf -m --prompt='Kill process → ' | awk '{print $2}' | xargs -r kill -9
 }
 
-# ===========================
 # Python environment helpers
-# ===========================
 pyon() {
     local venv_dir
     if [[ -n "$1" ]]; then
@@ -511,15 +504,24 @@ fi
 # Load any local env vars
 [[ -f "$HOME/.config/shell/myenv" ]] && source "$HOME/.config/shell/myenv"
 
-# Git autocompletion
-if command -v git >/dev/null 2>&1; then
-    if [[ -r /usr/share/bash-completion/bash_completion ]]; then
+# ===========================
+# Bash completion
+# ===========================
+if ! shopt -oq posix; then
+    shopt -s progcomp
+
+    if [[ -f /usr/share/bash-completion/bash_completion ]]; then
         source /usr/share/bash-completion/bash_completion
     fi
+fi
 
-    if [[ -r /usr/share/bash-completion/completions/git ]]; then
+# Git autocompletion
+if command -v git >/dev/null 2>&1; then
+    if [[ -f /usr/share/bash-completion/completions/git ]]; then
         source /usr/share/bash-completion/completions/git
-    elif [[ -r /usr/share/git/completion/git-completion.bash ]]; then
+    fi
+
+    if [[ -f /usr/share/git/completion/git-completion.bash ]]; then
         source /usr/share/git/completion/git-completion.bash
     fi
 
