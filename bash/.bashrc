@@ -48,6 +48,7 @@ PATH="/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 [[ -d "$HOME/.local/share/pi-node/current/bin" ]] &&
     PATH="$PATH:$HOME/.local/share/pi-node/current/bin"
 
+# WSL
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
     for p in /usr/lib/wsl/lib /mnt/c/WINDOWS/System32 /mnt/c/WINDOWS; do
         [[ -d "$p" ]] && PATH="$PATH:$p"
@@ -220,7 +221,7 @@ __set_prompt() {
         git_segment+="\[\033[0m\]"
     fi
 
-    PS1="${prompt_color}\n${venv_segment}${info_color}\u${prompt_symbol}\h ${prompt_color}${info_color}\w${prompt_color}${git_segment}\n${info_color}${dollar}\[\033[0m\] "
+    PS1="\n${prompt_color}${venv_segment}${info_color}\u${prompt_symbol}\h ${prompt_color}${info_color}\w${prompt_color}${git_segment}\n${info_color}${dollar}\[\033[0m\] "
 
     case "$TERM" in
     xterm* | rxvt*)
@@ -308,7 +309,7 @@ PROMPT_COMMAND="__auto_venv;__set_prompt${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 # SSH agent
 # =========================
 SSH_ENV="$HOME/.ssh/agent_env"
-SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.zsh"
+SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.sh"
 
 if [[ -x "$SSH_BOOTSTRAP" ]]; then
     "$SSH_BOOTSTRAP"
@@ -421,12 +422,13 @@ pyoff() {
 
 # copy command output to clipboard
 y() {
-    xclip -selection clipboard
+    command -v xclip >/dev/null 2>&1 &&
+        xclip -selection clipboard
 }
 
 # Run fastfetch or neofetch
 ff() {
-    command -v fastfetch >/dev/null 2>&1 && fastfetch
+    command -v fastfetch >/dev/null 2>&1 && fastfetch && return 0
     command -v neofetch >/dev/null 2>&1 && neofetch
 }
 
@@ -437,6 +439,12 @@ sk() {
     else
         screenkey -g '1920x300+1900+20' -s large >/dev/null 2>&1 &
     fi
+}
+
+# Display i3 keybindings
+i3keys() {
+    grep -hE '^[[:space:]]*bindsym' \
+        ~/.config/i3/config 2>/dev/null
 }
 
 # ===========================
@@ -499,11 +507,6 @@ alias z='zathura'
 if [[ -f "$HOME/.config/shell/local_aliases" ]]; then
     source "$HOME/.config/shell/local_aliases"
 fi
-
-i3keys() {
-    grep -hE '^[[:space:]]*bindsym' \
-        ~/.config/i3/config 2>/dev/null
-}
 
 # Load any local env vars
 [[ -f "$HOME/.config/shell/myenv" ]] && source "$HOME/.config/shell/myenv"

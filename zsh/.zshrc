@@ -326,7 +326,7 @@ zle -N zle-line-finish
 # SSH agent
 # =========================
 SSH_ENV="$HOME/.ssh/agent_env"
-SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.zsh"
+SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.sh"
 
 if [[ -x "$SSH_BOOTSTRAP" ]]; then
     # Run the bootstrap script to ensure the agent is started/reused
