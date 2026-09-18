@@ -263,21 +263,6 @@ if ! shopt -oq posix; then
     fi
 fi
 
-if command -v git >/dev/null 2>&1; then
-    if [[ -f /usr/share/bash-completion/completions/git ]]; then
-        . /usr/share/bash-completion/completions/git
-    elif [[ -f /usr/share/git/completion/git-completion.bash ]]; then
-        . /usr/share/git/completion/git-completion.bash
-    fi
-
-    # Apply git completion to the `g` alias too.
-    if declare -F __git_wrap__git_main >/dev/null 2>&1; then
-        complete -o bashdefault -o default -o nospace -F __git_wrap__git_main git g
-    elif declare -F _git >/dev/null 2>&1; then
-        complete -o bashdefault -o default -o nospace -F _git git g
-    fi
-fi
-
 # ===========================
 # Pager settings
 # ===========================
@@ -522,6 +507,23 @@ i3keys() {
 
 # Load any local env vars
 [[ -f "$HOME/.config/shell/myenv" ]] && source "$HOME/.config/shell/myenv"
+
+# Git autocompletion
+if command -v git >/dev/null 2>&1; then
+    if [[ -r /usr/share/bash-completion/bash_completion ]]; then
+        source /usr/share/bash-completion/bash_completion
+    fi
+
+    if [[ -r /usr/share/bash-completion/completions/git ]]; then
+        source /usr/share/bash-completion/completions/git
+    elif [[ -r /usr/share/git/completion/git-completion.bash ]]; then
+        source /usr/share/git/completion/git-completion.bash
+    fi
+
+    if declare -F __git_complete >/dev/null; then
+        __git_complete g git
+    fi
+fi
 
 case $TERM in
 xterm* | tmux* | screen*) printf '\e]0;%s@%s\a' "$USER" "${HOSTNAME%%.*}" ;;
