@@ -19,6 +19,8 @@ shopt -s histappend
 export PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
 export XAUTHORITY="$HOME/.Xauthority"
 
+shopt -s cdspell
+shopt -s autocd
 shopt -s checkwinsize
 
 [[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -475,6 +477,7 @@ alias gd='git diff | nvim -'
 alias gf='git fetch'
 alias g='git'
 alias gm='git merge'
+alias gs='git status'
 alias grep='grep --color=auto'
 alias h='fc -l 1'
 alias hl='rg --passthru'
@@ -486,6 +489,8 @@ if command -v eza >/dev/null 2>&1; then
 else
     alias ll='ls -Alh'
 fi
+command -v xdg-open >/dev/null 2>&1 &&
+    alias open='xdg-open'
 alias ls='ls --color=auto'
 alias md="mkdir -p"
 alias micc='arecord -f cd -vv -D default /dev/null'
