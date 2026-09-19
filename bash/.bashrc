@@ -29,28 +29,46 @@ shopt -s progcomp
 
 [[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 
+# detect OS
+__detect_os() {
+    if [[ -r /etc/os-release ]]; then
+        source /etc/os-release
+        printf '%s' "$ID"
+    fi
+}
+__OS=$(__detect_os)
+
 # ===========================
 # Path
 # ===========================
 PATH="/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
+
 [[ -d "$HOME/.local/bin" ]] &&
     PATH="$PATH:$HOME/.local/bin"
-[[ -d "$HOME/bin" ]] && PATH=$PATH:"$HOME/bin"
-# Ubuntu
-[[ -d "/snap/bin" ]] &&
-    PATH="$PATH:/snap/bin"
+
 [[ -d "$HOME/.cargo/bin" ]] &&
     PATH="$PATH:$HOME/.cargo/bin"
+
 [[ -d "/usr/local/go/bin" ]] &&
     PATH="$PATH:/usr/local/go/bin"
-[[ -d "$HOME/.opencode/bin" ]] &&
-    PATH="$PATH:$HOME/.opencode/bin"
-# Pi on Arch
-[[ -d "$HOME/.local/share/npm/bin" ]] &&
-    PATH="$PATH:$HOME/.local/share/npm/bin"
-# Pi on Ubuntu
-[[ -d "$HOME/.local/share/pi-node/current/bin" ]] &&
-    PATH="$PATH:$HOME/.local/share/pi-node/current/bin"
+
+# Ubuntu
+if [[ $__OS == "ubuntu" ]]; then
+    [[ -d "/snap/bin" ]] &&
+        PATH="$PATH:/snap/bin"
+    [[ -d "$HOME/.opencode/bin" ]] &&
+        PATH="$PATH:$HOME/.opencode/bin"
+    # Pi on Ubuntu
+    [[ -d "$HOME/.local/share/pi-node/current/bin" ]] &&
+        PATH="$PATH:$HOME/.local/share/pi-node/current/bin"
+fi
+
+# Arch
+if [[ $__OS == "arch" ]]; then
+    # Pi on Arch
+    [[ -d "$HOME/.local/share/npm/bin" ]] &&
+        PATH="$PATH:$HOME/.local/share/npm/bin"
+fi
 
 # WSL
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
@@ -169,13 +187,9 @@ __auto_venv() {
 # ===========================
 # identify the os for building the prompt
 __os_icon() {
-    local os=""
+    local os
 
-    if [[ -r /etc/os-release ]]; then
-        . /etc/os-release
-        os="$ID"
-    fi
-
+    os="$__OS"
     if [[ "$os" == "arch" ]]; then
         printf ""
     elif [[ "$os" == "ubuntu" ]]; then
@@ -326,40 +340,46 @@ cd() {
 
     builtin cd "$@" || return
 
-    # Keep the previous directory in the stack so popd/fcd work.
+    # Keep the previous directory in the stack so popd/cdh work.
     if [[ "$oldpwd" != "$PWD" ]]; then
         pushd -n "$oldpwd" >/dev/null || true
+    fi
+}
+
+# Search cd history
+cdh() {
+    local dir
+    if command -v fzf >/dev/null 2>&1; then
+        dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
+        [[ -z "$dir" ]] && return
+        [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" ||
+            cd "$dir" || echo "No such directory: $dir"
     fi
 }
 
 # Search command history
 fh() {
     local cmd
-    cmd=$(
-        fc -l 1 | fzf --tac --no-sort --prompt='History → ' |
-            sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//'
-    ) || return
-    eval "$cmd"
+    if command -v fzf >/dev/null 2>&1; then
+        cmd=$(
+            fc -l 1 | fzf --tac --no-sort --prompt='History → ' |
+                sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//'
+        ) || return
+        eval "$cmd"
+    fi
 }
 
 # Search with preview
 fv() {
     local file
-    file=$(
-        find . -type f | fzf \
-            --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-            --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0
-    )
-    [[ -n "$file" ]] && nvim "$file"
-}
-
-# Search cd history
-cdh() {
-    local dir
-    dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
-    [[ -z "$dir" ]] && return
-    [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" ||
-        cd "$dir" || echo "No such directory: $dir"
+    if command -v fzf >/dev/null 2>&1; then
+        file=$(
+            find . -type f | fzf \
+                --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
+                --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0
+        )
+        [[ -n "$file" ]] && nvim "$file"
+    fi
 }
 
 # search for and change to directory
@@ -386,8 +406,10 @@ fcd() {
 
 # Search and kill processes
 fk() {
-    ps -ef | sed 1d | fzf -m --prompt='Kill process → ' |
-        awk '{print $2}' | xargs -r kill -9
+    if command -v fzf >/dev/null 2>&1; then
+        ps -ef | sed 1d | fzf -m --prompt='Kill process → ' |
+            awk '{print $2}' | xargs -r kill -9
+    fi
 }
 
 # Python environment helpers
