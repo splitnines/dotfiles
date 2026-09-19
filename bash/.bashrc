@@ -1,33 +1,26 @@
 # shellcheck shell=bash
 # shellcheck disable=SC1091
-set -o vi
-set -o posix
 
-case $- in
-*i*) ;;
-*) return ;;
-esac
+# Check for interactive shell
+[[ $- == *i* ]] || return
+
+# Terminal settings
+if [[ -t 0 ]]; then
+    stty -echoctl
+    stty stop undef 2>/dev/null || true
+fi
 
 # Turn off ctrl-c echo
 [[ $- == *i* ]] && stty -echoctl
 
-HISTFILE="$HOME/.local/state/bash/bash_history"
-mkdir -p "${HISTFILE%/*}"
-HISTSIZE=50000
-HISTFILESIZE=50000
-HISTCONTROL=ignoreboth
-export XAUTHORITY="$HOME/.Xauthority"
+# vi on the command line
+set -o vi
 
 # Enable shopts
 shopt -s cdspell
 shopt -s autocd
-shopt -s checkwinsize
-shopt -s cmdhist
 shopt -s histappend
 shopt -s dotglob globstar extglob
-shopt -s progcomp
-
-[[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # detect OS
 __detect_os() {
@@ -38,9 +31,7 @@ __detect_os() {
 }
 __OS=$(__detect_os)
 
-# ===========================
 # Path
-# ===========================
 PATH="/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 
 [[ -d "$HOME/.local/bin" ]] &&
@@ -56,14 +47,12 @@ PATH="/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 if [[ $__OS == "ubuntu" ]]; then
     [[ -d "/snap/bin" ]] &&
         PATH="$PATH:/snap/bin"
-    # Pi on Ubuntu
     [[ -d "$HOME/.local/share/pi-node/current/bin" ]] &&
         PATH="$PATH:$HOME/.local/share/pi-node/current/bin"
 fi
 
 # Arch
 if [[ $__OS == "arch" ]]; then
-    # Pi on Arch
     [[ -d "$HOME/.local/share/npm/bin" ]] &&
         PATH="$PATH:$HOME/.local/share/npm/bin"
 fi
@@ -75,18 +64,37 @@ if grep -qi "microsoft" /proc/version 2>/dev/null; then
     done
 fi
 
-# ===========================
 # Prioritize local fzf install
-# ===========================
 if [[ -d "$HOME/.fzf/bin" ]]; then
     PATH="$HOME/.fzf/bin:$PATH"
 fi
 
 export PATH
 
-# ===========================
+# Load any local env vars
+[[ -f "$HOME/.config/shell/myenv" ]] && source "$HOME/.config/shell/myenv"
+
+# history file config
+HISTFILE="$HOME/.local/state/bash/bash_history"
+[[ -d "${HISTFILE%/*}" ]] || mkdir -p "${HISTFILE%/*}"
+HISTSIZE=10000
+HISTFILESIZE=20000
+HISTCONTROL=ignoreboth
+
+# History behavior / completion
+bind 'set show-mode-in-prompt on'
+bind 'set vi-ins-mode-string \1\e[5 q\2'
+bind 'set vi-cmd-mode-string \1\e[2 q\2'
+bind 'set completion-ignore-case on'
+bind 'set show-all-if-ambiguous on'
+bind 'set show-all-if-unmodified on'
+bind 'set menu-complete-display-prefix on'
+bind 'TAB:menu-complete'
+bind '"\e[Z":menu-complete-backward'
+bind '"\e[A":history-search-backward'
+bind '"\e[B":history-search-forward'
+
 # ls, directory colors
-# ===========================
 if [[ -x /usr/bin/dircolors ]]; then
     if [[ -f "$HOME/.config/shell/dircolors-onedark" ]]; then
         eval "$(dircolors -b "$HOME/.config/shell/dircolors-onedark")"
@@ -97,16 +105,22 @@ if [[ -x /usr/bin/dircolors ]]; then
     fi
 fi
 
-# ===========================
 # OneDark Color Scheme
-# ===========================
 if [[ -s "$HOME/.config/shell/onedark-colors.sh" ]]; then
     source "$HOME/.config/shell/onedark-colors.sh"
 fi
 
-# ===========================
+# SSH agent
+SSH_ENV="$HOME/.ssh/agent_env"
+SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.sh"
+
+if [[ -x "$SSH_BOOTSTRAP" ]]; then
+    "$SSH_BOOTSTRAP"
+    # shellcheck source=/home/rickey/.ssh/agent_env
+    [[ -f "$SSH_ENV" ]] && source "$SSH_ENV" >/dev/null
+fi
+
 # Python venv auto-activation
-# ===========================
 __auto_venv_path=''
 __auto_venv_pwd=''
 
@@ -133,7 +147,7 @@ __find_venv_dir() {
 __auto_venv() {
     local found_venv
 
-    # Do not rescan unless the working directory changed.
+    # Do not rescan unless the working directory changed
     [[ "$PWD" == "$__auto_venv_pwd" ]] && return 0
     __auto_venv_pwd=$PWD
 
@@ -180,17 +194,11 @@ __auto_venv() {
     fi
 }
 
-# ===========================
 # Prompt
-# ===========================
-# identify the os for building the prompt
 __os_icon() {
-    local os
-
-    os="$__OS"
-    if [[ "$os" == "arch" ]]; then
+    if [[ "$__OS" == "arch" ]]; then
         printf ""
-    elif [[ "$os" == "ubuntu" ]]; then
+    elif [[ "$__OS" == "ubuntu" ]]; then
         printf ""
     else
         printf "@"
@@ -208,8 +216,10 @@ __git_is_dirty() {
     ! git diff --quiet --ignore-submodules --cached 2>/dev/null ||
         ! git diff --quiet --ignore-submodules 2>/dev/null
 }
+
 __set_prompt() {
-    local prompt_color info_color branch_color venv_color dirty_color prompt_symbol dollar
+    local prompt_color info_color branch_color
+    local venv_color dirty_color prompt_symbol dollar
     local venv_segment git_segment branch
 
     prompt_color='\[\033[0;90m\]'
@@ -248,36 +258,11 @@ __set_prompt() {
     fi
 
     PS1="\n${prompt_color}${venv_segment}${info_color}\u${prompt_symbol}\h "
-    PS1+="${prompt_color}${info_color}\w${prompt_color}${git_segment}\n${info_color}"
-    PS1+="${dollar}\[\033[0m\] "
-
-    case "$TERM" in
-    xterm* | rxvt*)
-        PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]${PS1}"
-        ;;
-    esac
+    PS1+="${prompt_color}${info_color}\w${prompt_color}${git_segment}\n"
+    PS1+="${info_color}${dollar}\[\033[0m\] "
 }
 
-# ===========================
-# History behavior / completion
-# ===========================
-stty stop undef 2>/dev/null || true
-bind 'set editing-mode vi'
-bind 'set show-mode-in-prompt on'
-bind 'set vi-ins-mode-string \1\e[5 q\2'
-bind 'set vi-cmd-mode-string \1\e[2 q\2'
-bind 'set completion-ignore-case on'
-bind 'set show-all-if-ambiguous on'
-bind 'set show-all-if-unmodified on'
-bind 'set menu-complete-display-prefix on'
-bind 'TAB:menu-complete'
-bind '"\e[Z":menu-complete-backward'
-bind '"\e[A":history-search-backward'
-bind '"\e[B":history-search-forward'
-
-# ===========================
 # Pager settings
-# ===========================
 export PAGER="less"
 export LESS="-R -X -F --use-color"
 export LESS_TERMCAP_me=$'\e[0m'
@@ -298,25 +283,7 @@ export BAT_THEME="OneHalfDark"
 export EDITOR="nvim"
 export VISUAL="nvim"
 
-# Better globbing
-
-PROMPT_COMMAND="__auto_venv;__set_prompt;history -a${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
-
-# =========================
-# SSH agent
-# =========================
-SSH_ENV="$HOME/.ssh/agent_env"
-SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.sh"
-
-if [[ -x "$SSH_BOOTSTRAP" ]]; then
-    "$SSH_BOOTSTRAP"
-    # shellcheck source=/home/rickey/.ssh/agent_env
-    [[ -f "$SSH_ENV" ]] && source "$SSH_ENV" >/dev/null
-fi
-
-# ===========================
 # fzf defaults
-# ===========================
 export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
 export FZF_DEFAULT_OPTS="
   --height=100%
@@ -328,9 +295,7 @@ export FZF_DEFAULT_OPTS="
   --color=border:#3e4451,label:#61afef
 "
 
-# ===========================
 # Functions
-# ===========================
 
 # Push cd history to stack
 cd() {
@@ -406,46 +371,7 @@ fcd() {
 fk() {
     if command -v fzf >/dev/null 2>&1; then
         ps -ef | sed 1d | fzf -m --prompt='Kill process → ' |
-            awk '{print $2}' | xargs -r kill -9
-    fi
-}
-
-# Python environment helpers
-pyon() {
-    local venv_dir
-    if [[ -n "$1" ]]; then
-        venv_dir="$1"
-    elif [[ -d .venv ]]; then
-        venv_dir=".venv"
-    elif [[ -d venv ]]; then
-        venv_dir="venv"
-    else
-        echo "${E_RED:-}No virtual environment found.${E_RESET:-}"
-        return 1
-    fi
-
-    if [[ ! -f "$venv_dir/bin/activate" ]]; then
-        echo "${E_RED:-}No activate script found in $venv_dir/bin.${E_RESET:-}"
-        return 1
-    fi
-
-    echo "${E_GREEN:-}Activating Python environment: ${E_BLUE:-}${venv_dir}${E_RESET:-}"
-    source "$venv_dir/bin/activate"
-}
-
-pyoff() {
-    if [[ -z "$VIRTUAL_ENV" ]]; then
-        echo "${E_RED:-}No virtual environment active.${E_RESET:-}"
-        return 1
-    fi
-    if type deactivate &>/dev/null; then
-        deactivate
-        echo "${E_ORANGE:-}Python environment deactivated.${E_RESET:-}"
-    else
-        PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "$VIRTUAL_ENV/bin" | paste -sd:)
-        export PATH
-        unset VIRTUAL_ENV
-        echo "${E_ORANGE:-}Python environment deactivated (manual cleanup).${E_RESET:-}"
+            awk '{print $2}' | xargs -r kill
     fi
 }
 
@@ -476,9 +402,7 @@ i3keys() {
         ~/.config/i3/config 2>/dev/null
 }
 
-# ===========================
 # Aliases
-# ===========================
 alias ....="cd ../../.."
 alias ...="cd ../.."
 alias ..="cd .."
@@ -488,7 +412,6 @@ alias btC='bluetoothctl devices Connected'
 alias btc='bluetoothctl connect'
 alias btd='bluetoothctl disconnect'
 alias btl='bluetoothctl devices'
-alias egrep='egrep --color=auto'
 alias feh='feh --image-bg black --auto-zoom --scale-down'
 alias g='git'
 alias ga='git add .'
@@ -537,12 +460,7 @@ if [[ -f "$HOME/.config/shell/local_aliases" ]]; then
     source "$HOME/.config/shell/local_aliases"
 fi
 
-# Load any local env vars
-[[ -f "$HOME/.config/shell/myenv" ]] && source "$HOME/.config/shell/myenv"
-
-# ===========================
 # Bash completion
-# ===========================
 if [[ -f /usr/share/bash-completion/bash_completion ]]; then
     source /usr/share/bash-completion/bash_completion
 fi
@@ -560,16 +478,6 @@ if command -v git >/dev/null 2>&1; then
     fi
 fi
 
-case $TERM in
-xterm* | tmux* | screen*) printf '\e]0;%s@%s\a' "$USER" "${HOSTNAME%%.*}" ;;
-esac
-
-export NVM_DIR="$HOME/.nvm"
-if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-    \. "$NVM_DIR/nvm.sh" --no-use
-fi
-[[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"
-
 # Use pinentry-tty if in a terminal and the GUI if not
 if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
     GPG_TTY="$(tty)"
@@ -577,7 +485,4 @@ if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
     gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
 fi
 
-# CML environment variables
-export CISCO_USER=cisco
-export CISCO_PASS=cisco
-export BREAKOUT_PASSWORD=cisco
+PROMPT_COMMAND="__auto_venv;__set_prompt;history -a${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
