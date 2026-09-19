@@ -56,8 +56,6 @@ PATH="/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 if [[ $__OS == "ubuntu" ]]; then
     [[ -d "/snap/bin" ]] &&
         PATH="$PATH:/snap/bin"
-    [[ -d "$HOME/.opencode/bin" ]] &&
-        PATH="$PATH:$HOME/.opencode/bin"
     # Pi on Ubuntu
     [[ -d "$HOME/.local/share/pi-node/current/bin" ]] &&
         PATH="$PATH:$HOME/.local/share/pi-node/current/bin"
