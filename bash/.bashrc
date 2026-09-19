@@ -10,9 +10,6 @@ if [[ -t 0 ]]; then
     stty stop undef 2>/dev/null || true
 fi
 
-# Turn off ctrl-c echo
-[[ $- == *i* ]] && stty -echoctl
-
 # vi on the command line
 set -o vi
 
@@ -43,18 +40,17 @@ PATH="/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 [[ -d "/usr/local/go/bin" ]] &&
     PATH="$PATH:/usr/local/go/bin"
 
-# Ubuntu
-if [[ $__OS == "ubuntu" ]]; then
-    [[ -d "/snap/bin" ]] &&
-        PATH="$PATH:/snap/bin"
-    [[ -d "$HOME/.local/share/pi-node/current/bin" ]] &&
-        PATH="$PATH:$HOME/.local/share/pi-node/current/bin"
-fi
-
 # Arch
 if [[ $__OS == "arch" ]]; then
     [[ -d "$HOME/.local/share/npm/bin" ]] &&
         PATH="$PATH:$HOME/.local/share/npm/bin"
+fi
+
+# Ubuntu
+if [[ $__OS == "ubuntu" ]]; then
+    for p in /snap/bin $HOME/.local/share/pi-node/current/bin; do
+        [[ -d "$p" ]] && PATH="$PATH:$p"
+    done
 fi
 
 # WSL
@@ -110,6 +106,8 @@ if [[ -s "$HOME/.config/shell/onedark-colors.sh" ]]; then
     source "$HOME/.config/shell/onedark-colors.sh"
 fi
 
+# Session agents
+
 # SSH agent
 SSH_ENV="$HOME/.ssh/agent_env"
 SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.sh"
@@ -118,6 +116,13 @@ if [[ -x "$SSH_BOOTSTRAP" ]]; then
     "$SSH_BOOTSTRAP"
     # shellcheck source=/home/rickey/.ssh/agent_env
     [[ -f "$SSH_ENV" ]] && source "$SSH_ENV" >/dev/null
+fi
+
+# Use pinentry-tty if in a terminal and the GUI if not
+if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
+    GPG_TTY="$(tty)"
+    export GPG_TTY
+    gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
 fi
 
 # Python venv auto-activation
@@ -147,7 +152,6 @@ __find_venv_dir() {
 __auto_venv() {
     local found_venv
 
-    # Do not rescan unless the working directory changed
     [[ "$PWD" == "$__auto_venv_pwd" ]] && return 0
     __auto_venv_pwd=$PWD
 
@@ -207,14 +211,12 @@ __os_icon() {
 __OS_ICON=$(__os_icon)
 
 __git_branch_name() {
-    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
     git symbolic-ref --quiet --short HEAD 2>/dev/null ||
         git rev-parse --short HEAD 2>/dev/null || return 0
 }
 
 __git_is_dirty() {
-    ! git diff --quiet --ignore-submodules --cached 2>/dev/null ||
-        ! git diff --quiet --ignore-submodules 2>/dev/null
+    [[ -n "$(git status --porcelain=v1 --ignore-submodules=all 2>/dev/null)" ]]
 }
 
 __set_prompt() {
@@ -303,7 +305,6 @@ cd() {
 
     builtin cd "$@" || return
 
-    # Keep the previous directory in the stack so popd/cdh work.
     if [[ "$oldpwd" != "$PWD" ]]; then
         pushd -n "$oldpwd" >/dev/null || true
     fi
@@ -476,13 +477,6 @@ if command -v git >/dev/null 2>&1; then
     if declare -F __git_complete >/dev/null; then
         __git_complete g git
     fi
-fi
-
-# Use pinentry-tty if in a terminal and the GUI if not
-if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
-    GPG_TTY="$(tty)"
-    export GPG_TTY
-    gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
 fi
 
 PROMPT_COMMAND="__auto_venv;__set_prompt;history -a${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
