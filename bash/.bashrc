@@ -15,8 +15,7 @@ HISTFILE="$HOME/.local/state/bash/bash_history"
 mkdir -p "${HISTFILE%/*}"
 HISTSIZE=50000
 HISTFILESIZE=50000
-HISTCONTROL=ignoreboth:erasedups
-export PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+HISTCONTROL=ignoreboth
 export XAUTHORITY="$HOME/.Xauthority"
 
 # Enable shopts
@@ -92,8 +91,8 @@ fi
 # ===========================
 # Python venv auto-activation
 # ===========================
-# VIRTUAL_ENV_DISABLE_PROMPT=1
 __auto_venv_path=''
+__auto_venv_pwd=''
 
 __find_venv_dir() {
     local dir
@@ -107,6 +106,7 @@ __find_venv_dir() {
                 return 0
             fi
         done
+
         dir=${dir%/*}
         [[ -n "$dir" ]] || dir=/
     done
@@ -117,6 +117,10 @@ __find_venv_dir() {
 __auto_venv() {
     local found_venv
 
+    # Do not rescan unless the working directory changed.
+    [[ "$PWD" == "$__auto_venv_pwd" ]] && return 0
+    __auto_venv_pwd=$PWD
+
     found_venv=$(__find_venv_dir 2>/dev/null || true)
 
     if [[ -n "$__auto_venv_path" ]]; then
@@ -125,12 +129,15 @@ __auto_venv() {
                 deactivate >/dev/null 2>&1 || true
             else
                 PATH=$(
-                    printf '%s' "$PATH" | tr ':' '\n' |
-                        grep -v "^$__auto_venv_path/bin$" | paste -sd:
+                    printf '%s' "$PATH" |
+                        tr ':' '\n' |
+                        grep -v "^$__auto_venv_path/bin$" |
+                        paste -sd:
                 )
                 export PATH
                 unset VIRTUAL_ENV
             fi
+
             __auto_venv_path=''
             return 0
         fi
@@ -144,13 +151,15 @@ __auto_venv() {
     fi
 
     if [[ -n "$found_venv" ]]; then
-        if [[ -n "$VIRTUAL_ENV" ]] && [[ -z "$__auto_venv_path" ]]; then
+        if [[ -n "${VIRTUAL_ENV:-}" && -z "$__auto_venv_path" ]]; then
             return 0
         fi
 
-        if [[ "$VIRTUAL_ENV" != "$found_venv" ]]; then
-            . "$found_venv/bin/activate"
+        if [[ "${VIRTUAL_ENV:-}" != "$found_venv" ]]; then
+            # shellcheck disable=SC1090
+            source "$found_venv/bin/activate"
         fi
+
         __auto_venv_path=$found_venv
     fi
 }
@@ -175,6 +184,7 @@ __os_icon() {
         printf "@"
     fi
 }
+__OS_ICON=$(__os_icon)
 
 __git_branch_name() {
     git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
@@ -183,14 +193,9 @@ __git_branch_name() {
 }
 
 __git_is_dirty() {
-    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 1
-    git update-index -q --refresh >/dev/null 2>&1
-
     ! git diff --quiet --ignore-submodules --cached 2>/dev/null ||
-        ! git diff --quiet --ignore-submodules 2>/dev/null ||
-        [[ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]]
+        ! git diff --quiet --ignore-submodules 2>/dev/null
 }
-
 __set_prompt() {
     local prompt_color info_color branch_color venv_color dirty_color prompt_symbol dollar
     local venv_segment git_segment branch
@@ -200,7 +205,7 @@ __set_prompt() {
     branch_color='\[\033[0;31m\]'
     venv_color='\[\033[0;32m\]'
     dirty_color='\[\033[38;5;208m\]'
-    prompt_symbol="$(__os_icon)"
+    prompt_symbol="$__OS_ICON"
     dollar='$'
 
     if [[ "$EUID" -eq 0 ]]; then
@@ -252,10 +257,7 @@ bind 'set vi-cmd-mode-string \1\e[2 q\2'
 bind 'set completion-ignore-case on'
 bind 'set show-all-if-ambiguous on'
 bind 'set show-all-if-unmodified on'
-bind 'set mark-symlinked-directories on'
 bind 'set menu-complete-display-prefix on'
-bind 'set colored-stats on'
-bind 'set visible-stats on'
 bind 'TAB:menu-complete'
 bind '"\e[Z":menu-complete-backward'
 bind '"\e[A":history-search-backward'
@@ -286,7 +288,7 @@ export VISUAL="nvim"
 
 # Better globbing
 
-PROMPT_COMMAND="__auto_venv;__set_prompt${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+PROMPT_COMMAND="__auto_venv;__set_prompt;history -a${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 
 # =========================
 # SSH agent
@@ -529,9 +531,7 @@ fi
 if command -v git >/dev/null 2>&1; then
     if [[ -f /usr/share/bash-completion/completions/git ]]; then
         source /usr/share/bash-completion/completions/git
-    fi
-
-    if [[ -f /usr/share/git/completion/git-completion.bash ]]; then
+    elif [[ -f /usr/share/git/completion/git-completion.bash ]]; then
         source /usr/share/git/completion/git-completion.bash
     fi
 
@@ -546,7 +546,7 @@ esac
 
 export NVM_DIR="$HOME/.nvm"
 if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-    \. "$NVM_DIR/nvm.sh"
+    \. "$NVM_DIR/nvm.sh" --no-use
 fi
 [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"
 
