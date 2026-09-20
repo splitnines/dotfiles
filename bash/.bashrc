@@ -75,7 +75,7 @@ HISTFILE="$HOME/.local/state/bash/bash_history"
 [[ -d "${HISTFILE%/*}" ]] || mkdir -p "${HISTFILE%/*}"
 HISTSIZE=10000
 HISTFILESIZE=20000
-HISTCONTROL=ignoreboth
+HISTCONTROL=ignoreboth:erasedups
 
 # History behavior / completion
 bind 'set show-mode-in-prompt on'
@@ -425,7 +425,8 @@ alias gf='git fetch'
 alias gm='git merge'
 alias grep='grep --color=auto'
 alias gs='git status'
-alias h='fc -l 1'
+# alias h='fc -l 1'
+alias h='history'
 alias hl='rg --passthru'
 alias l='ls --color=auto'
 alias la='ls -A'
