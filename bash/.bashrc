@@ -89,6 +89,8 @@ bind 'TAB:menu-complete'
 bind '"\e[Z":menu-complete-backward'
 bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
+bind '"\C-a": beginning-of-line'
+bind '"\C-e": end-of-line'
 
 # ls, directory colors
 if [[ -x /usr/bin/dircolors ]]; then
