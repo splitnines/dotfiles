@@ -158,6 +158,16 @@ vim.keymap.set("n", "<leader>tz", function()
   end
 end, { desc = "Toggle Zen mode" })
 
+-- run formatter manually
+vim.keymap.set({ "n", "v" }, "<leader>f", function()
+  vim.lsp.buf.format({
+    async = true,
+    filter = function(client)
+      return client.name == "ruff"
+    end,
+  })
+end, { desc = "Format Python with Ruff" })
+
 -- Force :Man to open in current window
 vim.cmd([[
    cnoreabbrev <expr> Man
