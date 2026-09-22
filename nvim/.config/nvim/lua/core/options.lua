@@ -29,10 +29,7 @@ if bash_path ~= "" then
   vim.opt.shell = bash_path
 end
 vim.opt.autoread = true
-
-vim.schedule(function()
-  vim.opt.clipboard = "unnamedplus"
-end)
+vim.opt.clipboard = "unnamedplus"
 
 vim.diagnostic.config({
   virtual_text = false,
