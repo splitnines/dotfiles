@@ -22,7 +22,7 @@ require("lazy").setup({
     require("plugins.whichkey"),
     require("plugins.dressing"),
     require("plugins.autopairs"),
-    -- require("plugins.indent"),
+    require("plugins.indent"),
     require("plugins.telescope"),
     require("plugins.treesitter"),
     require("plugins.lsp"),
