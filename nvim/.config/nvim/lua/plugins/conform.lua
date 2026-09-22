@@ -13,7 +13,7 @@ return {
       },
     },
     format_on_save = function(bufnr)
-      local disable = { c = true, cpp = true }
+      local disable = { c = true, cpp = true, python = true }
       return {
         timeout_ms = 500,
         lsp_format = disable[vim.bo[bufnr].filetype] and "never" or "fallback",
