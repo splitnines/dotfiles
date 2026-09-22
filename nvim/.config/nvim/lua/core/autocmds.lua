@@ -42,14 +42,6 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Turn off indent guides for text files
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "markdown", "text" },
-  callback = function()
-    require("ibl").setup_buffer(0, { enabled = false })
-  end,
-})
-
 -- Highlight yanked text
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking text",
