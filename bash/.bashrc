@@ -91,7 +91,7 @@ bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
 bind '"\C-a": beginning-of-line'
 bind '"\C-e": end-of-line'
-bind '"\C-x\C-e"; edit-and-execute-command'
+bind '"\C-x\C-e": edit-and-execute-command'
 
 # ls, directory colors
 if [[ -x /usr/bin/dircolors ]]; then
