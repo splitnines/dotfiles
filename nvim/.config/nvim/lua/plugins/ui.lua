@@ -1,9 +1,6 @@
 -- ~/dotfiles/nvim/.config/nvim/lua/plugins/ui.lua
 return {
-
-  ---------------------------------------------------------------------------
   -- Colorscheme + global UI control
-  ---------------------------------------------------------------------------
   {
     "navarasu/onedark.nvim",
     priority = 1000,
@@ -36,24 +33,26 @@ return {
           bg = "#1e1e1e",
         })
 
-        -- ==============================
         -- Unified popup + border theme
-        -- ==============================
         local popup_bg = "NONE"
         local border_fg = "#5c6370"
         local sel_bg = "#2a2a3a"
         local sel_fg = "#ffffff"
+
         -- Global float foundation (used by many plugins + LSP hovers)
         vim.api.nvim_set_hl(0, "NormalFloat", { bg = popup_bg })
         vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_fg, bg = popup_bg })
         vim.api.nvim_set_hl(0, "FloatTitle", { fg = border_fg, bg = popup_bg })
+
         -- Built-in popup menu / completion
         vim.api.nvim_set_hl(0, "Pmenu", { bg = popup_bg })
         vim.api.nvim_set_hl(0, "PmenuSel", { bg = sel_bg, fg = sel_fg })
         vim.api.nvim_set_hl(0, "PmenuBorder", { link = "FloatBorder" })
+
         -- nvim-cmp docs
         vim.api.nvim_set_hl(0, "CmpDoc", { bg = popup_bg })
         vim.api.nvim_set_hl(0, "CmpDocBorder", { link = "FloatBorder" })
+
         -- Telescope
         vim.api.nvim_set_hl(0, "TelescopeNormal", { link = "NormalFloat" })
         vim.api.nvim_set_hl(0, "TelescopeBorder", { link = "FloatBorder" })
@@ -64,10 +63,12 @@ return {
         vim.api.nvim_set_hl(0, "TelescopePreviewNormal", { link = "NormalFloat" })
         vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { link = "FloatBorder" })
         vim.api.nvim_set_hl(0, "TelescopeTitle", { link = "FloatTitle" })
+
         -- Lazy.nvim
         vim.api.nvim_set_hl(0, "LazyNormal", { link = "NormalFloat" })
         vim.api.nvim_set_hl(0, "LazyBorder", { link = "FloatBorder" })
         vim.api.nvim_set_hl(0, "LazyBackdrop", { bg = "NONE" })
+
         -- Mason.nvim
         vim.api.nvim_set_hl(0, "MasonNormal", { link = "NormalFloat" })
         vim.api.nvim_set_hl(0, "MasonBorder", { link = "FloatBorder" })
@@ -85,9 +86,7 @@ return {
     end,
   },
 
-  ---------------------------------------------------------------------------
   -- Lazy.nvim
-  ---------------------------------------------------------------------------
   {
     "folke/lazy.nvim",
     opts = {
@@ -97,9 +96,7 @@ return {
     },
   },
 
-  ---------------------------------------------------------------------------
   -- Statusline
-  ---------------------------------------------------------------------------
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },

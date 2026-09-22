@@ -2,8 +2,6 @@
 _G.uv = vim.uv or vim.loop
 
 vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -22,11 +20,13 @@ vim.opt.list = false
 vim.g.have_nerd_font = true
 vim.opt.inccommand = "split"
 vim.opt.smartindent = true
-local zsh_path = vim.fn.exepath("zsh")
-if zsh_path ~= "" then
-  vim.opt.shell = zsh_path
-elseif vim.env.SHELL and vim.env.SHELL ~= "" then
-  vim.opt.shell = vim.env.SHELL
+vim.opt.expandtab = true
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
+local bash_path = vim.fn.exepath("bash")
+if bash_path ~= "" then
+  vim.opt.shell = bash_path
 end
 vim.opt.autoread = true
 
@@ -40,7 +40,6 @@ vim.diagnostic.config({
   signs = true,
   update_in_insert = false,
 })
-vim.o.updatetime = 250
 
 vim.api.nvim_create_autocmd("CursorHold", {
   callback = function()

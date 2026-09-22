@@ -18,12 +18,11 @@ require("lazy").setup({
     { "tpope/vim-sleuth" },
     { "folke/neodev.nvim", opts = {} },
 
-    require("plugins.todo-comments"),
     require("plugins.gitsigns"),
     require("plugins.whichkey"),
     require("plugins.dressing"),
     require("plugins.autopairs"),
-    require("plugins.indent"),
+    -- require("plugins.indent"),
     require("plugins.telescope"),
     require("plugins.treesitter"),
     require("plugins.lsp"),
@@ -34,8 +33,7 @@ require("lazy").setup({
     require("plugins.smear"),
     require("plugins.markdown"),
     require("plugins.surround"),
-    require("plugins.undotree"),
+    -- require("plugins.undotree"),
     require("plugins.cisco"),
-    -- require("plugins.debug"),
   },
 })
