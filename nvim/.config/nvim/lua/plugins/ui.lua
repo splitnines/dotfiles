@@ -66,7 +66,7 @@ return {
 
         -- Lazy.nvim
         vim.api.nvim_set_hl(0, "LazyNormal", { link = "NormalFloat" })
-        vim.api.nvim_set_hl(0, "LazyBorder", { link = "FloatBorder" })
+        vim.api.nvim_set_hl(0, "LazyBorder", { fg = "#5c6370", bg = popup_bg })
         vim.api.nvim_set_hl(0, "LazyBackdrop", { bg = "NONE" })
 
         -- Mason.nvim
@@ -84,16 +84,6 @@ return {
 
       vim.schedule(set_ui)
     end,
-  },
-
-  -- Lazy.nvim
-  {
-    "folke/lazy.nvim",
-    opts = {
-      ui = {
-        border = "single",
-      },
-    },
   },
 
   -- Statusline

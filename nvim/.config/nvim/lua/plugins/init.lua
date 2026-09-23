@@ -36,4 +36,16 @@ require("lazy").setup({
     -- require("plugins.undotree"),
     require("plugins.cisco"),
   },
+  ui = {
+    border = {
+      { "┌", "LazyBorder" },
+      { "─", "LazyBorder" },
+      { "┐", "LazyBorder" },
+      { "│", "LazyBorder" },
+      { "┘", "LazyBorder" },
+      { "─", "LazyBorder" },
+      { "└", "LazyBorder" },
+      { "│", "LazyBorder" },
+    },
+  },
 })
