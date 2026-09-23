@@ -49,7 +49,7 @@ fi
 # Ubuntu
 if [[ $__OS == "ubuntu" ]]; then
     for p in /snap/bin $HOME/.local/share/pi-node/current/bin; do
-        [[ -d "$p" ]] && PATH="$PATH:$p"
+        [[ -d "$p" ]] && PATH="$p:$PATH"
     done
 fi
 
