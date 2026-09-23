@@ -91,7 +91,7 @@ return {
     "folke/lazy.nvim",
     opts = {
       ui = {
-        border = "rounded",
+        border = "single",
       },
     },
   },

@@ -30,7 +30,7 @@ return {
         element = "repl",
       },
       floating = {
-        border = "rounded",
+        border = "single",
       },
     })
 

@@ -11,7 +11,7 @@ return {
   config = function()
     require("mason").setup({
       ui = {
-        border = "rounded",
+        border = "single",
       },
     })
 
@@ -22,7 +22,7 @@ return {
     local capabilities = require("cmp_nvim_lsp").default_capabilities()
     local cfg = vim.lsp.config
 
-    vim.o.winborder = "rounded"
+    vim.o.winborder = "single"
 
     cfg("lua_ls", {
       cmd = { "lua-language-server" },

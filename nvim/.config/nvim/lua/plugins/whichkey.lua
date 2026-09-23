@@ -13,7 +13,7 @@ return {
         nav = true,
       },
       win = {
-        border = "rounded",
+        border = "single",
         wo = {
           winblend = 0,
         },

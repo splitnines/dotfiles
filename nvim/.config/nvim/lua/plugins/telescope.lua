@@ -22,6 +22,7 @@ return {
     local themes = require("telescope.themes")
     telescope.setup({
       defaults = {
+        borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
         initial_mode = "normal",
         mappings = {
           i = {
