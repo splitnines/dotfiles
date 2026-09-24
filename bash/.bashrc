@@ -351,6 +351,8 @@ fv() {
 
 # search for and change to directory
 fcd() {
+    local search_path dir prompt
+
     command -v find >/dev/null 2>&1 || {
         echo "required command not found: find"
         return 1
@@ -360,9 +362,8 @@ fcd() {
         return 1
     }
 
-    local search_path="${1-$HOME}"
-    local dir
-    local prompt="Search in $search_path → "
+    search_path="${1-$HOME}"
+    prompt="Search in $search_path → "
 
     dir=$(find "$search_path" -type d -print 2>/dev/null |
         fzf --prompt="$prompt")
@@ -398,6 +399,18 @@ sk() {
     else
         screenkey -g '1920x300+1900+20' -s large >/dev/null 2>&1 &
     fi
+}
+
+# List tmux sessions
+tl() {
+    command -v tmux >/dev/null 2>&1 &&
+        tmux list-sessions | column -t
+}
+
+# Print an easy to read path
+path() {
+    [[ -n $PATH ]] &&
+        echo "$PATH" | tr ":" "\n"
 }
 
 # Display i3 keybindings
@@ -447,7 +460,6 @@ alias nv='nvim'
 command -v xdg-open >/dev/null 2>&1 &&
     alias open='xdg-open'
 alias p="ping"
-alias path='echo "$PATH" | tr ":" "\n"'
 alias pull='git pull'
 alias push='git push'
 alias py='python3'
@@ -457,7 +469,6 @@ alias rs="rsync -avzr"
 alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
 alias t="telnet"
 alias ta="tmux attach -t"
-alias tl="tmux ls | column -t"
 alias ts="tailscale"
 alias z='zathura'
 
