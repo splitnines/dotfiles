@@ -263,7 +263,7 @@ __set_prompt() {
     fi
 
     PS1="\n${prompt_color}${venv_segment}${info_color}\u${prompt_symbol}\h "
-    PS1+="${prompt_color}${info_color}\w${prompt_color}${git_segment}\n"
+    PS1+="${prompt_color}${info_color}\W${prompt_color}${git_segment}\n"
     PS1+="${info_color}${dollar}\[\033[0m\] "
 }
 
