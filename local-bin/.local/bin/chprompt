@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+    echo "Run this with: source $0"
+    exit 1
+fi
+
+alt_ps1='\n\[\033[0;34m\]\$ \[\033[0m\]'
+unset PROMPT_COMMAND
+PS1=$alt_ps1
