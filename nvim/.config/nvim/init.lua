@@ -176,6 +176,7 @@ vim.keymap.set("n", "<leader>ts", function()
   end
 end, { desc = "Toggle spell checking" })
 
+-- toggle gutter
 vim.keymap.set("n", "<leader>tg", function()
   local new_state = not vim.wo.number
 
@@ -189,11 +190,12 @@ vim.keymap.set("n", "<leader>tg", function()
   )
 end, { desc = "Toggle gutter and line numbers" })
 
+-- toggle zen mode
 vim.keymap.set("n", "<leader>tz", function()
-  zen_mode = not zen_mode
+  ZEN_MODE = not ZEN_MODE
 
-  if zen_mode then
-    zen_state = {
+  if ZEN_MODE then
+    ZEN_STATE = {
       number = vim.wo.number,
       relativenumber = vim.wo.relativenumber,
       signcolumn = vim.wo.signcolumn,
@@ -211,12 +213,12 @@ vim.keymap.set("n", "<leader>tz", function()
 
     -- vim.notify("Zen mode enabled", vim.log.levels.INFO)
   else
-    vim.wo.number = zen_state.number
-    vim.wo.relativenumber = zen_state.relativenumber
-    vim.wo.signcolumn = zen_state.signcolumn
-    vim.o.laststatus = zen_state.laststatus
-    vim.o.ruler = zen_state.ruler
-    vim.o.cmdheight = zen_state.cmdheight
+    vim.wo.number = ZEN_STATE.number
+    vim.wo.relativenumber = ZEN_STATE.relativenumber
+    vim.wo.signcolumn = ZEN_STATE.signcolumn
+    vim.o.laststatus = ZEN_STATE.laststatus
+    vim.o.ruler = ZEN_STATE.ruler
+    vim.o.cmdheight = ZEN_STATE.cmdheight
 
     vim.notify("Zen mode disabled", vim.log.levels.INFO)
   end
@@ -436,14 +438,14 @@ local plugin_autopairs = {
 }
 
 -- indent.lua
-local plugin_indent = {
-  "lukas-reineke/indent-blankline.nvim",
-  main = "ibl",
-  opts = {
-    indent = { char = "│" },
-    scope = { enabled = false },
-  },
-}
+-- local plugin_indent = {
+--   "lukas-reineke/indent-blankline.nvim",
+--   main = "ibl",
+--   opts = {
+--     indent = { char = "│" },
+--     scope = { enabled = false },
+--   },
+-- }
 
 -- telescope.lua
 local plugin_telescope = {
@@ -1078,14 +1080,14 @@ local plugin_surround = {
 }
 
 -- undotree.lua
-local plugin_undotree = {
-  "jiaoshijie/undotree",
-  opts = {
-  },
-  keys = {
-    { "<leader>u", "<cmd>lua require('undotree').toggle()<cr>" },
-  },
-}
+-- local plugin_undotree = {
+--   "jiaoshijie/undotree",
+--   opts = {
+--   },
+--   keys = {
+--     { "<leader>u", "<cmd>lua require('undotree').toggle()<cr>" },
+--   },
+-- }
 
 -- cisco.lua
 local plugin_cisco = {
