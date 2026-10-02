@@ -21,8 +21,10 @@ get_temp_from_cache() {
     while IFS='|' read -r location current_temp daily_min daily_max; do
         if [[ $name == "$location" ]]; then
             if [[ -n $current_temp ]]; then
+                daily_min="${daily_min:-$default}"
+                daily_max="${daily_max:-$default}"
                 printf '%s|%s|%s' \
-                    "$current_temp" "${daily_min:-$default}" "${daily_max:-$default}"
+                    "${current_temp,,}" "${daily_min,,}" "${daily_max,,}"
             else
                 echo "--|--|--"
             fi

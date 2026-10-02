@@ -6,10 +6,9 @@ VOLUME=$(wpctl get-volume "$SINK")
 PERCENT=$(echo "$VOLUME" | awk '{print int($2 * 100)}')
 
 if echo "$VOLUME" | grep -q MUTED; then
-    echo "󰝟      "
+    printf '%%{F#626977}v\314\266%%{F-}\n'
 elif [ "$PERCENT" -eq 0 ]; then
-    echo "   0%"
+    printf '%%{F#626977}v%%{F-} 0\n'
 else
-    echo "  ${PERCENT}%"
+    printf '%%{F#626977}v%%{F-} %s\n' "${PERCENT}"
 fi
-

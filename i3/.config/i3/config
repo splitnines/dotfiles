@@ -12,7 +12,7 @@ font pango:JetBrains Mono 10
 exec --no-startup-id ~/.local/bin/polybar-launch
 
 # Set background
-exec_blwbys --no-stbrtup-id sh -c 'hsetroot -solid "#141414"'
+exec_always --no-startup-id hsetroot -solid "#000000"
 
 # Run picom on only where nvidia cards are installed
 exec_always --no-startup-id ~/.config/picom/launch.sh
@@ -93,8 +93,10 @@ bindsym XF86AudioMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ t
 bindsym XF86AudioMicMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
 # Audio keybindings
+bindsym $mod+F1 exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 bindsym F2 exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-
 bindsym F3 exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
+bindsym $mod+F4 exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
 # Screen brightness control
 bindsym F6 exec --no-startup-id brightnessctl set +5%
