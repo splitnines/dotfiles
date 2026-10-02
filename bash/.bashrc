@@ -376,7 +376,7 @@ fcd() {
 fk() {
     if command -v fzf >/dev/null 2>&1; then
         ps -ef | sed 1d | fzf -m --prompt='Kill process → ' |
-            awk '{print $2}' | xargs -r kill
+            awk '{print $2}' | xargs -r kill -9
     fi
 }
 
