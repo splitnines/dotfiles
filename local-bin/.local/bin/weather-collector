@@ -32,8 +32,8 @@ get_temp() {
 
     if [[ -n $readings ]]; then
         IFS="|" read -r current_temp daily_min daily_max <<<"$readings"
-        printf '%.0f%s|%.0f%s|%.0f%s' \
-            "$current_temp" "°F" "$daily_min" "°F" "$daily_max" "°F"
+        printf '%.0f|%.0f|%.0f' \
+            "$current_temp" "$daily_min" "$daily_max"
     else
         echo "--|--|--"
     fi
