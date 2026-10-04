@@ -45,7 +45,7 @@ while IFS='|' read -r name temp _; do
 done <"$cache_file"
 
 if [[ -n $current_temp ]]; then
-    printf '%s%%{F#3a698f}f%%{F-}' "${current_temp}"
+    printf '%s%%{F#3a698f} f%%{F-}\n' "${current_temp}"
 else
     echo "--"
 fi
