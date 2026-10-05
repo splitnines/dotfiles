@@ -386,12 +386,6 @@ y() {
         xclip -selection clipboard
 }
 
-# Run fastfetch or neofetch
-ff() {
-    command -v fastfetch >/dev/null 2>&1 && fastfetch && return 0
-    command -v neofetch >/dev/null 2>&1 && neofetch
-}
-
 # Screenkey
 sk() {
     if pgrep -x screenkey >/dev/null; then
@@ -431,6 +425,11 @@ alias btd='bluetoothctl disconnect'
 alias btl='bluetoothctl devices'
 alias chprompt='source ~/.local/bin/chprompt'
 alias feh='feh --image-bg black --auto-zoom --scale-down'
+if command -v fastfetch &>/dev/null; then
+    alias ff="fastfetch"
+elif command -v neofetch &>/dev/null; then
+    alias ff="neofetch"
+fi
 alias g='git'
 alias ga='git add .'
 alias gb='git --no-pager branch'
@@ -442,7 +441,6 @@ alias gf='git fetch'
 alias gm='git merge'
 alias grep='grep --color=auto'
 alias gs='git status'
-# alias h='fc -l 1'
 alias h='history'
 alias hl='rg --passthru'
 alias l='ls --color=auto'
@@ -471,6 +469,7 @@ alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
 alias t="telnet"
 alias ta="tmux attach -t"
 alias ts="tailscale"
+alias vim="nvim"
 alias z='zathura'
 
 if [[ -f "$HOME/.config/shell/local_aliases" ]]; then
