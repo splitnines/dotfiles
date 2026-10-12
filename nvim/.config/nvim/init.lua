@@ -129,7 +129,6 @@ vim.keymap.set("n", "<leader>tm", function()
     end
 end, { desc = "Toggle Markdown Render" })
 
-
 -- Toggle spell ckeck
 vim.keymap.set("n", "<leader>ts", function()
     local spell_enabled = vim.opt.spell
@@ -205,6 +204,12 @@ vim.keymap.set({ "n", "v" }, "<leader>f", function()
         end,
     })
 end, { desc = "Format Python with Ruff" })
+
+-- Append date to end of current line
+vim.keymap.set("n", "<leader>ad", function()
+    local line = vim.api.nvim_get_current_line()
+    vim.api.nvim_set_current_line(line .. " " .. os.date("(%Y-%m-%d)"))
+end, { desc = "Append date to current line" })
 
 -- Force :Man to open in current window
 vim.cmd([[
@@ -392,6 +397,7 @@ local plugin_autopairs = {
     config = true,
 }
 
+-- (2026-10-12)
 -- indent.lua
 -- local plugin_indent = {
 --   "lukas-reineke/indent-blankline.nvim",
@@ -1021,6 +1027,7 @@ local plugin_surround = {
     },
 }
 
+-- (2026-10-12)
 -- undotree.lua
 -- local plugin_undotree = {
 --   "jiaoshijie/undotree",
@@ -1258,7 +1265,6 @@ make_sort_cmd("CSVSortAlphaRev", "alpharev", "Sort alphabetically descending")
 -- ============================================================================
 -- Extra commands and mappings
 -- ============================================================================
--- ToggleLint + Hover Fix
 -- Toggle lint
 do
     vim.api.nvim_create_user_command("ToggleLint", function()
