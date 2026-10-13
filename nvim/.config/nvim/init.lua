@@ -894,7 +894,7 @@ local plugin_ui = {
                 vim.api.nvim_set_hl(0, "WhichKeyBorder", { link = "FloatBorder" })
                 vim.api.nvim_set_hl(0, "WhichKeyFloat", { link = "NormalFloat" })
                 vim.api.nvim_set_hl(0, "CursorLine", { bg = "#242424" })
-                vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#e5c07b", bold = true, })
+                vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#abb2bf", bold = true, })
                 vim.api.nvim_set_hl(0, "CursorLineSign", { bg = "#1a1a1a", })
                 vim.api.nvim_set_hl(0, "CursorLineFold", { bg = "#1a1a1a", })
             end
