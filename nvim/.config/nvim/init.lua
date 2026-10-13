@@ -893,6 +893,10 @@ local plugin_ui = {
                 vim.api.nvim_set_hl(0, "WhichKeyNormal", { link = "NormalFloat" })
                 vim.api.nvim_set_hl(0, "WhichKeyBorder", { link = "FloatBorder" })
                 vim.api.nvim_set_hl(0, "WhichKeyFloat", { link = "NormalFloat" })
+                vim.api.nvim_set_hl(0, "CursorLine", { bg = "#242424" })
+                vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#e5c07b", bold = true, })
+                vim.api.nvim_set_hl(0, "CursorLineSign", { bg = "#1a1a1a", })
+                vim.api.nvim_set_hl(0, "CursorLineFold", { bg = "#1a1a1a", })
             end
 
             vim.api.nvim_create_autocmd("ColorScheme", {
@@ -913,58 +917,78 @@ local plugin_ui = {
                 return
             end
 
+            local bg = "#242424"
+            local fg = "#abb2bf"
+
+            local theme = {}
+
+            for _, mode in ipairs({
+                "normal",
+                "insert",
+                "visual",
+                "replace",
+                "command",
+                "terminal",
+                "inactive",
+            }) do
+                theme[mode] = {
+                    a = { fg = fg, bg = bg, gui = "bold" },
+                    b = { fg = fg, bg = bg },
+                    c = { fg = fg, bg = bg },
+                }
+            end
+
             local cfg = lualine.get_config() or {}
             local sections = cfg.sections or {}
 
             sections = vim.tbl_extend("force", sections, {
                 lualine_a = {
                     {
-                        "mode", color = { gui = "reverse" },
+                        "mode",
+                        color = { fg = fg, bg = bg, gui = "bold" },
                     },
                 },
                 lualine_b = {},
                 lualine_c = {},
                 lualine_x = {
                     {
-                        "filename", color = { bg = "#2a2a3a", fg = "#abb2bf" },
+                        "filename",
+                        color = { fg = fg, bg = bg },
                     },
                 },
                 lualine_y = {
                     {
                         "branch",
                         padding = { left = 1, right = 1 },
-                        color = { fg = "#abb2bf" }
+                        color = { fg = fg, bg = bg },
                     },
-                    "diff",
+                    {
+                        "diff",
+                        color = { fg = fg, bg = bg },
+                    },
                 },
                 lualine_z = {
                     {
                         function()
                             return tostring(vim.api.nvim_buf_line_count(0))
                         end,
-                        color = {
-                            bg = "#abb2bf",
-                            gui = "reverse"
-                        },
+                        color = { fg = fg, bg = bg },
                         padding = { left = 1, right = 1 },
                     },
                     {
                         "location",
-                        color = {
-                            bg = "#abb2bf",
-                            gui = "reverse"
-                        },
+                        color = { fg = fg, bg = bg },
                     },
                 },
             })
 
             lualine.setup({
                 options = {
-                    icons_enabled        = false,
-                    theme                = "auto",
-                    globalstatus         = true,
+                    icons_enabled = false,
+                    theme = theme,
+                    globalstatus = true,
                     component_separators = { left = "", right = "" },
-                    section_separators   = { left = "", right = "" },
+                    section_separators = { left = "", right = "" },
                 },
                 sections = sections,
             })
