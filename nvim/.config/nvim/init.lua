@@ -38,6 +38,53 @@ if bash_path ~= "" then
     vim.opt.shell = bash_path
 end
 
+-- Statusline
+vim.opt.laststatus = 3
+
+local statusline_modes = {
+    n = "NORMAL",
+    i = "INSERT",
+    v = "VISUAL",
+    V = "V-LINE",
+    ["\22"] = "V-BLOCK",
+    s = "SELECT",
+    S = "S-LINE",
+    ["\19"] = "S-BLOCK",
+    R = "REPLACE",
+    c = "COMMAND",
+    r = "PROMPT",
+    t = "TERMINAL",
+    ["!"] = "SHELL",
+}
+
+rawset(_G, "StatuslineMode", function()
+    local mode = vim.api.nvim_get_mode().mode
+    if mode:sub(1, 2) == "no" then
+        return "O-PENDING"
+    end
+    return statusline_modes[mode:sub(1, 1)] or mode:upper()
+end)
+
+rawset(_G, "StatuslineGit", function()
+    local branch = vim.b.gitsigns_head or ""
+    local status = vim.b.gitsigns_status or ""
+
+    if branch == "" then
+        return ""
+    end
+
+    return branch .. (status ~= "" and " " .. status or "")
+end)
+
+vim.opt.statusline = table.concat({
+    " %{v:lua.StatuslineMode()}",
+    "%=",
+    " %t%m%r ",
+    " %{v:lua.StatuslineGit()} ",
+    " %L ",
+    " %l:%c ",
+})
+
 -- Floating diagnostic window
 vim.api.nvim_create_autocmd("CursorHold", {
     callback = function()
@@ -897,6 +944,8 @@ local plugin_ui = {
                 vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#abb2bf", bold = true, })
                 vim.api.nvim_set_hl(0, "CursorLineSign", { bg = "#1a1a1a", })
                 vim.api.nvim_set_hl(0, "CursorLineFold", { bg = "#1a1a1a", })
+                vim.api.nvim_set_hl(0, "StatusLine", { fg = "#abb2bf", bg = "#242424", })
+                vim.api.nvim_set_hl(0, "StatusLineNC", { fg = "#5c6370", bg = "#242424", })
             end
 
             vim.api.nvim_create_autocmd("ColorScheme", {
@@ -907,93 +956,94 @@ local plugin_ui = {
         end,
     },
 
+    -- Removed (2026-10-13)
     -- Statusline
-    {
-        "nvim-lualine/lualine.nvim",
-        dependencies = { "nvim-tree/nvim-web-devicons" },
-        config = function()
-            local ok, lualine = pcall(require, "lualine")
-            if not ok then
-                return
-            end
-
-            local bg = "#242424"
-            local fg = "#abb2bf"
-
-            local theme = {}
-
-            for _, mode in ipairs({
-                "normal",
-                "insert",
-                "visual",
-                "replace",
-                "command",
-                "terminal",
-                "inactive",
-            }) do
-                theme[mode] = {
-                    a = { fg = fg, bg = bg, gui = "bold" },
-                    b = { fg = fg, bg = bg },
-                    c = { fg = fg, bg = bg },
-                }
-            end
-
-            local cfg = lualine.get_config() or {}
-            local sections = cfg.sections or {}
-
-            sections = vim.tbl_extend("force", sections, {
-                lualine_a = {
-                    {
-                        "mode",
-                        color = { fg = fg, bg = bg, gui = "bold" },
-                    },
-                },
-                lualine_b = {},
-                lualine_c = {},
-                lualine_x = {
-                    {
-                        "filename",
-                        color = { fg = fg, bg = bg },
-                    },
-                },
-                lualine_y = {
-                    {
-                        "branch",
-                        padding = { left = 1, right = 1 },
-                        color = { fg = fg, bg = bg },
-                    },
-                    {
-                        "diff",
-                        color = { fg = fg, bg = bg },
-                    },
-                },
-                lualine_z = {
-                    {
-                        function()
-                            return tostring(vim.api.nvim_buf_line_count(0))
-                        end,
-                        color = { fg = fg, bg = bg },
-                        padding = { left = 1, right = 1 },
-                    },
-                    {
-                        "location",
-                        color = { fg = fg, bg = bg },
-                    },
-                },
-            })
-
-            lualine.setup({
-                options = {
-                    icons_enabled = false,
-                    theme = theme,
-                    globalstatus = true,
-                    component_separators = { left = "", right = "" },
-                    section_separators = { left = "", right = "" },
-                },
-                sections = sections,
-            })
-        end,
-    },
+    -- {
+    --     "nvim-lualine/lualine.nvim",
+    --     dependencies = { "nvim-tree/nvim-web-devicons" },
+    --     config = function()
+    --         local ok, lualine = pcall(require, "lualine")
+    --         if not ok then
+    --             return
+    --         end
+    --
+    --         local bg = "#242424"
+    --         local fg = "#abb2bf"
+    --
+    --         local theme = {}
+    --
+    --         for _, mode in ipairs({
+    --             "normal",
+    --             "insert",
+    --             "visual",
+    --             "replace",
+    --             "command",
+    --             "terminal",
+    --             "inactive",
+    --         }) do
+    --             theme[mode] = {
+    --                 a = { fg = fg, bg = bg, gui = "bold" },
+    --                 b = { fg = fg, bg = bg },
+    --                 c = { fg = fg, bg = bg },
+    --             }
+    --         end
+    --
+    --         local cfg = lualine.get_config() or {}
+    --         local sections = cfg.sections or {}
+    --
+    --         sections = vim.tbl_extend("force", sections, {
+    --             lualine_a = {
+    --                 {
+    --                     "mode",
+    --                     color = { fg = fg, bg = bg, gui = "bold" },
+    --                 },
+    --             },
+    --             lualine_b = {},
+    --             lualine_c = {},
+    --             lualine_x = {
+    --                 {
+    --                     "filename",
+    --                     color = { fg = fg, bg = bg },
+    --                 },
+    --             },
+    --             lualine_y = {
+    --                 {
+    --                     "branch",
+    --                     padding = { left = 1, right = 1 },
+    --                     color = { fg = fg, bg = bg },
+    --                 },
+    --                 {
+    --                     "diff",
+    --                     color = { fg = fg, bg = bg },
+    --                 },
+    --             },
+    --             lualine_z = {
+    --                 {
+    --                     function()
+    --                         return tostring(vim.api.nvim_buf_line_count(0))
+    --                     end,
+    --                     color = { fg = fg, bg = bg },
+    --                     padding = { left = 1, right = 1 },
+    --                 },
+    --                 {
+    --                     "location",
+    --                     color = { fg = fg, bg = bg },
+    --                 },
+    --             },
+    --         })
+    --
+    --         lualine.setup({
+    --             options = {
+    --                 icons_enabled = false,
+    --                 theme = theme,
+    --                 globalstatus = true,
+    --                 component_separators = { left = "", right = "" },
+    --                 section_separators = { left = "", right = "" },
+    --             },
+    --             sections = sections,
+    --         })
+    --     end,
+    -- },
 }
 
 -- smear.lua
