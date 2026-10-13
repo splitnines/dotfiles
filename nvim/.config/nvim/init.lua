@@ -85,6 +85,15 @@ vim.opt.statusline = table.concat({
     " %l:%c ",
 })
 
+local statusline_group = vim.api.nvim_create_augroup("NativeStatusline", {
+    clear = true,
+})
+
+vim.api.nvim_create_autocmd("ModeChanged", {
+    group = statusline_group,
+    command = "redrawstatus!",
+})
+
 -- Floating diagnostic window
 vim.api.nvim_create_autocmd("CursorHold", {
     callback = function()
