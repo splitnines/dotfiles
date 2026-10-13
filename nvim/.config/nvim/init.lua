@@ -57,15 +57,16 @@ local statusline_modes = {
     ["!"] = "SHELL",
 }
 
-rawset(_G, "StatuslineMode", function()
+
+_G.StatuslineMode = function()
     local mode = vim.api.nvim_get_mode().mode
     if mode:sub(1, 2) == "no" then
         return "O-PENDING"
     end
     return statusline_modes[mode:sub(1, 1)] or mode:upper()
-end)
+end
 
-rawset(_G, "StatuslineGit", function()
+_G.StatuslineGit = function()
     local branch = vim.b.gitsigns_head or ""
     local status = vim.b.gitsigns_status or ""
 
@@ -74,7 +75,7 @@ rawset(_G, "StatuslineGit", function()
     end
 
     return branch .. (status ~= "" and " " .. status or "")
-end)
+end
 
 vim.opt.statusline = table.concat({
     " %{v:lua.StatuslineMode()}",
