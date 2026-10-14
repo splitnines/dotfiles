@@ -47,7 +47,10 @@ if [[ -n $menu ]]; then
             printf '%-16s %-8s %-8s %s\n' \
                 "${cols[0]}" "${cols[1]}" "${cols[2]}" "${cols[3]}"
         done <<<"$menu" |
-            rofi -dmenu -p "Weather" -theme-str 'window { width: 22%; height: 20%; }'
+            rofi -dmenu -p "Weather" \
+                -location 2 \
+                -yoffset 50 \
+                -theme-str 'window { width: 22%; height: 20%; }'
     )"
 fi
 
