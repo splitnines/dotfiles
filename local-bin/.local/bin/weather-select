@@ -8,12 +8,7 @@ cache_file="$HOME/.cache/polybar/weather-cache"
 polybar_launch="$HOME/.local/bin/polybar-launch"
 
 get_temp_from_cache() {
-    local name
-    local location
-    local current_temp
-    local daily_min
-    local daily_max
-    local default
+    local name location current_temp daily_min daily_max default
 
     name="$1"
     default="--"
@@ -49,10 +44,10 @@ menu="$(
 if [[ -n $menu ]]; then
     choice="$(
         while IFS='|' read -r -a cols; do
-            printf '%-20s %-8s %-8s %s\n' \
+            printf '%-16s %-8s %-8s %s\n' \
                 "${cols[0]}" "${cols[1]}" "${cols[2]}" "${cols[3]}"
         done <<<"$menu" |
-            rofi -dmenu -p "Weather"
+            rofi -dmenu -p "Weather" -theme-str 'window { width: 22%; height: 20%; }'
     )"
 fi
 
