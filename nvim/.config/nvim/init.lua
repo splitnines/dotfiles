@@ -279,7 +279,7 @@ vim.cmd([[
 -- ============================================================================
 -- Autocommands
 -- ============================================================================
--- FileType-specific settings
+-- File type specific settings
 local group = vim.api.nvim_create_augroup("IndentSettings", { clear = true })
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -426,7 +426,7 @@ local plugin_whichkey = {
             { "z",         group = "Fold / Spell / View" },
             { "[",         group = "Previous" },
             { "]",         group = "Next" },
-            -- nvim."surround"
+            -- nvim.surround
             { "ys",        desc = "Add surround",                      mode = "n" },
             { "yss",       desc = "Add surround line",                 mode = "n" },
             { "yS",        desc = "Add surround with new lines",       mode = "n" },
