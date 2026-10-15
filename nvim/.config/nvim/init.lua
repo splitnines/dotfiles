@@ -1,7 +1,5 @@
 -- Standalone Neovim configuration.
 --
--- commenting out unused and unnecessary config Wed Sep 30 07:24:03 PM PDT 2026
---
 -- ============================================================================
 -- Options
 -- ============================================================================
@@ -453,17 +451,6 @@ local plugin_autopairs = {
     event = "InsertEnter",
     config = true,
 }
-
--- (2026-10-12)
--- indent.lua
--- local plugin_indent = {
---   "lukas-reineke/indent-blankline.nvim",
---   main = "ibl",
---   opts = {
---     indent = { char = "│" },
---     scope = { enabled = false },
---   },
--- }
 
 -- telescope.lua
 local plugin_telescope = {
@@ -966,95 +953,6 @@ local plugin_ui = {
             vim.schedule(set_ui)
         end,
     },
-
-    -- Removed (2026-10-13)
-    -- Statusline
-    -- {
-    --     "nvim-lualine/lualine.nvim",
-    --     dependencies = { "nvim-tree/nvim-web-devicons" },
-    --     config = function()
-    --         local ok, lualine = pcall(require, "lualine")
-    --         if not ok then
-    --             return
-    --         end
-    --
-    --         local bg = "#242424"
-    --         local fg = "#abb2bf"
-    --
-    --         local theme = {}
-    --
-    --         for _, mode in ipairs({
-    --             "normal",
-    --             "insert",
-    --             "visual",
-    --             "replace",
-    --             "command",
-    --             "terminal",
-    --             "inactive",
-    --         }) do
-    --             theme[mode] = {
-    --                 a = { fg = fg, bg = bg, gui = "bold" },
-    --                 b = { fg = fg, bg = bg },
-    --                 c = { fg = fg, bg = bg },
-    --             }
-    --         end
-    --
-    --         local cfg = lualine.get_config() or {}
-    --         local sections = cfg.sections or {}
-    --
-    --         sections = vim.tbl_extend("force", sections, {
-    --             lualine_a = {
-    --                 {
-    --                     "mode",
-    --                     color = { fg = fg, bg = bg, gui = "bold" },
-    --                 },
-    --             },
-    --             lualine_b = {},
-    --             lualine_c = {},
-    --             lualine_x = {
-    --                 {
-    --                     "filename",
-    --                     color = { fg = fg, bg = bg },
-    --                 },
-    --             },
-    --             lualine_y = {
-    --                 {
-    --                     "branch",
-    --                     padding = { left = 1, right = 1 },
-    --                     color = { fg = fg, bg = bg },
-    --                 },
-    --                 {
-    --                     "diff",
-    --                     color = { fg = fg, bg = bg },
-    --                 },
-    --             },
-    --             lualine_z = {
-    --                 {
-    --                     function()
-    --                         return tostring(vim.api.nvim_buf_line_count(0))
-    --                     end,
-    --                     color = { fg = fg, bg = bg },
-    --                     padding = { left = 1, right = 1 },
-    --                 },
-    --                 {
-    --                     "location",
-    --                     color = { fg = fg, bg = bg },
-    --                 },
-    --             },
-    --         })
-    --
-    --         lualine.setup({
-    --             options = {
-    --                 icons_enabled = false,
-    --                 theme = theme,
-    --                 globalstatus = true,
-    --                 component_separators = { left = "", right = "" },
-    --                 section_separators = { left = "", right = "" },
-    --             },
-    --             sections = sections,
-    --         })
-    --     end,
-    -- },
 }
 
 -- smear.lua
@@ -1112,17 +1010,6 @@ local plugin_surround = {
     },
 }
 
--- (2026-10-12)
--- undotree.lua
--- local plugin_undotree = {
---   "jiaoshijie/undotree",
---   opts = {
---   },
---   keys = {
---     { "<leader>u", "<cmd>lua require('undotree').toggle()<cr>" },
---   },
--- }
-
 -- cisco.lua
 local plugin_cisco = {
     {
@@ -1154,7 +1041,6 @@ require("lazy").setup({
         plugin_whichkey,
         plugin_dressing,
         plugin_autopairs,
-        -- plugin_indent,
         plugin_telescope,
         plugin_treesitter,
         plugin_lsp,
@@ -1165,7 +1051,6 @@ require("lazy").setup({
         plugin_smear,
         plugin_markdown,
         plugin_surround,
-        -- plugin_undotree,
         plugin_cisco,
     },
     -- Keep runtime-generated state out of this one-file config directory.
@@ -1187,11 +1072,8 @@ require("lazy").setup({
 -- ============================================================================
 -- CSV / TSV utilities
 -- ============================================================================
--- CSV / TSV utilities for Neovim
 
-------------------------------------------------------------
 -- Detect delimiter
-------------------------------------------------------------
 local function detect_delim()
     local first = vim.fn.getline(1)
     if first:find("\t") then
@@ -1203,9 +1085,7 @@ local function detect_delim()
     end
 end
 
-------------------------------------------------------------
 -- Open results in scratch window
-------------------------------------------------------------
 local function open_in_new_window(lines, title)
     vim.cmd("new")
     vim.bo.buftype = "nofile"
@@ -1219,9 +1099,7 @@ local function open_in_new_window(lines, title)
     end
 end
 
-------------------------------------------------------------
 -- Sort
-------------------------------------------------------------
 local function csv_sort(col, mode)
     local delim = detect_delim()
     local flagmap = { num = "n", numrev = "nr", alpha = "", alpharev = "r" }
@@ -1263,9 +1141,7 @@ local function make_sort_cmd(name, mode, desc)
     end, { nargs = 1, desc = desc })
 end
 
-------------------------------------------------------------
 -- Column select
-------------------------------------------------------------
 local function csv_select(cols)
     if cols == "" then
         vim.notify("Usage: :CSVSelect {columns}", vim.log.levels.ERROR)
@@ -1292,9 +1168,7 @@ vim.api.nvim_create_user_command("CSVSelect", function(opts)
     csv_select(opts.args)
 end, { nargs = 1, desc = "Show only specified columns (e.g. :CSVSelect 1,3,5)" })
 
-------------------------------------------------------------
 -- Align columns
-------------------------------------------------------------
 vim.api.nvim_create_user_command("CSVAlign", function()
     local delim = detect_delim()
     local tmp = vim.fn.tempname()
@@ -1310,9 +1184,7 @@ vim.api.nvim_create_user_command("CSVAlign", function()
     open_in_new_window(out, "Align")
 end, { desc = "Align CSV columns" })
 
-------------------------------------------------------------
 -- List all column names
-------------------------------------------------------------
 vim.api.nvim_create_user_command("CSVColumns", function()
     local delim = detect_delim()
     local header = vim.fn.getline(1)
@@ -1339,9 +1211,7 @@ vim.api.nvim_create_user_command("CSVColumns", function()
     vim.api.nvim_buf_set_name(0, "[CSV: Columns]")
 end, { desc = "Show column names from the header line" })
 
-------------------------------------------------------------
 -- Register sort commands
-------------------------------------------------------------
 make_sort_cmd("CSVSortNum", "num", "Sort numerically ascending")
 make_sort_cmd("CSVSortNumRev", "numrev", "Sort numerically descending")
 make_sort_cmd("CSVSortAlpha", "alpha", "Sort alphabetically ascending")
