@@ -81,7 +81,7 @@ HISTCONTROL=ignoreboth:erasedups
 bind 'set show-mode-in-prompt on'
 bind 'set vi-ins-mode-string \1\e[5 q\2'
 bind 'set vi-cmd-mode-string \1\e[2 q\2'
-bind 'set completion-ignore-case on'
+# bind 'set completion-ignore-case on'
 bind 'set show-all-if-ambiguous on'
 bind 'set show-all-if-unmodified on'
 bind 'set menu-complete-display-prefix on'
