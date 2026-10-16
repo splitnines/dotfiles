@@ -446,11 +446,7 @@ alias hl='rg --passthru'
 alias l='ls --color=auto'
 alias la='ls -A'
 alias le='less -X'
-if command -v eza >/dev/null 2>&1; then
-    alias ll='eza -lA --git'
-else
-    alias ll='ls -Alh'
-fi
+alias ll='ls -Alh'
 alias ls='ls --color=auto'
 alias md="mkdir -p"
 alias micc='arecord -f cd -vv -D default /dev/null'
