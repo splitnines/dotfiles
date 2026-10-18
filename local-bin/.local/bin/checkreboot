@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+UNAME="$(uname -r | sed 's/-/./')"
+PACMAN="$(pacman -Q linux | awk '{print $2}')"
+
+if [[ $UNAME != $PACMAN ]]; then
+    printf '%%{F#ff0000}%s%%{F-}\n' "REBOOT"
+fi
