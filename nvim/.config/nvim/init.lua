@@ -942,8 +942,8 @@ local plugin_ui = {
                 vim.api.nvim_set_hl(0, "CursorLineSign", { bg = "#1a1a1a", })
                 vim.api.nvim_set_hl(0, "CursorLineFold", { bg = "#1a1a1a", })
                 vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#242424" })
-                vim.api.nvim_set_hl(0, "StatusLine", { fg = "#5c6370", bg = "#242424", })
-                vim.api.nvim_set_hl(0, "StatusLineNC", { fg = "#5c6370", bg = "#242424", })
+                vim.api.nvim_set_hl(0, "StatusLine", { fg = "#3a698f", bg = "#242424", })
+                vim.api.nvim_set_hl(0, "StatusLineNC", { fg = "#3a698f", bg = "#242424", })
                 vim.api.nvim_set_hl(0, "StatuslineMode", { fg = "#abb2bf", bg = "#3a698f", bold = true, })
             end
 
