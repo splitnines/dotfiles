@@ -417,7 +417,8 @@ i3keys() {
 alias ....="cd ../../.."
 alias ...="cd ../.."
 alias ..="cd .."
-alias bat='batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
+# alias bat='batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
+alias bat='bat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
 alias bt='bluetoothctl'
 alias btC='bluetoothctl devices Connected'
 alias btc='bluetoothctl connect'
