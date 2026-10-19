@@ -137,7 +137,7 @@ bindsym $mod+q kill
 bindsym $mod+d exec rofi -config ~/.config/rofi/config.rasi -show drun
 bindsym $mod+Shift+d exec rofi -config ~/.config/rofi/config.rasi -show run
 bindsym $mod+period exec rofi -modi emoji -show emoji
-bindsym $mod+Escape exec --no-startup-id rofi -show power-menu -modi power-menu:rofi-power-menu
+bindsym $mod+Escape exec --no-startup-id "rofi -show power-menu -modi power-menu:rofi-power-menu -theme-str 'window { width: 20%; height: 15%; }'"
 bindsym $mod+p exec --no-startup-id ~/.local/bin/passmenu-rofi
 bindsym $mod+Shift+w exec --no-startup-id ~/.local/bin/weather-select
 
