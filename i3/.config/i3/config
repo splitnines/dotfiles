@@ -177,8 +177,8 @@ bindsym $mod+v split v
 bindsym $mod+f fullscreen toggle
 
 # Change container layout (stacked, tabbed, toggle split)
-# bindsym $mod+t layout toggle tabbed split
-bindsym $mod+t focus parent, layout toggle tabbed splith, focus child
+# bindsym $mod+t exec --no-startup-id ~/.local/bin/i3-toggle-tabbed
+bindsym $mod+t exec --no-startup-id ~/.local/bin/i3-toggle-tabbed
 
 # Toggle tiling / floating
 # bindsym $mod+s floating toggle, resize set 1100 px 700 px, move position center

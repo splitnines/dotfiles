@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# set -euo pipefail
+
+target_id="$({
+    i3-msg -t get_tree
+} | jq -r '
+    def focused_path:
+        . as $node
+        | if .focused then
+            [$node]
+          else
+            first((.nodes[]?, .floating_nodes[]?) | focused_path) as $rest
+            | [$node] + $rest
+          end;
+
+    focused_path as $path
+    | ($path | map(.type) | index("workspace")) as $workspace_index
+    | (first(
+          range(($path | length) - 2; $workspace_index - 1; -1) as $i
+          | select(($path[$i].nodes | length) > 1)
+          | $path[$i + 1].id
+      ) // $path[-1].id)
+')"
+
+[[ -n "$target_id" && "$target_id" != "null" ]] || exit 1
+
+i3-msg -q "[con_id=\"$target_id\"] layout toggle tabbed splith"
