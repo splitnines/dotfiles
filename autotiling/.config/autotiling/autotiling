@@ -10,9 +10,13 @@ if [ -f "$PIDFILE" ]; then
     fi
 fi
 
-cd "$HOME/.config/autotiling" || exit 1
+# Resolve this launcher's real directory so a GNU Stow symlink still finds
+# the virtual environment created beside the source files.
+SCRIPT_PATH="$(readlink -f -- "$0")" || exit 1
+SCRIPT_DIR="$(dirname -- "$SCRIPT_PATH")"
+cd "$SCRIPT_DIR" || exit 1
 
-PYTHON_BIN="$HOME/.config/autotiling/.venv/bin/python"
+PYTHON_BIN="$SCRIPT_DIR/.venv/bin/python"
 if [ ! -x "$PYTHON_BIN" ]; then
     PYTHON_BIN="$(command -v python3 || command -v python)"
 fi
