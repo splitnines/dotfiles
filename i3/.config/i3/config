@@ -131,6 +131,9 @@ bindsym $mod+Return exec --no-startup-id st -e tmux new-session
 bindsym $mod+Shift+Return exec --no-startup-id st -t floating-term -e tmux new-session
 for_window [title="floating-term"] floating enable, resize set 1100 px 700 px, move position center
 
+# Start the bc calculator
+bindsym $mod+c exec --no-startup-id st -t floating-term -e bc
+
 # Kill focused window
 bindsym $mod+q kill
 
