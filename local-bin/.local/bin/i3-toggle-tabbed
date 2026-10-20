@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# set -euo pipefail
-
 target_id="$({
     i3-msg -t get_tree
 } | jq -r '
