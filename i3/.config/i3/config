@@ -28,7 +28,7 @@ exec_always --no-startup-id dunst
 exec_always --no-startup-id sh -c 'sleep 1; xset s 900 0'
 exec --no-startup-id xset dpms 0 0 915
 exec --no-startup-id xset +dpms
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -e -n -t -i /usr/local/share/backgrounds/arch-login.png
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -e -n -t -i /usr/local/share/backgrounds/arch-ascii-wallpaper.png
 
 # NetworkManager in the tray
 exec --no-startup-id nm-applet
