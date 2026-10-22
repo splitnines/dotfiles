@@ -104,9 +104,13 @@ vim.api.nvim_create_autocmd("CursorHold", {
 local custom_spellfile = vim.fn.stdpath("data") .. "/spell/en.utf-8.add"
 vim.fn.mkdir(vim.fn.fnamemodify(custom_spellfile, ":h"), "p")
 if vim.fn.filereadable(custom_spellfile) == 0 then
-    vim.fn.writefile({ "Virtualzation", "virtualization", "virtualized" }, custom_spellfile)
+    vim.fn.writefile({ "virtualization", "virtualized" }, custom_spellfile)
 end
 vim.opt.spellfile = custom_spellfile
+
+local function allow_plain_spellchecking()
+    vim.opt_local.spelloptions:remove("noplainbuffer")
+end
 
 -- ============================================================================
 -- Keymaps
@@ -186,19 +190,17 @@ end, { desc = "Toggle Markdown Render" })
 
 -- Toggle spell ckeck
 vim.keymap.set("n", "<leader>ts", function()
-    local spell_enabled = vim.opt.spell
-    if type(spell_enabled) ~= "boolean" then
-        spell_enabled = vim.wo.spell
-    end
-
-    local new_state = not spell_enabled
-    vim.opt.spell = new_state
+    local new_state = not vim.wo.spell
 
     if new_state then
-        vim.notify("Spell check enabled", vim.log.levels.INFO)
-    else
-        vim.notify("Spell check disabled", vim.log.levels.INFO)
+        allow_plain_spellchecking()
     end
+
+    vim.wo.spell = new_state
+    vim.notify(
+        new_state and "Spell check enabled" or "Spell check disabled",
+        vim.log.levels.INFO
+    )
 end, { desc = "Toggle spell checking" })
 
 -- Toggle gutter
@@ -303,6 +305,14 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt_local.tabstop = 2
         vim.opt_local.shiftwidth = 2
         vim.opt_local.softtabstop = 2
+    end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("MarkdownSpellOptions", { clear = true }),
+    pattern = "markdown",
+    callback = function()
+        allow_plain_spellchecking()
     end,
 })
 
