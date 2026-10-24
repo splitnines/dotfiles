@@ -426,18 +426,14 @@ alias btd='bluetoothctl disconnect'
 alias btl='bluetoothctl devices'
 alias chprompt='source ~/.local/bin/chprompt'
 alias feh='feh --image-bg black --auto-zoom --scale-down'
-if command -v fastfetch &>/dev/null; then
-    alias ff="fastfetch"
-elif command -v neofetch &>/dev/null; then
-    alias ff="neofetch"
-fi
+alias ff="fastfetch"
 alias g='git'
 alias ga='git add .'
 alias gb='git --no-pager branch'
 alias gc='git commit'
 alias gcm='git commit -m'
 alias gco='git checkout'
-alias gd='git diff | nvim -'
+alias gd='git diff | nvim -R -'
 alias gf='git fetch'
 alias gm='git merge'
 alias grep='grep --color=auto'
