@@ -1,6 +1,0 @@
-# Account-switching shortcuts: g1, g2, and g3 (index only)
-bind index g noop
-# Open each account directly; its folder-hook loads the account configuration once
-macro index g1 "<change-folder>imaps://splitnines@gmail.com@imap.gmail.com:993/INBOX<enter>" "Open splitnines Gmail"
-macro index g2 "<change-folder>imaps://rickey.ingrassia@gmail.com@imap.gmail.com:993/INBOX<enter>" "Open rickey.ingrassia Gmail"
-macro index g3 "<change-folder>imaps://uspsa@lindencsc.com@imap.gmail.com:993/INBOX<enter>" "Open LCSC Gmail"
