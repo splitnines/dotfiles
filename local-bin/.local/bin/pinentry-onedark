@@ -79,7 +79,15 @@ gui_backend() {
     fi
 }
 
-if [[ $has_request_tty == true && -x $PINENTRY_TTY ]]; then
+# Prefer the themed graphical prompt in an X11/Wayland session. This prevents
+# background programs such as NeoMutt from drawing pinentry over their TUI.
+if [[ -n ${DISPLAY:-} || -n ${WAYLAND_DISPLAY:-} ]]; then
+    if [[ -x $PINENTRY_GTK ]]; then
+        backend=$PINENTRY_GTK
+    else
+        backend=$(gui_backend)
+    fi
+elif [[ $has_request_tty == true && -x $PINENTRY_TTY ]]; then
     backend=$PINENTRY_TTY
 else
     backend=$(gui_backend)

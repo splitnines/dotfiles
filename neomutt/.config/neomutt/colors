@@ -1,0 +1,101 @@
+# One Dark Two – NeoMutt adaptation
+#
+# Generated automatically from iTerm2-Color-Schemes
+# Source: One Dark Two
+#
+# Base palette
+# bg:  #21252b
+# fg:  #e6e6e6
+# grey:#4a505a
+
+########################################
+# Global Defaults
+########################################
+color normal color254 color234
+color error color174 color234
+color message color75 color234
+color indicator color254 color68
+color tree color239 color234
+
+########################################
+# Status Bar
+########################################
+
+color status color254 color239
+
+########################################
+# Sidebar
+########################################
+
+# Sidebar navigation cursor: match the unread-message background
+color sidebar_highlight none color254 color236
+
+# Currently open folder: use the same darker blue as the selected message
+color sidebar_indicator none color254 color68
+
+########################################
+# Index View
+########################################
+
+color index color254 color234
+color index_number color239 color234
+color index_author color75 color234
+color index_subject color254 color234
+color index_date color186 color234
+color index_flags color174 color234
+
+# Unread — same field colors as read messages, with a lighter background
+color index         color254 color236 "~U"
+color index_number  color239 color236 "~U"
+color index_author  color75  color236 "~U"
+color index_subject color254 color236 "~U"
+color index_date    color186 color236 "~U"
+color index_flags   color174 color236 "~U"
+
+color index color174 color234 "~D"
+color index color222 color234 "~T"
+
+########################################
+# Headers
+########################################
+
+color hdrdefault color254 color234
+color header color75 color234 "^From:"
+color header color75 color234 "^To:"
+color header color186 color234 "^Subject:"
+color header color186 color234 "^Date:"
+color header color116 color234 "^Reply-To:"
+color header color116 color234 "^Message-ID:"
+
+########################################
+# Body
+########################################
+
+color body color254 color234 ".*"
+color quoted0 color150 color234
+color quoted1 color116 color234
+color signature color239 color234
+color body color117 color234 "(https?|ftp)://[^ ]+"
+
+########################################
+# Search
+########################################
+
+color search color235 color186
+
+########################################
+# Compose
+########################################
+
+color compose_header color75 color234
+color compose_security_encrypt color174 color234
+color compose_security_sign color150 color234
+color compose_security_both color116 color234
+
+########################################
+# Diff / Patch
+########################################
+
+color body color235 color150 "^\\+.*"
+color body color235 color174 "^-.*"
+color body color235 color186 "^@@.*"

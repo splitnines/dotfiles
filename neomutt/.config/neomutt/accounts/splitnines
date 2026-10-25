@@ -1,0 +1,54 @@
+set realname = "Rickey Ingrassia"
+set from = "splitnines@gmail.com"
+set status_format = "[splitnines] -%r-NeoMutt: %D [Msgs:%<M?%M/>%m%<n? New:%n>%<o? Old:%o>%<d? Del:%d>%<F? Flag:%F>%<t? Tag:%t>%<p? Post:%p>%<b? Inc:%b>%<l? %l>]---(%<T?%T/>%s/%S)-%>-(%P)---"
+set use_from = yes
+set envelope_from = yes
+
+set folder = "imaps://splitnines@gmail.com@imap.gmail.com:993/"
+set spoolfile = "+INBOX"
+
+set imap_user = "splitnines@gmail.com"
+set imap_pass = "`pass show neomutt/splitnines | head -n 1`"
+
+set smtp_url = "smtps://splitnines@gmail.com@smtp.gmail.com:465/"
+set smtp_pass = "`pass show neomutt/splitnines | head -n 1`"
+
+# Clear OAuth-only settings when switching from the LCSC account
+unset imap_authenticators
+unset smtp_authenticators
+unset imap_oauth_refresh_command
+unset smtp_oauth_refresh_command
+
+set postponed = "+[Gmail]/Drafts"
+set trash = "+[Gmail]/Trash"
+
+unset record
+
+unmailboxes *
+mailboxes +INBOX
+mailboxes "+[Gmail]/All Mail"
+mailboxes "+[Gmail]/Drafts"
+mailboxes "+[Gmail]/Sent Mail"
+mailboxes "+[Gmail]/Spam"
+mailboxes "+[Gmail]/Trash"
+mailboxes "+BankAmerica"
+mailboxes "+Amazon"
+mailboxes "+Cisco"
+mailboxes "+GDH"
+mailboxes "+GitHub"
+mailboxes "+Heroku"
+mailboxes "+Job Search"
+mailboxes "+Job Search/Applied"
+mailboxes "+Job Search/Dice"
+mailboxes "+Job Search/Indeed"
+mailboxes "+Job Search/Jobright"
+# mailboxes "+LCSC"
+# mailboxes "+LCSC/Gridiron"
+# mailboxes "+LCSC/Gridiron/Potential Sponsors"
+mailboxes "+Practiscore"
+# mailboxes "+Receipts"
+mailboxes "+Reddit"
+mailboxes "+Unemployment"
+mailboxes "+USPSA"
+
+set signature = "~/.config/neomutt/signature-splitnines"

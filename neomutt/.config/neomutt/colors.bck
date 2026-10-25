@@ -1,0 +1,35 @@
+# General interface
+color normal      white         default
+color indicator   black          color252
+color status      black         color245
+color error       brightwhite   red
+color message     brightyellow  default
+color search      black         brightyellow
+color markers     brightred     default
+color tree        cyan          default
+
+# Message index
+color index       brightyellow  default  "~N"  # New
+color index       brightcyan    default  "~U"  # Unread
+color index       brightred     default  "~F"  # Flagged
+color index       blue          default  "~D"  # Marked for deletion
+color index       green         default  "~T"  # Tagged
+
+# Message headers
+color hdrdefault  cyan          default
+color header      brightcyan    default  "^From:"
+color header      brightcyan    default  "^To:"
+color header      brightyellow  default  "^Subject:"
+color header      green         default  "^Date:"
+
+# Message body
+color quoted      green         default
+color quoted1     cyan          default
+color quoted2     yellow        default
+color quoted3     magenta       default
+color signature   blue          default
+color attachment  brightmagenta default
+
+# Links and email addresses
+color body        brightblue    default  "https?://[^ ]+"
+color body        brightcyan    default "[[:alnum:]._%+-]+@[[:alnum:].-]+\\.[[:alpha:]]{2,}"
