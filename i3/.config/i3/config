@@ -253,9 +253,9 @@ for_window [class="flameshot"] floating enable, resize set 1000 700, move positi
 exec --no-startup-id i3-msg "workspace $ws1"
 
 # Launch programs to specific work space
-assign [class="Chromium"] $ws2
-# assign [class="Thunderbird"] $ws2
+assign [class="Chromium"] $ws4
+assign [class="Thunderbird"] $ws2
 
-# exec --no-startup-id thunderbird
+exec --no-startup-id thunderbird
 exec --no-startup-id st
 exec --no-startup-id chromium
