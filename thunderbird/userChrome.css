@@ -1,0 +1,310 @@
+/*
+ * One Dark theme for Thunderbird
+ *
+ * Background:       #1c1c1c
+ * Dark background:  #21252b
+ * Selection:        #3e4451
+ * Foreground:       #abb2bf
+ * Muted foreground: #5c6370
+ * Blue:             #61afef
+ * Cyan:             #56b6c2
+ * Green:            #98c379
+ * Orange:           #d19a66
+ * Purple:           #c678dd
+ * Red:              #e06c75
+ */
+
+:root {
+  color-scheme: dark !important;
+
+  /* Thunderbird/Firefox theme variables */
+  --lwt-accent-color: #21252b !important;
+  --lwt-text-color: #abb2bf !important;
+  --lwt-selected-tab-background-color: #1c1c1c !important;
+
+  --toolbar-bgcolor: #1c1c1c !important;
+  --toolbar-color: #abb2bf !important;
+  --toolbar-field-background-color: #21252b !important;
+  --toolbar-field-color: #abb2bf !important;
+  --toolbar-field-border-color: #3e4451 !important;
+  --toolbar-field-focus-background-color: #21252b !important;
+  --toolbar-field-focus-color: #ffffff !important;
+  --toolbar-field-focus-border-color: #61afef !important;
+
+  --sidebar-background-color: #1c1c1c !important;
+  --sidebar-text-color: #abb2bf !important;
+  --sidebar-border-color: #3e4451 !important;
+
+  --tree-view-bg: #1c1c1c !important;
+  --tree-view-color: #abb2bf !important;
+  --tree-view-header-bg: #21252b !important;
+  --tree-view-header-color: #abb2bf !important;
+  --tree-view-header-border-color: #3e4451 !important;
+
+  --in-content-page-background: #1c1c1c !important;
+  --in-content-page-color: #abb2bf !important;
+  --in-content-box-background: #21252b !important;
+  --in-content-box-border-color: #3e4451 !important;
+  --in-content-primary-button-background: #61afef !important;
+  --in-content-primary-button-text-color: #21252b !important;
+
+  --button-background-color: #3e4451 !important;
+  --button-background-color-hover: #4b5263 !important;
+  --button-background-color-active: #5c6370 !important;
+  --button-text-color: #abb2bf !important;
+}
+
+/* Main window and toolbars */
+#messengerWindow,
+#navigation-toolbox,
+#unifiedToolbar,
+#toolbar-menubar,
+#tabs-toolbar,
+#mail-toolbox,
+#status-bar {
+  background-color: #1c1c1c !important;
+  color: #abb2bf !important;
+}
+
+/* Tabs */
+tab,
+.tabmail-tab {
+  color: #abb2bf !important;
+}
+
+tab[selected="true"],
+.tabmail-tab[selected="true"] {
+  background-color: #1c1c1c !important;
+  color: #ffffff !important;
+}
+
+.tab-line,
+.tab-context-line {
+  background-color: #61afef !important;
+}
+
+/* Folder and message-list panes */
+#folderPane,
+#threadPane,
+#threadPaneBox,
+#threadTree,
+#folderTree {
+  background-color: #1c1c1c !important;
+  color: #abb2bf !important;
+}
+
+/* Message header */
+.message-header-container,
+#messageHeader,
+#messageHeaderView {
+  background-color: #1c1c1c !important;
+  color: #abb2bf !important;
+  border-color: #3e4451 !important;
+}
+
+/* Quick-filter area */
+#quick-filter-bar,
+#quickFilterBarContainer {
+  background-color: #21252b !important;
+  color: #abb2bf !important;
+  border-color: #3e4451 !important;
+}
+
+/* Inputs and search boxes */
+input,
+search-textbox,
+textbox {
+  background-color: #21252b !important;
+  color: #abb2bf !important;
+  border-color: #3e4451 !important;
+}
+
+/* Menus and popups */
+menupopup,
+panel {
+  --panel-background: #1c1c1c !important;
+  --panel-color: #abb2bf !important;
+  --panel-border-color: #3e4451 !important;
+
+  background-color: #1c1c1c !important;
+  color: #abb2bf !important;
+}
+
+menuitem:hover,
+menu:hover {
+  background-color: #3e4451 !important;
+  color: #ffffff !important;
+}
+
+/* Selected and hovered rows */
+:is(
+  treechildren::-moz-tree-row(selected),
+  treechildren::-moz-tree-row(current)
+) {
+  background-color: #3e4451 !important;
+}
+
+:is(
+  treechildren::-moz-tree-cell-text(selected),
+  treechildren::-moz-tree-cell-text(current)
+) {
+  color: #ffffff !important;
+}
+
+/* Modern Thunderbird HTML-based rows */
+:is(
+  #threadTree,
+  #folderTree
+) :is(
+  [aria-selected="true"],
+  .selected,
+  .current
+) {
+  background-color: #3e4451 !important;
+  color: #ffffff !important;
+}
+
+/* Links and accent colors */
+a,
+.text-link,
+.link {
+  color: #61afef !important;
+}
+
+a:hover,
+.text-link:hover,
+.link:hover {
+  color: #56b6c2 !important;
+}
+
+/* Unread messages */
+/* .unread, */
+/* [data-properties~="unread"] { */
+/*   color: #ffffff !important; */
+/*   font-weight: bold !important; */
+/* } */
+#threadTree tr.unread,
+#threadTree tr[data-properties~="unread"] {
+  color: #61afef !important;
+  font-weight: normal !important;
+}
+
+/* Ensure individual fields inherit the unread styling */
+#threadTree tr.unread :is(td, .subject, .sender, .correspondent, .date),
+#threadTree tr[data-properties~="unread"] :is(td, .subject, .sender, .correspondent, .date) {
+  color: inherit !important;
+  font-weight: inherit !important;
+}
+
+/* New-message badges and counters */
+.badge,
+.folder-count-badge,
+.unread-count {
+  background-color: #61afef !important;
+  color: #21252b !important;
+}
+
+/* Pane separators */
+splitter,
+.contentTabInstance,
+#folderPaneSplitter {
+  border-color: #3e4451 !important;
+}
+
+@-moz-document url-prefix("about:message"),
+               url-prefix("chrome://messenger/content/") {
+  body {
+    background-color: #1c1c1c !important;
+    color: #abb2bf !important;
+  }
+
+  a {
+    color: #61afef !important;
+  }
+
+  blockquote {
+    color: #98c379 !important;
+    border-color: #3e4451 !important;
+  }
+
+  pre,
+  code {
+    background-color: #21252b !important;
+    color: #abb2bf !important;
+  }
+}
+
+/* Alternating colors in the message index */
+#threadTree tr .card-container {
+  background-color: #1c1c1c !important;
+}
+
+#threadTree tr:nth-child(even) .card-container {
+  background-color: #2c313a !important;
+}
+
+/* Table/list view used by some Thunderbird versions */
+#threadTree tr {
+  background-color: #1c1c1c !important;
+}
+
+#threadTree tr:nth-child(even) {
+  background-color: #1a1a1a !important;
+}
+
+/* Hovered message */
+#threadTree tr:hover .card-container,
+#threadTree tr:hover {
+  background-color: #353b45 !important;
+}
+
+/* Selected message: highlighted background, normal text */
+#threadTree tr[aria-selected="true"],
+#threadTree tr.selected,
+#threadTree tr.current,
+#threadTree tr[aria-selected="true"] .card-container,
+#threadTree tr.selected .card-container,
+#threadTree tr.current .card-container {
+  background-color: #3e4451 !important;
+  color: #abb2bf !important;
+  font-weight: normal !important;
+}
+
+/* Prevent selected-message fields from becoming white or bold */
+#threadTree tr[aria-selected="true"] :is(td, .card-container, .card-container *),
+#threadTree tr.selected :is(td, .card-container, .card-container *),
+#threadTree tr.current :is(td, .card-container, .card-container *) {
+  color: inherit !important;
+  font-weight: normal !important;
+}
+
+/* Selected messages in card view */
+#threadTree tr[aria-selected="true"] .card-container,
+#threadTree tr.selected .card-container {
+  background-color: #1c1c1c !important;
+  color: #abb2bf !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#threadTree tr:nth-child(even)[aria-selected="true"] .card-container,
+#threadTree tr:nth-child(even).selected .card-container {
+  background-color: #2c313a !important;
+}
+
+/* Unread text stays blue, including when selected */
+#threadTree tr.unread,
+#threadTree tr[data-properties~="unread"],
+#threadTree tr.unread .card-container,
+#threadTree tr[data-properties~="unread"] .card-container,
+#threadTree tr.unread :is(td, .subject, .sender, .correspondent, .date),
+#threadTree tr[data-properties~="unread"] :is(
+  td,
+  .subject,
+  .sender,
+  .correspondent,
+  .date
+) {
+  color: #61afef !important;
+  font-weight: normal !important;
+}
