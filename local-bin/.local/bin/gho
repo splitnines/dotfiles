@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+check_command() {
+    local cmd
+    for cmd in "$@"; do
+        command -v "$cmd" >/dev/null 2>&1 || {
+            echo "command not found: $cmd"
+            exit 1
+        }
+    done
+}
+
+check_command xdg-open git
+
+read -r remote_git <<<"$(git remote -v 2>/dev/null)"
+
+if [[ -z $remote_git ]]; then
+    echo "no remote git repo found"
+    exit 1
+fi
+
+if [[ $remote_git != *'github'* ]]; then
+    echo "remote repo not github hosted"
+    exit 1
+fi
+
+remote_git="${remote_git#*@}"
+remote_git="${remote_git%.git*}"
+remote_git="${remote_git/:/\/}"
+url="https://$remote_git"
+
+if ! xdg-open "$url" >/dev/null 2>&1; then
+    echo "failed to open: $url"
+    exit 1
+fi
