@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+check_commands() {
+    local commands="$1"
+
+    for cmd in "${commands[@]}"; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            echo "command not found: $cmd"
+            exit 1
+        fi
+    done
+}
+
+lookup() {
+    local word="$1"
+    printf '%s\n' "$word" | aspell -a
+}
+
+commands=(aspell fzf xclip)
+check_commands "${commands[@]}"
+
+if [[ -z "$1" ]]; then
+    echo "missing word to look up"
+    exit 1
+fi
+
+word="$1"
+
+results=$(
+    while IFS= read -r line; do
+        if [[ $line == '& '* && $line == *': '* ]]; then
+            field=${line#*': '}
+            field=${field%%': '*}
+
+            while [[ $field == *', '* ]]; do
+                printf '%s\n' "${field%%', '*}"
+                field=${field#*', '}
+            done
+            printf '%s\n' "$field"
+        fi
+    done < <(lookup "$word")
+)
+
+if [[ -n "$results" ]]; then
+    printf '%s\n' "$results" | fzf | xclip -selection clipboard -rmlastnl
+fi
