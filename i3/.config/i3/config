@@ -134,6 +134,9 @@ for_window [title="floating-term"] floating enable, resize set 1100 px 700 px, m
 # Start the bc calculator
 bindsym $mod+c exec --no-startup-id st -t floating-term -e bc
 
+# Spell checker
+bindsym $mod+Shift+s exec --no-startup-id ~/.local/bin/bspell-rofi
+
 # Kill focused window
 bindsym $mod+q kill
 
@@ -191,7 +194,7 @@ bindsym $mod+s exec --no-startup-id ~/.local/bin/i3-toggle-floating
 bindsym $mod+space focus mode_toggle
 
 # Toggle sticky
-bindsym $mod+Shift+s sticky toggle
+bindsym $mod+w sticky toggle
 
 # Focus the parent container
 bindsym $mod+a focus parent

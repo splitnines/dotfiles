@@ -1,46 +1,49 @@
 #!/usr/bin/env bash
 
-check_commands() {
-    local commands="$1"
+error() {
+    local msg=$1
+    local date_time
 
-    for cmd in "${commands[@]}"; do
-        if ! command -v "$cmd" >/dev/null 2>&1; then
-            echo "command not found: $cmd"
-            exit 1
-        fi
+    date_time=$(date '+%b %d  %T.%3N')
+    printf '%s: %s\n' "$date_time" "$msg" >&2
+    notify-send -t 5000 -u critical "$date_time: $msg"
+    exit 1
+}
+
+require_cmd() {
+    local cmd
+    for cmd in "$@"; do
+        command -v "$cmd" >/dev/null 2>&1 || {
+            error "%COMMAND-3-ERROR: required command not found: $cmd"
+        }
     done
 }
 
-lookup() {
-    local word="$1"
-    printf '%s\n' "$word" | aspell -a
-}
+require_cmd aspell fzf xclip
 
-commands=(aspell fzf xclip)
-check_commands "${commands[@]}"
+(
+    word=${1:-}
+    if [[ -z $word ]]; then
+        read -r -p 'Lookup: ' word </dev/tty || exit
+        [[ -n $word ]] || exit
+    fi
 
-if [[ -z "$1" ]]; then
-    echo "missing word to look up"
-    exit 1
-fi
+    choice=$(
+        printf '%s\n' "$word" | aspell -a |
+            while IFS= read -r line; do
+                case $line in
+                '& '* | '? '*)
+                    suggestions=${line#*: }
+                    while [[ $suggestions == *', '* ]]; do
+                        printf '%s\n' "${suggestions%%, *}"
+                        suggestions=${suggestions#*, }
+                    done
+                    printf '%s\n' "$suggestions"
+                    ;;
+                esac
+            done | fzf --prompt="Selection > " --popup
+    ) || exit
 
-word="$1"
-
-results=$(
-    while IFS= read -r line; do
-        if [[ $line == '& '* && $line == *': '* ]]; then
-            field=${line#*': '}
-            field=${field%%': '*}
-
-            while [[ $field == *', '* ]]; do
-                printf '%s\n' "${field%%', '*}"
-                field=${field#*', '}
-            done
-            printf '%s\n' "$field"
-        fi
-    done < <(lookup "$word")
+    [[ -n $choice ]] || exit
+    printf '%s' "$choice" | xclip -selection clipboard
 )
-
-if [[ -n "$results" ]]; then
-    printf '%s\n' "$results" | fzf | xclip -selection clipboard -rmlastnl
-fi
