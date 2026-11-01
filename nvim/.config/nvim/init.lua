@@ -566,6 +566,15 @@ local plugin_telescope = {
                 prompt_title = "Find Files",
             })
         end, { desc = "Search files" })
+        map("n", "<leader>sh", function()
+            builtin.find_files({
+                cwd = "~",
+                hidden = true,
+                no_ignore = true,
+                initial_mode = "normal",
+                prompt_title = "Search Home",
+            })
+        end, { desc = "Search home" })
         map("n", "<leader>sb", function()
             builtin.live_grep({
                 grep_open_files = true,
