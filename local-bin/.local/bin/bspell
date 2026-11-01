@@ -41,7 +41,13 @@ require_cmd aspell fzf xclip
                     printf '%s\n' "$suggestions"
                     ;;
                 esac
-            done | fzf --prompt="Selection > " --popup
+            done | (
+            if command -v tmux >/dev/null 2>&1; then
+                fzf --prompt="Selection > " --popup
+            else
+                fzf --prompt="Selection > "
+            fi
+        )
     ) || exit
 
     [[ -n $choice ]] || exit
