@@ -15,7 +15,7 @@ require_cmd aspell fzf xclip
 (
     word=${1:-}
     if [[ -z $word ]]; then
-        read -r -p 'Lookup: ' word </dev/tty || exit
+        read -r -p 'lookup: ' word </dev/tty || exit
         [[ -n $word ]] || exit
     fi
 
@@ -34,9 +34,9 @@ require_cmd aspell fzf xclip
                 esac
             done | (
             if command -v tmux >/dev/null 2>&1; then
-                fzf --prompt="Selection > " --popup
+                fzf --prompt="selection > " --popup center,20%,50%
             else
-                fzf --prompt="Selection > "
+                fzf --prompt="selection > "
             fi
         )
     ) || exit

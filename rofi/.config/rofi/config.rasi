@@ -1,6 +1,7 @@
 configuration {
     show-icons:      false;
-    display-drun:    "";
+    display-drun:    "launch";
+    display-run:     "run";
     disable-history: false;
     // modes: [ "run", "drun", "window"];
     modes: [ "run", "drun"];
@@ -115,6 +116,7 @@ configuration {
 #entry {
     spacing:    0;
     text-color: @foreground;
+    placeholder: "";
 }
 #prompt {
     spacing:    0;

@@ -22,7 +22,10 @@ require_cmd() {
 require_cmd aspell rofi xclip
 
 (
-    word=$(rofi -dmenu -p 'Word' </dev/null) || exit
+    word=$(
+        rofi -dmenu -p 'spelling' \
+            -theme-str 'window { width: 22%; height: 5%; }' </dev/null
+    ) || exit
     [[ -n $word ]] || exit
 
     printf '%s\n' "$word" | aspell -a |
@@ -38,5 +41,7 @@ require_cmd aspell rofi xclip
                 ;;
             esac
         done |
-        rofi -dmenu -p 'Suggestions' | xclip -selection clipboard -rmlastnl
+        rofi -dmenu -p 'suggestions' \
+            -theme-str 'window { width: 20%; height: 20%; }' |
+        xclip -selection clipboard -rmlastnl
 )
