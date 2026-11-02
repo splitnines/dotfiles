@@ -21,27 +21,30 @@ require_cmd() {
 
 require_cmd aspell rofi xclip
 
-(
-    word=$(
-        rofi -dmenu -p 'spelling' \
-            -theme-str 'window { width: 22%; height: 5%; }' </dev/null
-    ) || exit
-    [[ -n $word ]] || exit
+word=$(
+    rofi -dmenu -p 'spelling' \
+        -theme-str 'window { width: 22%; height: 5%; }' </dev/null
+) || exit 1
+[[ -n $word ]] || exit
 
-    printf '%s\n' "$word" | aspell -a |
-        while IFS= read -r line; do
-            case $line in
-            '& '* | '? '*)
-                suggestions=${line#*: }
-                while [[ $suggestions == *', '* ]]; do
-                    printf '%s\n' "${suggestions%%, *}"
-                    suggestions=${suggestions#*, }
-                done
-                printf '%s\n' "$suggestions"
-                ;;
-            esac
-        done |
-        rofi -dmenu -p 'suggestions' \
-            -theme-str 'window { width: 20%; height: 20%; }' |
-        xclip -selection clipboard -rmlastnl
-)
+suggestions=()
+while IFS= read -r line; do
+    case $line in
+    '& '*)
+        remaining=${line#*: }
+        while [[ $remaining == *', '* ]]; do
+            suggestions+=("${remaining%%, *}")
+            remaining=${remaining#*, }
+        done
+        suggestions+=("$remaining")
+        ;;
+    '*')
+        exit 0
+        ;;
+    esac
+done < <(printf '%s\n' "$word" | aspell -a --sug-mode=bad-spellers)
+
+printf '%s\n' "${suggestions[@]}" |
+    rofi -dmenu -p 'suggestions' \
+        -theme-str 'window { width: 20%; height: 20%; }' |
+    xclip -selection clipboard -rmlastnl

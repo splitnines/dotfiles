@@ -12,35 +12,35 @@ require_cmd() {
 
 require_cmd aspell fzf xclip
 
-(
-    word=${1:-}
-    if [[ -z $word ]]; then
-        read -r -p 'lookup: ' word </dev/tty || exit
-        [[ -n $word ]] || exit
-    fi
+word=${1:-}
+if [[ -z $word ]]; then
+    read -r -p 'lookup: ' word </dev/tty || exit
+    [[ -n $word ]] || exit
+fi
 
-    choice=$(
-        printf '%s\n' "$word" | aspell -a |
-            while IFS= read -r line; do
-                case $line in
-                '& '* | '? '*)
-                    suggestions=${line#*: }
-                    while [[ $suggestions == *', '* ]]; do
-                        printf '%s\n' "${suggestions%%, *}"
-                        suggestions=${suggestions#*, }
-                    done
-                    printf '%s\n' "$suggestions"
-                    ;;
-                esac
-            done | (
-            if command -v tmux >/dev/null 2>&1; then
-                fzf --prompt="selection > " --popup center,20%,50%
-            else
-                fzf --prompt="selection > "
-            fi
-        )
-    ) || exit
+suggestions=()
+while IFS= read -r line; do
+    case $line in
+    '& '*)
+        remaining=${line#*: }
+        while [[ $remaining == *', '* ]]; do
+            suggestions+=("${remaining%%, *}")
+            remaining=${remaining#*, }
+        done
+        suggestions+=("$remaining")
+        ;;
+    '*')
+        exit 0
+        ;;
+    esac
+done < <(printf '%s\n' "$word" | aspell -a --sug-mode=bad-spellers)
 
-    [[ -n $choice ]] || exit
-    printf '%s' "$choice" | xclip -selection clipboard
-)
+if command -v tmux >/dev/null 2>&1; then
+    printf '%s\n' "${suggestions[@]}" |
+        fzf --prompt="selection > " --popup center,20%,50% |
+        xclip -selection clipboard -rmlastnl
+else
+    printf '%s\n' "${suggestions[@]}" |
+        fzf --prompt="selection > " |
+        xclip -selection clipboard -rmlastnl
+fi
