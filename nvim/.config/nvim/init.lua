@@ -965,7 +965,8 @@ local plugin_ui = {
                 vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#242424" })
                 vim.api.nvim_set_hl(0, "StatusLine", { fg = "#3a698f", bg = "#242424", })
                 vim.api.nvim_set_hl(0, "StatusLineNC", { fg = "#3a698f", bg = "#242424", })
-                vim.api.nvim_set_hl(0, "StatuslineMode", { fg = "#abb2bf", bg = "#3a698f", bold = true, })
+                -- vim.api.nvim_set_hl(0, "StatuslineMode", { fg = "#abb2bf", bg = "#3a698f", bold = true, })
+                vim.api.nvim_set_hl(0, "StatuslineMode", { fg = "#3a698f", bg = "#242424", bold = true, })
                 vim.api.nvim_set_hl(0, "StatuslineGitBranch", { fg = "#b64f58", bg = "#242424", bold = false, })
                 -- misspelled words red curly line
                 vim.api.nvim_set_hl(0, "SpellBad", { fg = "#e86671", sp = "#e86671", undercurl = true, underline = true })
