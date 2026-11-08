@@ -440,59 +440,6 @@ pyoff() {
 }
 
 # ===========================
-# Weather
-# ===========================
-typeset -ga WEATHER_CITIES
-WEATHER_CITIES_FILE="$HOME/.config/zsh/weather_cities.zsh"
-[[ -f $WEATHER_CITIES_FILE ]] && source "$WEATHER_CITIES_FILE"
-
-weather() {
-    local city="$1"
-    local state="$2"
-    local country="${3:-usa}"
-
-    if [[ -z "$city" ]]; then
-        echo "usage: weather <city> [state] [country]"
-        return 1
-    fi
-
-    city="${city// /+}"
-    state=${state// /+}
-
-    curl "http://wttr.in/${city}${state:+,+$state}+${country}?u"
-}
-
-_weather() {
-    local -a states countries
-
-    states=(
-        al ak az ar ca co ct de fl ga hi id il in ia ks ky
-        la me md ma mi mn ms mo mt ne nv nh nj nm ny nc
-        nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy
-    )
-
-    countries=(usa)
-
-    _arguments -C \
-        '1:city:->city' \
-        '2:state:->state' \
-        '3:country:->country'
-
-    case $state in
-        city)
-            compadd -Q -a WEATHER_CITIES
-            ;;
-        state)
-            compadd -a states
-            ;;
-        country)
-            compadd -a countries
-            ;;
-    esac
-}
-compdef _weather weather
-
-# ===========================
 # Auto Python venv activation
 # ===========================
 
