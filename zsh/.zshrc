@@ -1,4 +1,4 @@
-# ~/.zshrc — zsh counterpart to ../bash/.bashrc
+# ~/.zshrc
 [[ -o interactive ]] || return
 
 # Terminal and vi command-line editing
@@ -17,11 +17,7 @@ zle -N zle-line-init
 function zle-line-finish() { print -n '\e[2 q'; }
 zle -N zle-line-finish
 
-# Bash shopts: autocd, dotglob, globstar, extglob
 setopt AUTO_CD GLOB_DOTS EXTENDED_GLOB
-# zsh supports recursive **/ globs natively; extended globbing supplies extglob-like patterns.
-# cdspell's closest equivalent is approximate cd completion, not CORRECT (which
-# also corrects command names).
 
 # Detect OS once for PATH and prompt
 __detect_os() {
@@ -72,7 +68,10 @@ zmodload zsh/complist
 autoload -Uz compinit
 mkdir -p -- "$HOME/.cache/zsh"
 compinit -d "$HOME/.cache/zsh/zcompdump"
-zstyle ':completion:*' menu select
+# Enter the selector on the first Tab whenever completion has multiple matches.
+zstyle ':completion:*' menu yes select
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' matcher-list 'r:|[._-]=* r:|=*'
 zstyle ':completion:*:cd:*' completer _complete _approximate
@@ -107,7 +106,8 @@ if command -v dircolors >/dev/null 2>&1; then
     fi
 fi
 [[ -s $HOME/.config/shell/onedark-colors.sh ]] && source "$HOME/.config/shell/onedark-colors.sh"
-zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
+# Keep the selected completion highlighted, as in the pre-rewrite configuration.
+zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}" 'ma=48;5;238;38;5;229'
 
 # Session agents
 SSH_ENV="$HOME/.ssh/agent_env"
@@ -212,6 +212,8 @@ __set_prompt() {
     fi
     PS1=$'\n'"${prompt_color}${venv_segment}${info_color}%n${__OS_ICON}%m ${prompt_color}${info_color}%~${prompt_color}${git_segment}"$'\n'"${info_color}${dollar}%f "
 }
+# Preserve the prompt layout used before the Nov 8 zshrc rewrite.
+unsetopt PROMPT_CR PROMPT_SP
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd __auto_venv
 add-zsh-hook precmd __set_prompt
@@ -241,6 +243,27 @@ export FZF_DEFAULT_OPTS='
 '
 [[ -f $HOME/.fzf/shell/key-bindings.zsh ]] && source "$HOME/.fzf/shell/key-bindings.zsh"
 [[ -f $HOME/.fzf/shell/completion.zsh ]] && source "$HOME/.fzf/shell/completion.zsh"
+
+# Leave one terminal row unused while completing so long selector lists
+# cannot scroll the first line of the two-line prompt off the screen.
+__tab_with_prompt_room() {
+    local tty_state
+    # Let the menu receive Ctrl-C as a key rather than a terminal interrupt.
+    # ZLE widgets have redirected stdin, so address the controlling tty directly.
+    tty_state=$(stty -F /dev/tty -g 2>/dev/null) || {
+        zle expand-or-complete
+        return
+    }
+    stty -F /dev/tty -isig
+    local LINES=$(( LINES > 3 ? LINES - 1 : LINES ))
+    { zle expand-or-complete } always { stty -F /dev/tty "$tty_state" }
+}
+zle -N __tab_with_prompt_room
+bindkey -M menuselect '^C' send-break
+bindkey -M menuselect '^[' send-break
+for map in viins vicmd; do
+    bindkey -M "$map" '^I' __tab_with_prompt_room
+done
 
 # Interactive helpers
 cdh() {
