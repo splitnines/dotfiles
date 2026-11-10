@@ -33,24 +33,31 @@ path=( /sbin /bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin $path )
 for p in "$HOME/.local/bin" "$HOME/.cargo/bin" /usr/local/go/bin; do
     [[ -d $p ]] && path+=( "$p" )
 done
+
+# OS specific settings
 if [[ $__OS == arch && -d $HOME/.local/share/npm/bin ]]; then
     path+=( "$HOME/.local/share/npm/bin" )
 fi
+
 if [[ $__OS == ubuntu ]]; then
     for p in /snap/bin "$HOME/.local/share/pi-node/current/bin"; do
         [[ -d $p ]] && path=( "$p" $path )
     done
 fi
+
 if grep -qi microsoft /proc/version 2>/dev/null; then
     for p in /usr/lib/wsl/lib /mnt/c/WINDOWS/System32 /mnt/c/WINDOWS; do
         [[ -d $p ]] && path+=( "$p" )
     done
 fi
+
 [[ -d $HOME/.fzf/bin ]] && path=( "$HOME/.fzf/bin" $path )
+
 export PATH
 
 # Optional local environment and node version manager
 [[ -f $HOME/.config/shell/myenv ]] && source "$HOME/.config/shell/myenv"
+
 export NVM_DIR="$HOME/.nvm"
 [[ -s $NVM_DIR/nvm.sh ]] && source "$NVM_DIR/nvm.sh"
 
@@ -68,6 +75,7 @@ zmodload zsh/complist
 autoload -Uz compinit
 mkdir -p -- "$HOME/.cache/zsh"
 compinit -d "$HOME/.cache/zsh/zcompdump"
+
 # Enter the selector on the first Tab whenever completion has multiple matches.
 zstyle ':completion:*' menu yes select
 zstyle ':completion:*' verbose yes
@@ -106,6 +114,7 @@ if command -v dircolors >/dev/null 2>&1; then
     fi
 fi
 [[ -s $HOME/.config/shell/onedark-colors.sh ]] && source "$HOME/.config/shell/onedark-colors.sh"
+
 # Keep the selected completion highlighted, as in the pre-rewrite configuration.
 zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}" 'ma=48;5;238;38;5;229'
 
@@ -248,24 +257,24 @@ export FZF_DEFAULT_OPTS='
 # cannot scroll the first line of the two-line prompt off the screen.
 __tab_with_prompt_room() {
     local tty_state
-    # Let the menu receive Ctrl-C as a key rather than a terminal interrupt.
-    # ZLE widgets have redirected stdin, so address the controlling tty directly.
-    tty_state=$(stty -F /dev/tty -g 2>/dev/null) || {
-        zle expand-or-complete
-        return
-    }
+    # # Let the menu receive Ctrl-C as a key rather than a terminal interrupt.
+    # # ZLE widgets have redirected stdin, so address the controlling tty directly.
+    # tty_state=$(stty -F /dev/tty -g 2>/dev/null) || {
+    #     zle expand-or-complete
+    #     return
+    # }
     stty -F /dev/tty -isig
     local LINES=$(( LINES > 3 ? LINES - 1 : LINES ))
     { zle expand-or-complete } always { stty -F /dev/tty "$tty_state" }
 }
 zle -N __tab_with_prompt_room
-bindkey -M menuselect '^C' send-break
-bindkey -M menuselect '^[' send-break
+# bindkey -M menuselect '^C' send-break
 for map in viins vicmd; do
     bindkey -M "$map" '^I' __tab_with_prompt_room
 done
 
 # Interactive helpers
+# fzf cd history
 cdh() {
     local dir
     command -v fzf >/dev/null 2>&1 || return 1
@@ -273,6 +282,8 @@ cdh() {
     [[ -n $dir ]] || return
     cd "${dir/#\~/$HOME}"
 }
+
+# fzf history picker
 fh() {
     local cmd
     command -v fzf >/dev/null 2>&1 || return 1
@@ -280,6 +291,8 @@ fh() {
         sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
     [[ -n $cmd ]] && eval "$cmd"
 }
+
+# fzf picker with with preview
 fv() {
     local file
     command -v fzf >/dev/null 2>&1 || return 1
@@ -288,6 +301,8 @@ fv() {
         --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0) || return
     [[ -n $file ]] && nvim "$file"
 }
+
+# fzf directory picker
 fcd() {
     local search_path dir prompt
     command -v find >/dev/null 2>&1 && command -v fzf >/dev/null 2>&1 || return 1
@@ -296,12 +311,18 @@ fcd() {
     dir=$(find "$search_path" -type d -print 2>/dev/null | fzf --prompt="$prompt") || return
     [[ -d $dir ]] && cd "$dir"
 }
+
+# fzf process killer
 fk() {
     command -v fzf >/dev/null 2>&1 || return 1
     ps -ef | sed 1d | fzf -m --prompt='Kill process → ' |
         awk '{print $2}' | xargs -r kill -9
 }
+
+# copy to clipboard
 y() { command -v xclip >/dev/null 2>&1 && xclip -selection clipboard; }
+
+# toggle screenkey
 sk() {
     if pgrep -x screenkey >/dev/null; then
         pkill -x screenkey
@@ -309,33 +330,63 @@ sk() {
         screenkey -g '1920x300+1900+20' -s large >/dev/null 2>&1 &
     fi
 }
+
+# list tmux session
 tl() { command -v tmux >/dev/null 2>&1 && tmux list-sessions | column -t; }
-# `path` is zsh's tied PATH array; use an alias rather than a function of that name.
-alias path='print -l -- $path'
+
+# list i3wm keybindings
 i3keys() { grep -hE '^[[:space:]]*bindsym' ~/.config/i3/config 2>/dev/null; }
 
 # Aliases from Bash
-alias ....='cd ../../..' ...='cd ../..' ..='cd ..'
-if command -v bat >/dev/null 2>&1; then
-    alias bat='bat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
-elif command -v batcat >/dev/null 2>&1; then
-    alias bat='batcat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
-fi
-alias bt='bluetoothctl' btC='bluetoothctl devices Connected'
-alias btc='bluetoothctl connect' btd='bluetoothctl disconnect' btl='bluetoothctl devices'
+alias ....="cd ../../.."
+alias ...="cd ../.."
+alias ..="cd .."
+alias bat='bat --style=plain --theme="OneHalfDark" --pager="less -RFX"'
+alias bt='bluetoothctl'
+alias btC='bluetoothctl devices Connected'
+alias btc='bluetoothctl connect'
+alias btd='bluetoothctl disconnect'
+alias btl='bluetoothctl devices'
 alias chprompt='source ~/.local/bin/chprompt'
 alias feh='feh --image-bg black --auto-zoom --scale-down'
-alias ff='fastfetch'
-alias g='git' ga='git add .' gb='git --no-pager branch' gc='git commit'
-alias gcm='git commit -m' gco='git checkout' gd='git diff | nvim -R -'
-alias gf='git fetch' gm='git merge' gs='git status'
-alias grep='grep --color=auto' h='history' hl='rg --passthru'
-alias l='ls --color=auto' la='ls -A' le='less -X' ll='ls -Alh' ls='ls --color=auto'
-alias md='mkdir -p' micc='arecord -f cd -vv -D default /dev/null'
-alias montage='feh --image-bg black --montage' nv='nvim'
-command -v xdg-open >/dev/null 2>&1 && alias open='xdg-open'
-alias p='ping' pull='git pull' push='git push' py='python3' q='exit'
-alias rcd='script -m advanced' rs='rsync -avzr'
+alias ff="fastfetch"
+alias g='git'
+alias ga='git add .'
+alias gb='git --no-pager branch'
+alias gc='git commit'
+alias gcm='git commit -m'
+alias gco='git checkout'
+alias gd='git diff | nvim -R -'
+alias gf='git fetch'
+alias gm='git merge'
+alias grep='grep --color=auto'
+alias gs='git status'
+alias h='history'
+alias hl='rg --passthru'
+alias l='ls --color=auto'
+alias la='ls -A'
+alias le='less -X'
+alias ll='ls -Alh'
+alias ls='ls --color=auto'
+alias md="mkdir -p"
+alias micc='arecord -f cd -vv -D default /dev/null'
+alias montage='feh --image-bg black --montage'
+alias nv='nvim'
+command -v xdg-open >/dev/null 2>&1 &&
+    alias open='xdg-open'
+alias p="ping"
+alias pull='git pull'
+alias push='git push'
+alias py='python3'
+alias q='exit'
+alias rcd="script -m advanced"
+alias rs="rsync -avzr"
 alias slides='feh --image-bg black -D 3 --auto-zoom --scale-down'
-alias t='telnet' ta='tmux attach -t' ts='tailscale' vim='nvim' z='zathura'
+alias t="telnet"
+alias ta="tmux attach -t"
+alias ts="tailscale"
+alias vim="nvim"
+alias z='zathura'
+
+# Load local aliases
 [[ -f $HOME/.config/shell/local_aliases ]] && source "$HOME/.config/shell/local_aliases"
