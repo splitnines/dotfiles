@@ -8,8 +8,10 @@ if [[ -t 0 ]]; then
 fi
 bindkey -v
 
+# disable highlighting of pasted text
 zle_highlight=('paste:none')
 
+# blinking cursor in viins, block in vicmd
 function zle-keymap-select() {
     [[ $KEYMAP == vicmd ]] && print -n '\e[2 q' || print -n '\e[5 q'
 }
@@ -67,6 +69,7 @@ HISTSIZE=10000
 SAVEHIST=20000
 setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_SPACE HIST_IGNORE_ALL_DUPS
 setopt HIST_SAVE_NO_DUPS HIST_EXPIRE_DUPS_FIRST EXTENDED_HISTORY
+source <(fzf --zsh) # ctrl-r for history search
 
 # Directory stack plus interactive completion
 setopt AUTO_PUSHD PUSHD_SILENT PUSHD_IGNORE_DUPS
@@ -103,6 +106,10 @@ for map in viins vicmd; do
 done
 bindkey -M viins '^A' beginning-of-line
 bindkey -M viins '^E' end-of-line
+bindkey -M viins "^k" history-search-backward
+bindkey -M viins "^j" history-search-forward
+bindkey -M menuselect '^j' down-line-or-history
+bindkey -M menuselect '^k' up-line-or-history
 
 # Directory colors and OneDark shell colors
 if command -v dircolors >/dev/null 2>&1; then
@@ -268,6 +275,7 @@ export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
 export FZF_DEFAULT_OPTS='
   --height=100%
   --border=sharp
+  --prompt="❯ "
   --margin=1,3
   --padding=1
   --color=fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
@@ -308,7 +316,7 @@ cdh() {
 fh() {
     local cmd
     command -v fzf >/dev/null 2>&1 || return 1
-    cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History → ' |
+    cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History ❯ ' |
         sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
     [[ -n $cmd ]] && eval "$cmd"
 }
@@ -319,7 +327,7 @@ fv() {
     command -v fzf >/dev/null 2>&1 || return 1
     file=$(find . -type f | fzf \
         --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-        --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0) || return
+        --preview-window=up:50%:wrap --prompt='Select file ❯ ' --exit-0) || return
     [[ -n $file ]] && nvim "$file"
 }
 
@@ -328,7 +336,7 @@ fcd() {
     local search_path dir prompt
     command -v find >/dev/null 2>&1 && command -v fzf >/dev/null 2>&1 || return 1
     search_path="${1-$HOME}"
-    prompt="Search in $search_path → "
+    prompt="Search in $search_path ❯ "
     dir=$(find "$search_path" -type d -print 2>/dev/null | fzf --prompt="$prompt") || return
     [[ -d $dir ]] && cd "$dir"
 }
@@ -336,7 +344,7 @@ fcd() {
 # fzf process killer
 fk() {
     command -v fzf >/dev/null 2>&1 || return 1
-    ps -ef | sed 1d | fzf -m --prompt='Kill process → ' |
+    ps -ef | sed 1d | fzf -m --prompt='Kill process ❯ ' |
         awk '{print $2}' | xargs -r kill -9
 }
 

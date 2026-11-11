@@ -286,15 +286,16 @@ export VISUAL="nvim"
 
 # fzf defaults
 export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
-export FZF_DEFAULT_OPTS="
+export FZF_DEFAULT_OPTS='
   --height=100%
+  --prompt="❯ "
   --border=sharp
   --margin=1,3
   --padding=1
   --color=fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
   --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
   --color=border:#3e4451,label:#61afef
-"
+'
 
 # Functions
 
@@ -313,7 +314,7 @@ cd() {
 cdh() {
     local dir
     if command -v fzf >/dev/null 2>&1; then
-        dir=$(dirs -v | fzf --prompt="Jump to dir → " | awk '{print $2}')
+        dir=$(dirs -v | fzf --prompt="Jump to dir ❯ " | awk '{print $2}')
         [[ -z "$dir" ]] && return
         [[ "$dir" == "~"* ]] && cd "${dir/#\~/$HOME}" ||
             cd "$dir" || echo "No such directory: $dir"
@@ -325,7 +326,7 @@ fh() {
     local cmd
     if command -v fzf >/dev/null 2>&1; then
         cmd=$(
-            fc -l 1 | fzf --tac --no-sort --prompt='History → ' |
+            fc -l 1 | fzf --tac --no-sort --prompt='History ❯' |
                 sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//'
         ) || return
         eval "$cmd"
@@ -339,7 +340,7 @@ fv() {
         file=$(
             find . -type f | fzf \
                 --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-                --preview-window=up:50%:wrap --prompt='Select file → ' --exit-0
+                --preview-window=up:50%:wrap --prompt='Select file ❯ ' --exit-0
         )
         [[ -n "$file" ]] && nvim "$file"
     fi
@@ -359,7 +360,7 @@ fcd() {
     }
 
     search_path="${1-$HOME}"
-    prompt="Search in $search_path → "
+    prompt="Search in $search_path ❯ "
 
     dir=$(find "$search_path" -type d -print 2>/dev/null |
         fzf --prompt="$prompt")
@@ -371,7 +372,7 @@ fcd() {
 # Search and kill processes
 fk() {
     if command -v fzf >/dev/null 2>&1; then
-        ps -ef | sed 1d | fzf -m --prompt='Kill process → ' |
+        ps -ef | sed 1d | fzf -m --prompt='Kill process ❯ ' |
             awk '{print $2}' | xargs -r kill -9
     fi
 }
