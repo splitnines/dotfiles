@@ -83,6 +83,7 @@ zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' matcher-list 'r:|[._-]=* r:|=*'
 zstyle ':completion:*:cd:*' completer _complete _approximate
+zstyle ':completion:*' select-prompt '%SScrolling: %p%s'
 setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD ALWAYS_TO_END AUTO_PARAM_SLASH
 if command -v git >/dev/null 2>&1; then
     compdef g=git
@@ -95,9 +96,9 @@ zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 zle -N edit-command-line
 for map in viins vicmd; do
-    bindkey -M "$map" '^[[A' up-line-or-beginning-search
-    bindkey -M "$map" '^[[B' down-line-or-beginning-search
-    bindkey -M "$map" '^[[Z' reverse-menu-complete
+    bindkey -M "$map" '^[[A' up-line-or-beginning-search # up arrow
+    bindkey -M "$map" '^[[B' down-line-or-beginning-search # down arrow
+    bindkey -M "$map" '^[[Z' reverse-menu-complete # shift+tab 
     bindkey -M "$map" '^X^E' edit-command-line
 done
 bindkey -M viins '^A' beginning-of-line
@@ -221,7 +222,6 @@ __set_prompt() {
     fi
     PS1=$'\n'"${prompt_color}${venv_segment}${info_color}%n${__OS_ICON}%m ${prompt_color}${info_color}%~${prompt_color}${git_segment}"$'\n'"${info_color}${dollar}%f "
 }
-# Preserve the prompt layout used before the Nov 8 zshrc rewrite.
 unsetopt PROMPT_CR PROMPT_SP
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd __auto_venv
@@ -253,22 +253,21 @@ export FZF_DEFAULT_OPTS='
 [[ -f $HOME/.fzf/shell/key-bindings.zsh ]] && source "$HOME/.fzf/shell/key-bindings.zsh"
 [[ -f $HOME/.fzf/shell/completion.zsh ]] && source "$HOME/.fzf/shell/completion.zsh"
 
-# Leave one terminal row unused while completing so long selector lists
-# cannot scroll the first line of the two-line prompt off the screen.
+# Leave one terminal row unused for tab complete
 __tab_with_prompt_room() {
     local tty_state
-    # # Let the menu receive Ctrl-C as a key rather than a terminal interrupt.
-    # # ZLE widgets have redirected stdin, so address the controlling tty directly.
-    # tty_state=$(stty -F /dev/tty -g 2>/dev/null) || {
-    #     zle expand-or-complete
-    #     return
-    # }
+    # Let the menu receive Ctrl-C as a key rather than a terminal interrupt.
+    # ZLE widgets have redirected stdin, so address the controlling tty directly.
+    tty_state=$(stty -F /dev/tty -g 2>/dev/null) || {
+        zle expand-or-complete
+        return
+    }
     stty -F /dev/tty -isig
     local LINES=$(( LINES > 3 ? LINES - 1 : LINES ))
-    { zle expand-or-complete } always { stty -F /dev/tty "$tty_state" }
+    { zle expand-or-complete }  always { stty -F /dev/tty "$tty_state" }
 }
 zle -N __tab_with_prompt_room
-# bindkey -M menuselect '^C' send-break
+bindkey -M menuselect '^C' send-break
 for map in viins vicmd; do
     bindkey -M "$map" '^I' __tab_with_prompt_room
 done
@@ -337,7 +336,7 @@ tl() { command -v tmux >/dev/null 2>&1 && tmux list-sessions | column -t; }
 # list i3wm keybindings
 i3keys() { grep -hE '^[[:space:]]*bindsym' ~/.config/i3/config 2>/dev/null; }
 
-# Aliases from Bash
+# Aliases
 alias ....="cd ../../.."
 alias ...="cd ../.."
 alias ..="cd .."
@@ -361,7 +360,7 @@ alias gf='git fetch'
 alias gm='git merge'
 alias grep='grep --color=auto'
 alias gs='git status'
-alias h='history'
+alias h='history 1'
 alias hl='rg --passthru'
 alias l='ls --color=auto'
 alias la='ls -A'
