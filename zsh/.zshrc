@@ -7,13 +7,17 @@ if [[ -t 0 ]]; then
     stty stop undef 2>/dev/null || true
 fi
 bindkey -v
+
 zle_highlight=('paste:none')
+
 function zle-keymap-select() {
     [[ $KEYMAP == vicmd ]] && print -n '\e[2 q' || print -n '\e[5 q'
 }
 zle -N zle-keymap-select
+
 function zle-line-init() { zle -K viins; print -n '\e[5 q'; }
 zle -N zle-line-init
+
 function zle-line-finish() { print -n '\e[2 q'; }
 zle -N zle-line-finish
 
@@ -51,15 +55,10 @@ if grep -qi microsoft /proc/version 2>/dev/null; then
     done
 fi
 
-[[ -d $HOME/.fzf/bin ]] && path=( "$HOME/.fzf/bin" $path )
-
 export PATH
 
 # Optional local environment and node version manager
 [[ -f $HOME/.config/shell/myenv ]] && source "$HOME/.config/shell/myenv"
-
-export NVM_DIR="$HOME/.nvm"
-[[ -s $NVM_DIR/nvm.sh ]] && source "$NVM_DIR/nvm.sh"
 
 # History (ignoreboth:erasedups, histappend, and save after each command)
 HISTFILE="$HOME/.local/state/zsh/zsh_history"
@@ -69,7 +68,7 @@ SAVEHIST=20000
 setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_SPACE HIST_IGNORE_ALL_DUPS
 setopt HIST_SAVE_NO_DUPS HIST_EXPIRE_DUPS_FIRST EXTENDED_HISTORY
 
-# Directory stack (Bash's cd wrapper), plus interactive completion
+# Directory stack plus interactive completion
 setopt AUTO_PUSHD PUSHD_SILENT PUSHD_IGNORE_DUPS
 zmodload zsh/complist
 autoload -Uz compinit
@@ -81,7 +80,8 @@ zstyle ':completion:*' menu yes select
 zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' group-name ''
-zstyle ':completion:*' matcher-list 'r:|[._-]=* r:|=*'
+# zstyle ':completion:*' matcher-list 'r:|[._-]=* r:|=*'
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*:cd:*' completer _complete _approximate
 zstyle ':completion:*' select-prompt '%SScrolling: %p%s'
 setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD ALWAYS_TO_END AUTO_PARAM_SLASH
@@ -116,8 +116,8 @@ if command -v dircolors >/dev/null 2>&1; then
 fi
 [[ -s $HOME/.config/shell/onedark-colors.sh ]] && source "$HOME/.config/shell/onedark-colors.sh"
 
-# Keep the selected completion highlighted, as in the pre-rewrite configuration.
-zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}" 'ma=48;5;238;38;5;229'
+# Keep the selected completion highlighted
+zstyle ':completion:*:default' list-colors 'ma=48;5;238;38;5;229'
 
 # Session agents
 SSH_ENV="$HOME/.ssh/agent_env"
@@ -126,6 +126,8 @@ if [[ -x $SSH_BOOTSTRAP ]]; then
     "$SSH_BOOTSTRAP"
     [[ -f $SSH_ENV ]] && source "$SSH_ENV" >/dev/null
 fi
+
+# Use pinentry-tty if in a terminal and the GUI if not
 if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
     export GPG_TTY="$(tty)"
     gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
@@ -134,8 +136,10 @@ fi
 # Python venv auto-activation (nearest .venv, venv, or env)
 __auto_venv_path=''
 __auto_venv_pwd=''
+
 __find_venv_dir() {
     local dir name
+
     dir=$PWD
     while [[ $dir != / ]]; do
         for name in .venv venv env; do
@@ -148,9 +152,12 @@ __find_venv_dir() {
     done
     return 1
 }
+
 __auto_venv() {
     local found_venv
+
     [[ $PWD == $__auto_venv_pwd ]] && return 0
+
     __auto_venv_pwd=$PWD
     found_venv=$(__find_venv_dir 2>/dev/null) || found_venv=''
 
@@ -163,8 +170,8 @@ __auto_venv() {
         fi
         __auto_venv_path=''
     fi
+
     [[ -n $found_venv ]] || return 0
-    # Never replace a venv activated manually.
     [[ -n ${VIRTUAL_ENV:-} && -z $__auto_venv_path ]] && return 0
     if [[ ${VIRTUAL_ENV:-} != $found_venv ]]; then
         source "$found_venv/bin/activate" || return
@@ -172,7 +179,7 @@ __auto_venv() {
     __auto_venv_path=$found_venv
 }
 
-# Prompt: same OS, git, dirty-tree, venv and root indicators as Bash.
+# Prompt
 __os_icon() {
     case $__OS in
         arch) print -n '' ;;
@@ -181,34 +188,40 @@ __os_icon() {
     esac
 }
 __OS_ICON=$(__os_icon)
+
 __git_branch_name() {
     git symbolic-ref --quiet --short HEAD 2>/dev/null ||
         git rev-parse --short HEAD 2>/dev/null || return 0
 }
+
 __git_is_dirty() {
     [[ -n $(git status --porcelain=v1 --ignore-submodules=all 2>/dev/null) ]]
 }
+
 __set_prompt() {
     local prompt_color info_color branch_color venv_color dirty_color
     local dollar branch git_segment venv_segment
+
     prompt_color='%F{8}'
     info_color='%F{4}'
     branch_color='%F{1}'
     venv_color='%F{2}'
     dirty_color='%F{208}'
     dollar='❯'
+
     if (( EUID == 0 )); then
         prompt_color='%F{12}'
         info_color='%F{1}'
         branch_color='%F{4}'
         dollar='#'
     fi
+
     venv_segment=''
     [[ -n ${VIRTUAL_ENV:-} ]] && venv_segment="${venv_color}π ${prompt_color}"
+
     git_segment=''
     branch=$(__git_branch_name)
     if [[ -n $branch ]]; then
-        # Branch names are untrusted prompt text; escape prompt percent sequences.
         branch=${branch//\%/%%}
         git_segment=" ${branch_color}${branch}"
         if __git_is_dirty; then
@@ -222,6 +235,7 @@ __set_prompt() {
     fi
     PS1=$'\n'"${prompt_color}${venv_segment}${info_color}%n${__OS_ICON}%m ${prompt_color}${info_color}%~${prompt_color}${git_segment}"$'\n'"${info_color}${dollar}%f "
 }
+
 unsetopt PROMPT_CR PROMPT_SP
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd __auto_venv
@@ -237,9 +251,19 @@ export LESS_TERMCAP_md=$'\e[38;2;97;175;239m\e[1m'
 export LESS_TERMCAP_mr=$'\e[38;2;198;120;221m'
 export LESS_TERMCAP_us=$'\e[38;2;152;195;121m'
 export LESS_TERMCAP_so=$'\e[48;2;40;44;52m\e[38;2;229;192;123m'
-export MANPAGER='nvim +Man!'
+
+# Man page viewing 
+# export MANPAGER='nvim +Man!'
+export GROFF_NO_SGR=1
+export MANPAGER=$PAGER
+
+# bat theme
 export BAT_THEME=OneHalfDark
+
+# The one, true editor
 export EDITOR=nvim VISUAL=nvim
+
+# fzf defaults
 export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
 export FZF_DEFAULT_OPTS='
   --height=100%
@@ -250,14 +274,11 @@ export FZF_DEFAULT_OPTS='
   --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
   --color=border:#3e4451,label:#61afef
 '
-[[ -f $HOME/.fzf/shell/key-bindings.zsh ]] && source "$HOME/.fzf/shell/key-bindings.zsh"
-[[ -f $HOME/.fzf/shell/completion.zsh ]] && source "$HOME/.fzf/shell/completion.zsh"
 
 # Leave one terminal row unused for tab complete
 __tab_with_prompt_room() {
     local tty_state
-    # Let the menu receive Ctrl-C as a key rather than a terminal interrupt.
-    # ZLE widgets have redirected stdin, so address the controlling tty directly.
+    # ctrl-c as a key rather than a terminal interrupt
     tty_state=$(stty -F /dev/tty -g 2>/dev/null) || {
         zle expand-or-complete
         return
@@ -266,6 +287,7 @@ __tab_with_prompt_room() {
     local LINES=$(( LINES > 3 ? LINES - 1 : LINES ))
     { zle expand-or-complete }  always { stty -F /dev/tty "$tty_state" }
 }
+
 zle -N __tab_with_prompt_room
 bindkey -M menuselect '^C' send-break
 for map in viins vicmd; do

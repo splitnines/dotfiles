@@ -60,11 +60,6 @@ if grep -qi "microsoft" /proc/version 2>/dev/null; then
     done
 fi
 
-# Prioritize local fzf install
-if [[ -d "$HOME/.fzf/bin" ]]; then
-    PATH="$HOME/.fzf/bin:$PATH"
-fi
-
 export PATH
 
 # Load any local env vars
@@ -279,7 +274,8 @@ export LESS_TERMCAP_us=$'\e[38;2;152;195;121m'
 export LESS_TERMCAP_so=$'\e[48;2;40;44;52m\e[38;2;229;192;123m'
 
 # Use nvim for viewing man pages
-export MANPAGER='nvim +Man!'
+# export MANPAGER='nvim +Man!'
+export MANPAGER=$PAGER
 
 # batcat theme
 export BAT_THEME="OneHalfDark"
