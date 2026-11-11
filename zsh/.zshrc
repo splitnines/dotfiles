@@ -23,7 +23,7 @@ zle -N zle-line-init
 function zle-line-finish() { print -n '\e[2 q'; }
 zle -N zle-line-finish
 
-setopt AUTO_CD GLOB_DOTS EXTENDED_GLOB
+setopt AUTO_CD GLOB_DOTS EXTENDED_GLOB DOT_GLOB
 
 # Detect OS once for PATH and prompt
 __detect_os() {
