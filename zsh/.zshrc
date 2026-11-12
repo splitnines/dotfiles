@@ -83,7 +83,6 @@ zstyle ':completion:*' menu yes select
 zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' group-name ''
-# zstyle ':completion:*' matcher-list 'r:|[._-]=* r:|=*'
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*:cd:*' completer _complete _approximate
 zstyle ':completion:*' select-prompt '%SScrolling: %p%s'
@@ -92,8 +91,10 @@ if command -v git >/dev/null 2>&1; then
     compdef g=git
 fi
 
-# Readline's history prefix search, menu completion, and edit-and-execute
-# Apply to both vi keymaps: bindkey -v changes which map is active.
+# Keep the selected completion highlighted
+zstyle ':completion:*:default' list-colors 'ma=48;5;238;38;5;229'
+
+# history prefix search, menu completion, and edit-and-execute
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search edit-command-line
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
@@ -104,12 +105,12 @@ for map in viins vicmd; do
     bindkey -M "$map" '^[[Z' reverse-menu-complete # shift+tab 
     bindkey -M "$map" '^X^E' edit-command-line
 done
-bindkey -M viins '^A' beginning-of-line
-bindkey -M viins '^E' end-of-line
-bindkey -M viins "^k" history-search-backward
-bindkey -M viins "^j" history-search-forward
-bindkey -M menuselect '^j' down-line-or-history
-bindkey -M menuselect '^k' up-line-or-history
+bindkey -M viins '^A' beginning-of-line # ctrl-a
+bindkey -M viins '^E' end-of-line # ctrl-e
+bindkey -M viins "^k" history-search-backward # ctrl-k
+bindkey -M viins "^j" history-search-forward # ctrl-j
+bindkey -M menuselect '^j' down-line-or-history # ctrl-j
+bindkey -M menuselect '^k' up-line-or-history # ctrl-k
 
 # Directory colors and OneDark shell colors
 if command -v dircolors >/dev/null 2>&1; then
@@ -121,12 +122,12 @@ if command -v dircolors >/dev/null 2>&1; then
         eval "$(dircolors -b)"
     fi
 fi
-[[ -s $HOME/.config/shell/onedark-colors.sh ]] && source "$HOME/.config/shell/onedark-colors.sh"
 
-# Keep the selected completion highlighted
-zstyle ':completion:*:default' list-colors 'ma=48;5;238;38;5;229'
+if [[ -s $HOME/.config/shell/onedark-colors.sh ]]; then
+    source "$HOME/.config/shell/onedark-colors.sh"
+fi
 
-# Session agents
+# ssh agent
 SSH_ENV="$HOME/.ssh/agent_env"
 SSH_BOOTSTRAP="$HOME/.ssh/ssh_agent.sh"
 if [[ -x $SSH_BOOTSTRAP ]]; then
@@ -134,13 +135,13 @@ if [[ -x $SSH_BOOTSTRAP ]]; then
     [[ -f $SSH_ENV ]] && source "$SSH_ENV" >/dev/null
 fi
 
-# Use pinentry-tty if in a terminal and the GUI if not
+# Use pinentry-tty if in a terminal and the gui if not
 if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
     export GPG_TTY="$(tty)"
     gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
 fi
 
-# Python venv auto-activation (nearest .venv, venv, or env)
+# Python venv auto-activation
 __auto_venv_path=''
 __auto_venv_pwd=''
 
@@ -214,13 +215,13 @@ __set_prompt() {
     branch_color='%F{1}'
     venv_color='%F{2}'
     dirty_color='%F{208}'
-    dollar='❯'
+    pointer='❯'
 
     if (( EUID == 0 )); then
         prompt_color='%F{12}'
         info_color='%F{1}'
         branch_color='%F{4}'
-        dollar='#'
+        pointer='#'
     fi
 
     venv_segment=''
@@ -240,15 +241,14 @@ __set_prompt() {
         fi
         git_segment+='%f'
     fi
-    PS1=$'\n'"${prompt_color}${venv_segment}${info_color}%n${__OS_ICON}%m ${prompt_color}${info_color}%~${prompt_color}${git_segment}"$'\n'"${info_color}${dollar}%f "
+    PS1=$'\n'"${prompt_color}${venv_segment}${info_color}%n${__OS_ICON}%m ${prompt_color}${info_color}%~${prompt_color}${git_segment}"$'\n'"${info_color}${pointer}%f "
 }
 
-unsetopt PROMPT_CR PROMPT_SP
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd __auto_venv
 add-zsh-hook precmd __set_prompt
 
-# Pager, editor, fzf
+# pager, editor, fzf
 export PAGER=less
 export LESS='-R -X -F --use-color'
 export LESS_TERMCAP_me=$'\e[0m'
@@ -259,8 +259,7 @@ export LESS_TERMCAP_mr=$'\e[38;2;198;120;221m'
 export LESS_TERMCAP_us=$'\e[38;2;152;195;121m'
 export LESS_TERMCAP_so=$'\e[48;2;40;44;52m\e[38;2;229;192;123m'
 
-# Man page viewing 
-# export MANPAGER='nvim +Man!'
+# man page viewing 
 export GROFF_NO_SGR=1
 export MANPAGER=$PAGER
 
@@ -271,7 +270,6 @@ export BAT_THEME=OneHalfDark
 export EDITOR=nvim VISUAL=nvim
 
 # fzf defaults
-export FZF_CTRL_T_OPTS="--preview 'ls --color=always -lah {}'"
 export FZF_DEFAULT_OPTS='
   --height=100%
   --border=sharp
@@ -283,17 +281,16 @@ export FZF_DEFAULT_OPTS='
   --color=border:#3e4451,label:#61afef
 '
 
-# Leave one terminal row unused for tab complete
+# leave one terminal row unused for tab complete
 __tab_with_prompt_room() {
     local tty_state
-    # ctrl-c as a key rather than a terminal interrupt
     tty_state=$(stty -F /dev/tty -g 2>/dev/null) || {
         zle expand-or-complete
         return
     }
     stty -F /dev/tty -isig
     local LINES=$(( LINES > 3 ? LINES - 1 : LINES ))
-    { zle expand-or-complete }  always { stty -F /dev/tty "$tty_state" }
+    { zle expand-or-complete } always { stty -F /dev/tty "$tty_state" }
 }
 
 zle -N __tab_with_prompt_room
@@ -302,12 +299,15 @@ for map in viins vicmd; do
     bindkey -M "$map" '^I' __tab_with_prompt_room
 done
 
-# Interactive helpers
+#
+# functions
+#
+
 # fzf cd history
 cdh() {
     local dir
     command -v fzf >/dev/null 2>&1 || return 1
-    dir=$(dirs -v | fzf --prompt='Jump to dir → ' | awk '{print $2}') || return
+    dir=$(dirs -v | fzf --prompt='jump to dir ❯ ' | awk '{print $2}') || return
     [[ -n $dir ]] || return
     cd "${dir/#\~/$HOME}"
 }
@@ -316,7 +316,7 @@ cdh() {
 fh() {
     local cmd
     command -v fzf >/dev/null 2>&1 || return 1
-    cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='History ❯ ' |
+    cmd=$(fc -l 1 | fzf --tac --no-sort --prompt='history ❯ ' |
         sed 's/^[[:space:]]*[0-9*]*[[:space:]]*//') || return
     [[ -n $cmd ]] && eval "$cmd"
 }
@@ -327,7 +327,7 @@ fv() {
     command -v fzf >/dev/null 2>&1 || return 1
     file=$(find . -type f | fzf \
         --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
-        --preview-window=up:50%:wrap --prompt='Select file ❯ ' --exit-0) || return
+        --preview-window=up:50%:wrap --prompt='select file ❯ ' --exit-0) || return
     [[ -n $file ]] && nvim "$file"
 }
 
@@ -336,7 +336,7 @@ fcd() {
     local search_path dir prompt
     command -v find >/dev/null 2>&1 && command -v fzf >/dev/null 2>&1 || return 1
     search_path="${1-$HOME}"
-    prompt="Search in $search_path ❯ "
+    prompt="search in $search_path ❯ "
     dir=$(find "$search_path" -type d -print 2>/dev/null | fzf --prompt="$prompt") || return
     [[ -d $dir ]] && cd "$dir"
 }
@@ -344,7 +344,7 @@ fcd() {
 # fzf process killer
 fk() {
     command -v fzf >/dev/null 2>&1 || return 1
-    ps -ef | sed 1d | fzf -m --prompt='Kill process ❯ ' |
+    ps -ef | sed 1d | fzf -m --prompt='kill process ❯ ' |
         awk '{print $2}' | xargs -r kill -9
 }
 
@@ -418,4 +418,6 @@ alias vim="nvim"
 alias z='zathura'
 
 # Load local aliases
-[[ -f $HOME/.config/shell/local_aliases ]] && source "$HOME/.config/shell/local_aliases"
+if [[ -f $HOME/.config/shell/local_aliases ]]; then
+    source "$HOME/.config/shell/local_aliases"
+fi
