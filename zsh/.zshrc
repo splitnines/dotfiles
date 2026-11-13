@@ -96,7 +96,9 @@ if command -v git >/dev/null 2>&1; then
 fi
 
 # Keep the selected completion highlighted
-zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}" 'ma=48;5;238;38;5;229'
+colors="no=0;38;5;145:${LS_COLORS#no=38;5;145:}"
+colors=${colors%:}
+zstyle ':completion:*:default' list-colors "${(s.:.)colors}" 'ma=48;5;238'
 
 # history prefix search, menu completion, and edit-and-execute
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search edit-command-line
