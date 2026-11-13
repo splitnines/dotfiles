@@ -13,7 +13,11 @@ zle_highlight=('paste:none')
 
 # blinking cursor in viins, block in vicmd
 function zle-keymap-select() {
-    [[ $KEYMAP == vicmd ]] && print -n '\e[2 q' || print -n '\e[5 q'
+    if [[ $KEYMAP == vicmd ]]; then
+        print -n '\e[2 q'
+    else
+        print -n '\e[5 q'
+    fi
 }
 zle -N zle-keymap-select
 
@@ -111,6 +115,17 @@ bindkey -M viins "^k" history-search-backward # ctrl-k
 bindkey -M viins "^j" history-search-forward # ctrl-j
 bindkey -M menuselect '^j' down-line-or-history # ctrl-j
 bindkey -M menuselect '^k' up-line-or-history # ctrl-k
+
+# use y to yank text to clipboard
+vi-yank-to-clipboard() {
+    zle vi-yank
+    if command -v xclip >/dev/null 2&>1; then
+        print -rn -- "$CUTBUFFER" | xclip -selection clipboard
+    fi
+}
+
+zle -N vi-yank-to-clipboard
+bindkey -M vicmd 'y' vi-yank-to-clipboard
 
 # Directory colors and OneDark shell colors
 if command -v dircolors >/dev/null 2>&1; then
