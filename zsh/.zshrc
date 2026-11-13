@@ -121,7 +121,7 @@ bindkey -M menuselect '^k' up-line-or-history # ctrl-k
 # use y to yank text to clipboard
 vi-yank-to-clipboard() {
     zle vi-yank
-    if command -v xclip >/dev/null 2&>1; then
+    if command -v xclip >/dev/null 2>&1; then
         print -rn -- "$CUTBUFFER" | xclip -selection clipboard
     fi
 }
@@ -381,6 +381,17 @@ tl() { command -v tmux >/dev/null 2>&1 && tmux list-sessions | column -t; }
 
 # list i3wm keybindings
 i3keys() { grep -hE '^[[:space:]]*bindsym' ~/.config/i3/config 2>/dev/null; }
+
+# man page search
+ms () {
+    for cmd in fzf awk xargs; do
+        command -v $cmd >/dev/null 2>&1 || return 1
+    done
+
+    man -k . | fzf --prompt='man page search ❯ ' |
+        awk '{gsub(/[()]/, "", $2); printf "%s %s", $2, $1}' |
+        xargs -r man
+}
 
 # Aliases
 alias ....="cd ../../.."
