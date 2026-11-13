@@ -123,7 +123,6 @@ vi-yank-to-clipboard() {
         print -rn -- "$CUTBUFFER" | xclip -selection clipboard
     fi
 }
-
 zle -N vi-yank-to-clipboard
 bindkey -M vicmd 'y' vi-yank-to-clipboard
 
