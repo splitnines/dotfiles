@@ -111,12 +111,13 @@ for map in viins vicmd; do
     bindkey -M "$map" '^[[Z' reverse-menu-complete # shift+tab 
     bindkey -M "$map" '^X^E' edit-command-line
 done
-bindkey -M viins '^A' beginning-of-line # ctrl-a
-bindkey -M viins '^E' end-of-line # ctrl-e
-bindkey -M viins "^k" history-search-backward # ctrl-k
-bindkey -M viins "^j" history-search-forward # ctrl-j
-bindkey -M menuselect '^j' down-line-or-history # ctrl-j
-bindkey -M menuselect '^k' up-line-or-history # ctrl-k
+bindkey -M viins '^a' beginning-of-line
+bindkey -M viins '^e' end-of-line
+bindkey -M viins "^k" history-search-backward
+bindkey -M viins "^j" history-search-forward
+bindkey -M menuselect '^j' down-line-or-history
+bindkey -M menuselect '^k' up-line-or-history
+bindkey '^_' undo
 
 # use y to yank text to clipboard
 vi-yank-to-clipboard() {
@@ -127,6 +128,15 @@ vi-yank-to-clipboard() {
 }
 zle -N vi-yank-to-clipboard
 bindkey -M vicmd 'y' vi-yank-to-clipboard
+
+# copy the contents of the command line to the clipboard
+copy-to-clipboard() {
+    if command -v xclip >/dev/null 2>&1; then
+        echo -n $BUFFER | xclip -selection clipboard
+    fi
+}
+zle -N copy-to-clipboard
+bindkey '^y' copy-to-clipboard
 
 # Directory colors and OneDark shell colors
 if command -v dircolors >/dev/null 2>&1; then
