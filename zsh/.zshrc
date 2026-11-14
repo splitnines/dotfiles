@@ -106,10 +106,10 @@ zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 zle -N edit-command-line
 for map in viins vicmd; do
-    bindkey -M "$map" '^[[A' up-line-or-beginning-search # up arrow
-    bindkey -M "$map" '^[[B' down-line-or-beginning-search # down arrow
+    bindkey -M "$map" '^[[a' up-line-or-beginning-search # up arrow
+    bindkey -M "$map" '^[[b' down-line-or-beginning-search # down arrow
     bindkey -M "$map" '^[[Z' reverse-menu-complete # shift+tab 
-    bindkey -M "$map" '^X^E' edit-command-line
+    bindkey -M "$map" '^x^e' edit-command-line
 done
 bindkey -M viins '^a' beginning-of-line
 bindkey -M viins '^e' end-of-line
@@ -118,6 +118,7 @@ bindkey -M viins "^j" history-search-forward
 bindkey -M menuselect '^j' down-line-or-history
 bindkey -M menuselect '^k' up-line-or-history
 bindkey '^_' undo
+bindkey -s '^g' 'git add . && git commit -m ""\e[D'
 
 # use y to yank text to clipboard
 vi-yank-to-clipboard() {
@@ -137,6 +138,9 @@ copy-to-clipboard() {
 }
 zle -N copy-to-clipboard
 bindkey '^y' copy-to-clipboard
+
+# load zmv
+autoload zmv
 
 # Directory colors and OneDark shell colors
 if command -v dircolors >/dev/null 2>&1; then
