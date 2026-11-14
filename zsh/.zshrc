@@ -91,14 +91,16 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*:cd:*' completer _complete _approximate
 zstyle ':completion:*' select-prompt '%SScrolling: %p%s'
 setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD ALWAYS_TO_END AUTO_PARAM_SLASH
-if command -v git >/dev/null 2>&1; then
-    compdef g=git
-fi
 
 # Keep the selected completion highlighted
 colors="no=0;38;5;145:${LS_COLORS#no=38;5;145:}"
 colors=${colors%:}
 zstyle ':completion:*:default' list-colors "${(s.:.)colors}" 'ma=48;5;238'
+
+# define g for git tab-complete
+if command -v git >/dev/null 2>&1; then
+    compdef g=git
+fi
 
 # history prefix search, menu completion, and edit-and-execute
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search edit-command-line
