@@ -82,6 +82,21 @@ autoload -Uz compinit
 mkdir -p -- "$HOME/.cache/zsh"
 compinit -d "$HOME/.cache/zsh/zcompdump"
 
+# Directory colors and OneDark shell colors
+if command -v dircolors >/dev/null 2>&1; then
+    if [[ -f $HOME/.config/shell/dircolors-onedark ]]; then
+        eval "$(dircolors -b "$HOME/.config/shell/dircolors-onedark")"
+    elif [[ -f $HOME/.dircolors ]]; then
+        eval "$(dircolors -b "$HOME/.dircolors")"
+    else
+        eval "$(dircolors -b)"
+    fi
+fi
+
+if [[ -s $HOME/.config/shell/onedark-colors.sh ]]; then
+    source "$HOME/.config/shell/onedark-colors.sh"
+fi
+
 # Enter the selector on the first Tab whenever completion has multiple matches.
 zstyle ':completion:*' menu yes select
 zstyle ':completion:*' verbose yes
@@ -143,21 +158,6 @@ bindkey '^y' copy-to-clipboard
 
 # load zmv
 autoload zmv
-
-# Directory colors and OneDark shell colors
-if command -v dircolors >/dev/null 2>&1; then
-    if [[ -f $HOME/.config/shell/dircolors-onedark ]]; then
-        eval "$(dircolors -b "$HOME/.config/shell/dircolors-onedark")"
-    elif [[ -f $HOME/.dircolors ]]; then
-        eval "$(dircolors -b "$HOME/.dircolors")"
-    else
-        eval "$(dircolors -b)"
-    fi
-fi
-
-if [[ -s $HOME/.config/shell/onedark-colors.sh ]]; then
-    source "$HOME/.config/shell/onedark-colors.sh"
-fi
 
 # ssh agent
 SSH_ENV="$HOME/.ssh/agent_env"
