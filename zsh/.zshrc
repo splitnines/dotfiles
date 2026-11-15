@@ -11,6 +11,8 @@ bindkey -v
 # disable highlighting of pasted text
 zle_highlight=('paste:none')
 
+LISTMAX=500
+
 # blinking cursor in viins, block in vicmd
 function zle-keymap-select() {
     if [[ $KEYMAP == vicmd ]]; then
@@ -98,19 +100,15 @@ if [[ -s $HOME/.config/shell/onedark-colors.sh ]]; then
 fi
 
 # Enter the selector on the first Tab whenever completion has multiple matches.
-zstyle ':completion:*' menu yes select
+zstyle ':completion:*' menu select
 zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*:cd:*' completer _complete _approximate
-zstyle ':completion:*' select-prompt '%SScrolling: %p%s'
+zstyle ':completion:*' select-prompt '%S%p'
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD ALWAYS_TO_END AUTO_PARAM_SLASH
-
-# Keep the selected completion highlighted
-colors="no=0;38;5;145:${LS_COLORS#no=38;5;145:}"
-colors=${colors%:}
-zstyle ':completion:*:default' list-colors "${(s.:.)colors}" 'ma=48;5;238'
 
 # define g for git tab-complete
 if command -v git >/dev/null 2>&1; then
@@ -123,10 +121,10 @@ zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 zle -N edit-command-line
 for map in viins vicmd; do
-    bindkey -M "$map" '^[[a' up-line-or-beginning-search # up arrow
-    bindkey -M "$map" '^[[b' down-line-or-beginning-search # down arrow
+    bindkey -M "$map" '^[[A' up-line-or-beginning-search # up arrow
+    bindkey -M "$map" '^[[B' down-line-or-beginning-search # down arrow
     bindkey -M "$map" '^[[Z' reverse-menu-complete # shift+tab 
-    bindkey -M "$map" '^x^e' edit-command-line
+    bindkey -M "$map" '^X^E' edit-command-line
 done
 bindkey -M viins '^a' beginning-of-line
 bindkey -M viins '^e' end-of-line

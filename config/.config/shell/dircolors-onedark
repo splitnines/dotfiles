@@ -5,7 +5,7 @@
 # This gives ls, fzf, and tab completion the same vibe as your OneDark config.
 
 # Global default colors
-NORMAL 38;5;145        # Regular file text (onedark white)
+NORMAL 0;38;5;145        # Regular file text (onedark white)
 FILE 38;5;145
 DIR 38;5;75            # Directories (onedark blue)
 LINK 38;5;180          # Symbolic links (onedark yellow)
