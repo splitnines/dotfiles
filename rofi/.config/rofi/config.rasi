@@ -5,6 +5,12 @@ configuration {
     disable-history: false;
     // modes: [ "run", "drun", "window"];
     modes: [ "run", "drun"];
+    kb-accept-entry: "Control+m,Return,KP_Enter";
+    kb-row-down: "Down,Control+j";
+    kb-remove-to-eol: "";
+    kb-row-up: "Up,Control+k";
+    kb-secondary-copy: "";
+    kb-cancel: "Escape,Control+g,Control+bracketleft,MouseSecondary,Control+c";
 }
 
 * {

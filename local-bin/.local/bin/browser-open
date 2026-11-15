@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+check_commmand() {
+    local cmd
+    for cmd in "$@"; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            printf '%s: command not found\n' "$cmd"
+            exit 1
+        fi
+    done
+}
+
+check_commmand xdg-open xclip
+
+url=$(xclip -selection clipboard -o) || {
+    exit 1
+}
+
+if [[ $url =~ ^https?:// ]]; then
+    xdg-open "$url" >/dev/null 2>&1
+fi
