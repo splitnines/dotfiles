@@ -136,6 +136,7 @@ bindkey -M menuselect '^j' down-line-or-history
 bindkey -M menuselect '^k' up-line-or-history
 bindkey '^_' undo
 bindkey -s '^g' 'git add . && git commit -m ""\e[D'
+bindkey -s '^E^Z' 'exec zsh\r'
 
 # use y to yank text to clipboard
 vi-yank-to-clipboard() {
