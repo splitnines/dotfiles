@@ -126,7 +126,7 @@ for map in viins vicmd; do
     bindkey -M "$map" '^[[A' up-line-or-beginning-search # up arrow
     bindkey -M "$map" '^[[B' down-line-or-beginning-search # down arrow
     bindkey -M "$map" '^[[Z' reverse-menu-complete # shift+tab 
-    bindkey -M "$map" '^X^E' edit-command-line
+    bindkey -M "$map" '^Xe' edit-command-line
 done
 bindkey -M viins '^a' beginning-of-line
 bindkey -M viins '^e' end-of-line
@@ -136,7 +136,7 @@ bindkey -M menuselect '^j' down-line-or-history
 bindkey -M menuselect '^k' up-line-or-history
 bindkey '^_' undo
 bindkey -s '^g' 'git add . && git commit -m ""\e[D'
-bindkey -s '^E^Z' 'exec zsh\r'
+bindkey -s '^Xr' $'exec zsh\r'
 
 # use y to yank text to clipboard
 vi-yank-to-clipboard() {
