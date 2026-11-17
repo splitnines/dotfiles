@@ -11,8 +11,6 @@ bindkey -v
 # disable highlighting of pasted text
 zle_highlight=('paste:none')
 
-LISTMAX=500
-
 # blinking cursor in viins, block in vicmd
 function zle-keymap-select() {
     if [[ $KEYMAP == vicmd ]]; then
@@ -100,7 +98,7 @@ if [[ -s $HOME/.config/shell/onedark-colors.sh ]]; then
 fi
 
 # Enter the selector on the first Tab whenever completion has multiple matches.
-zstyle ':completion:*' menu select
+zstyle ':completion:*' menu yes select
 zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' group-name ''
@@ -110,7 +108,7 @@ zstyle ':completion:*' select-prompt '%S%p'
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$HOME/.cache/zsh/zcompcache"
-setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD ALWAYS_TO_END AUTO_PARAM_SLASH
+setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD ALWAYS_TO_END AUTO_PARAM_SLASH LIST_PACKED
 
 # define g for git tab-complete
 if command -v git >/dev/null 2>&1; then
