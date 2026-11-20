@@ -97,7 +97,7 @@ if [[ -s $HOME/.config/shell/onedark-colors.sh ]]; then
     source "$HOME/.config/shell/onedark-colors.sh"
 fi
 
-# Enter the selector on the first Tab whenever completion has multiple matches.
+# Tab completion
 zstyle ':completion:*' menu yes select
 zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
@@ -115,7 +115,7 @@ if command -v git >/dev/null 2>&1; then
     compdef g=git
 fi
 
-# history prefix search, menu completion, and edit-and-execute
+# Keybindings
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search edit-command-line
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
@@ -123,13 +123,15 @@ zle -N edit-command-line
 for map in viins vicmd; do
     bindkey -M "$map" '^[[A' up-line-or-beginning-search # up arrow
     bindkey -M "$map" '^[[B' down-line-or-beginning-search # down arrow
+    # bindkey -M "$map" '^[[A' history-search-backward # up arrow
+    # bindkey -M "$map" '^[[B' history-search-forward # down arrow
     bindkey -M "$map" '^[[Z' reverse-menu-complete # shift+tab 
     bindkey -M "$map" '^Xe' edit-command-line
 done
 bindkey -M viins '^a' beginning-of-line
 bindkey -M viins '^e' end-of-line
-bindkey -M viins "^k" history-search-backward
-bindkey -M viins "^j" history-search-forward
+bindkey -M viins "^k" up-line-or-beginning-search
+bindkey -M viins "^j" down-line-or-beginning-search
 bindkey -M menuselect '^j' down-line-or-history
 bindkey -M menuselect '^k' up-line-or-history
 bindkey '^_' undo
