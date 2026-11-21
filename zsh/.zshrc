@@ -73,7 +73,7 @@ HISTSIZE=50000
 SAVEHIST=50000
 setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_SPACE HIST_IGNORE_ALL_DUPS
 setopt HIST_SAVE_NO_DUPS HIST_EXPIRE_DUPS_FIRST EXTENDED_HISTORY
-source <(fzf --zsh --prompt='history > ') # ctrl-r for history search
+source <(fzf --zsh) # ctrl-r for history search
 
 # Directory stack
 setopt AUTO_PUSHD PUSHD_SILENT PUSHD_IGNORE_DUPS
