@@ -63,19 +63,19 @@ fi
 
 export PATH
 
-# Optional local environment and node version manager
+# Optional local environment
 [[ -f $HOME/.config/shell/myenv ]] && source "$HOME/.config/shell/myenv"
 
-# History (ignoreboth:erasedups, histappend, and save after each command)
+# History
 HISTFILE="$HOME/.local/state/zsh/zsh_history"
 [[ -d ${HISTFILE:h} ]] || mkdir -p -- "${HISTFILE:h}"
-HISTSIZE=10000
-SAVEHIST=20000
+HISTSIZE=50000
+SAVEHIST=50000
 setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_SPACE HIST_IGNORE_ALL_DUPS
 setopt HIST_SAVE_NO_DUPS HIST_EXPIRE_DUPS_FIRST EXTENDED_HISTORY
-source <(fzf --zsh) # ctrl-r for history search
+source <(fzf --zsh --prompt='history > ') # ctrl-r for history search
 
-# Directory stack plus interactive completion
+# Directory stack
 setopt AUTO_PUSHD PUSHD_SILENT PUSHD_IGNORE_DUPS
 zmodload zsh/complist
 autoload -Uz compinit
@@ -108,7 +108,8 @@ zstyle ':completion:*' select-prompt '%S%p'
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$HOME/.cache/zsh/zcompcache"
-setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD ALWAYS_TO_END AUTO_PARAM_SLASH LIST_PACKED
+setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD ALWAYS_TO_END
+setopt AUTO_PARAM_SLASH LIST_PACKED
 
 # define g for git tab-complete
 if command -v git >/dev/null 2>&1; then
@@ -116,15 +117,14 @@ if command -v git >/dev/null 2>&1; then
 fi
 
 # Keybindings
-autoload -Uz up-line-or-beginning-search down-line-or-beginning-search edit-command-line
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+autoload -Uz edit-command-line
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 zle -N edit-command-line
 for map in viins vicmd; do
     bindkey -M "$map" '^[[A' up-line-or-beginning-search # up arrow
     bindkey -M "$map" '^[[B' down-line-or-beginning-search # down arrow
-    # bindkey -M "$map" '^[[A' history-search-backward # up arrow
-    # bindkey -M "$map" '^[[B' history-search-forward # down arrow
     bindkey -M "$map" '^[[Z' reverse-menu-complete # shift+tab 
     bindkey -M "$map" '^Xe' edit-command-line
 done
@@ -223,9 +223,12 @@ __auto_venv() {
 # Prompt
 __os_icon() {
     case $__OS in
-        arch) print -n '' ;;
-        ubuntu) print -n '' ;;
-        *) print -n '@' ;;
+        arch)
+            print -n '' ;;
+        ubuntu) 
+            print -n '' ;;
+        *) 
+            print -n '@' ;;
     esac
 }
 __OS_ICON=$(__os_icon)
@@ -258,7 +261,8 @@ __set_prompt() {
     fi
 
     venv_segment=''
-    [[ -n ${VIRTUAL_ENV:-} ]] && venv_segment="${venv_color}π ${prompt_color}"
+    [[ -n ${VIRTUAL_ENV:-} ]] && \
+        venv_segment="${venv_color}π ${prompt_color}"
 
     git_segment=''
     branch=$(__git_branch_name)
@@ -274,7 +278,11 @@ __set_prompt() {
         fi
         git_segment+='%f'
     fi
-    PS1=$'\n'"${prompt_color}${venv_segment}${info_color}%n${__OS_ICON}%m ${prompt_color}${info_color}%~${prompt_color}${git_segment}"$'\n'"${info_color}${pointer}%f "
+    PS1=$'\n'
+    PS1+="${prompt_color}${venv_segment}${info_color}%n${__OS_ICON}%m "
+    PS1+="${prompt_color}${info_color}%~${prompt_color}${git_segment}"
+    PS1+=$'\n'
+    PS1+="${info_color}${pointer}%f "
 }
 
 autoload -Uz add-zsh-hook
@@ -310,7 +318,8 @@ export FZF_DEFAULT_OPTS='
   --margin=1,3
   --padding=1
   --color=fg:#abb2bf,fg+:#ffffff,hl:#e5c07b,hl+:#e5c07b
-  --color=info:#56b6c2,prompt:#61afef,pointer:#98c379,marker:#98c379,spinner:#e06c75,header:#61afef
+  --color=info:#56b6c2,prompt:#61afef,pointer:#98c379
+  --color=marker:#98c379,spinner:#e06c75,header:#61afef
   --color=border:#3e4451,label:#61afef
 '
 
@@ -325,7 +334,6 @@ __tab_with_prompt_room() {
     local LINES=$(( LINES > 3 ? LINES - 1 : LINES ))
     { zle expand-or-complete } always { stty -F /dev/tty "$tty_state" }
 }
-
 zle -N __tab_with_prompt_room
 bindkey -M menuselect '^C' send-break
 for map in viins vicmd; do
@@ -335,7 +343,6 @@ done
 #
 # functions
 #
-
 # fzf cd history
 cdh() {
     local dir
@@ -359,18 +366,21 @@ fv() {
     local file
     command -v fzf >/dev/null 2>&1 || return 1
     file=$(find . -type f | fzf \
-        --preview 'batcat --style=numbers --color=always {} 2>/dev/null || cat {}' \
+        --preview 'bat --style=numbers --color=always {} 2>/dev/null || cat {}' \
         --preview-window=up:50%:wrap --prompt='select file ❯ ' --exit-0) || return
-    [[ -n $file ]] && nvim "$file"
+    [[ -n $file ]] && xdg-open "$file"
 }
 
 # fzf directory picker
 fcd() {
     local search_path dir prompt
-    command -v find >/dev/null 2>&1 && command -v fzf >/dev/null 2>&1 || return 1
+    command -v find >/dev/null 2>&1 && \
+        command -v fzf >/dev/null 2>&1 && \
+        command -v xdg-open >/dev/null 2>&1 || return 1
     search_path="${1-$HOME}"
-    prompt="search in $search_path ❯ "
-    dir=$(find "$search_path" -type d -print 2>/dev/null | fzf --prompt="$prompt") || return
+    prompt="cd ❯ "
+    dir=$(find "$search_path" -type d -print 2>/dev/null | \
+        fzf --prompt="$prompt") || return
     [[ -d $dir ]] && cd "$dir"
 }
 
