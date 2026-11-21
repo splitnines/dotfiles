@@ -30,12 +30,12 @@ zle -N zle-line-finish
 setopt AUTO_CD GLOB_DOTS EXTENDED_GLOB DOT_GLOB
 
 # Detect OS once for PATH and prompt
-__detect_os() {
+detect_os() {
     if [[ -r /etc/os-release ]]; then
         ( source /etc/os-release; print -r -- "$ID" )
     fi
 }
-__OS=$(__detect_os)
+OS=$(detect_os)
 
 # PATH: keep inherited entries (including system-managed paths), without duplicates.
 typeset -U path PATH
@@ -45,11 +45,11 @@ for p in "$HOME/.local/bin" "$HOME/.cargo/bin" /usr/local/go/bin; do
 done
 
 # OS specific settings
-if [[ $__OS == arch && -d $HOME/.local/share/npm/bin ]]; then
+if [[ $OS == arch && -d $HOME/.local/share/npm/bin ]]; then
     path+=( "$HOME/.local/share/npm/bin" )
 fi
 
-if [[ $__OS == ubuntu ]]; then
+if [[ $OS == ubuntu ]]; then
     for p in /snap/bin "$HOME/.local/share/pi-node/current/bin"; do
         [[ -d $p ]] && path=( "$p" $path )
     done
@@ -102,7 +102,6 @@ zstyle ':completion:*' menu yes select
 zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 zstyle ':completion:*' group-name ''
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*:cd:*' completer _complete _approximate
 zstyle ':completion:*' select-prompt '%S%p'
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
@@ -175,10 +174,10 @@ if command -v gpg-connect-agent >/dev/null 2>&1 && [[ -t 1 ]]; then
 fi
 
 # Python venv auto-activation
-__auto_venv_path=''
-__auto_venv_pwd=''
+auto_venv_path=''
+auto_venv_pwd=''
 
-__find_venv_dir() {
+find_venv_dir() {
     local dir name
 
     dir=$PWD
@@ -194,35 +193,35 @@ __find_venv_dir() {
     return 1
 }
 
-__auto_venv() {
+auto_venv() {
     local found_venv
 
-    [[ $PWD == $__auto_venv_pwd ]] && return 0
+    [[ $PWD == $auto_venv_pwd ]] && return 0
 
-    __auto_venv_pwd=$PWD
-    found_venv=$(__find_venv_dir 2>/dev/null) || found_venv=''
+    auto_venv_pwd=$PWD
+    found_venv=$(find_venv_dir 2>/dev/null) || found_venv=''
 
-    if [[ -n $__auto_venv_path && $found_venv != $__auto_venv_path ]]; then
+    if [[ -n $auto_venv_path && $found_venv != $auto_venv_path ]]; then
         if (( $+functions[deactivate] )); then
             deactivate >/dev/null 2>&1 || true
         else
-            path=( ${path:#$__auto_venv_path/bin} )
+            path=( ${path:#$auto_venv_path/bin} )
             unset VIRTUAL_ENV
         fi
-        __auto_venv_path=''
+        auto_venv_path=''
     fi
 
     [[ -n $found_venv ]] || return 0
-    [[ -n ${VIRTUAL_ENV:-} && -z $__auto_venv_path ]] && return 0
+    [[ -n ${VIRTUAL_ENV:-} && -z $auto_venv_path ]] && return 0
     if [[ ${VIRTUAL_ENV:-} != $found_venv ]]; then
         source "$found_venv/bin/activate" || return
     fi
-    __auto_venv_path=$found_venv
+    auto_venv_path=$found_venv
 }
 
 # Prompt
-__os_icon() {
-    case $__OS in
+os_icon() {
+    case $OS in
         arch)
             print -n '' ;;
         ubuntu) 
@@ -231,18 +230,18 @@ __os_icon() {
             print -n '@' ;;
     esac
 }
-__OS_ICON=$(__os_icon)
+OS_ICON=$(os_icon)
 
-__git_branch_name() {
+git_branch_name() {
     git symbolic-ref --quiet --short HEAD 2>/dev/null ||
         git rev-parse --short HEAD 2>/dev/null || return 0
 }
 
-__git_is_dirty() {
+git_is_dirty() {
     [[ -n $(git status --porcelain=v1 --ignore-submodules=all 2>/dev/null) ]]
 }
 
-__set_prompt() {
+set_prompt() {
     local prompt_color info_color branch_color venv_color dirty_color
     local dollar branch git_segment venv_segment
 
@@ -265,29 +264,29 @@ __set_prompt() {
         venv_segment="${venv_color}π ${prompt_color}"
 
     git_segment=''
-    branch=$(__git_branch_name)
+    branch=$(git_branch_name)
     if [[ -n $branch ]]; then
         branch=${branch//\%/%%}
         git_segment=" ${branch_color}${branch}"
-        if __git_is_dirty; then
-            if [[ $__OS_ICON == '@' ]]; then
+        if git_is_dirty; then
+            if [[ $OS_ICON == '@' ]]; then
                 git_segment+=" ${dirty_color} !! "
             else
-                git_segment+=" ${dirty_color}${__OS_ICON} "
+                git_segment+=" ${dirty_color}${OS_ICON} "
             fi
         fi
         git_segment+='%f'
     fi
     PS1=$'\n'
-    PS1+="${prompt_color}${venv_segment}${info_color}%n${__OS_ICON}%m "
+    PS1+="${prompt_color}${venv_segment}${info_color}%n${OS_ICON}%m "
     PS1+="${prompt_color}${info_color}%~${prompt_color}${git_segment}"
     PS1+=$'\n'
     PS1+="${info_color}${pointer}%f "
 }
 
 autoload -Uz add-zsh-hook
-add-zsh-hook precmd __auto_venv
-add-zsh-hook precmd __set_prompt
+add-zsh-hook precmd auto_venv
+add-zsh-hook precmd set_prompt
 
 # pager, editor, fzf
 export PAGER=less
@@ -324,7 +323,7 @@ export FZF_DEFAULT_OPTS='
 '
 
 # leave one terminal row unused for tab complete
-__tab_with_prompt_room() {
+tab_with_prompt_room() {
     local tty_state
     tty_state=$(stty -F /dev/tty -g 2>/dev/null) || {
         zle expand-or-complete
@@ -334,10 +333,10 @@ __tab_with_prompt_room() {
     local LINES=$(( LINES > 3 ? LINES - 1 : LINES ))
     { zle expand-or-complete } always { stty -F /dev/tty "$tty_state" }
 }
-zle -N __tab_with_prompt_room
+zle -N tab_with_prompt_room
 bindkey -M menuselect '^C' send-break
 for map in viins vicmd; do
-    bindkey -M "$map" '^I' __tab_with_prompt_room
+    bindkey -M "$map" '^I' tab_with_prompt_room
 done
 
 #
