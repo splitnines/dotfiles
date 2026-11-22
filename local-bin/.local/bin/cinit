@@ -13,52 +13,32 @@ makefile() {
         {
             printf 'CC = gcc\n'
             printf 'CFLAGS = -Wall -Wextra\n'
-            printf 'LDFLAGS =\n'
-            printf 'LDLIBS =\n'
+            printf 'LDLIBS = \n'
             printf '\n'
-            printf 'NAME = %s\n' "$PROJECT_NAME"
-            printf 'SRC = src\n'
-            printf 'OBJ = obj\n'
-            printf 'BIN = bin\n'
+            printf 'PROG = %s\n' "$PROJECT_NAME"
             printf '\n'
-            printf 'EXEC = %s\n' "\$(BIN)/\$(NAME)"
-            printf 'BINSRC = %s\n' "\$(wildcard \$(SRC)/*.c)"
-            printf 'LIBSRC = %s\n' "\$(wildcard \$(SRC)/*/*.c)"
-            printf 'ALLSRC = %s\n' "\$(BINSRC) \$(LIBSRC)"
+            printf 'SRCDIR = src\n'
+            printf 'BINDIR = build\n'
             printf '\n'
-            printf 'LIBOBJ = %s\n' "\$(patsubst \$(SRC)/%.c,\$(OBJ)/%.o,\$(LIBSRC))"
-            printf 'BINS = %s\n' "\$(patsubst \$(SRC)/%.c,\$(BIN)/%,\$(BINSRC))"
-            printf 'DEPS = %s\n' "\$(patsubst \$(SRC)/%.c,\$(OBJ)/%.d,\$(ALLSRC))"
-            printf "\n"
-            printf 'PREFIX ?= /usr/local\n'
-            printf '%s\n' "BINDIR ?= \$(PREFIX)/bin"
+            printf 'SRC = %s/main.c\n' "\$(SRCDIR)"
+            printf 'BIN = %s/%s\n' "\$(BINDIR)" "\$(PROG)"
+            printf 'INSTALLDIR = /usr/local/bin'
             printf '\n'
-            printf 'all: %s\n' "\$(EXEC)"
             printf '\n'
-            printf '%s\n' "\$(EXEC): \$(OBJ)/main.o \$(LIBOBJ)"
-            printf '\t%s\n' "@mkdir -p \$(@D)"
-            printf '\t%s\n' "\$(CC) \$(LDFLAGS) \$^ \$(LDLIBS) -o \$@"
+            printf 'default: %s\n' "\$(BIN)"
             printf '\n'
-            printf '%s\n' "\$(OBJ)/%.o: \$(SRC)/%.c"
-            printf '\t%s\n' "@mkdir -p \$(@D)"
-            printf '\t%s\n' "\$(CC) \$(CFLAGS) \$< -c -MMD -o \$@"
-            printf '\n'
-            printf '%s\n' "run: \$(EXEC)"
-            printf '\t%s\n' "@\$(EXEC)"
-            printf '\n'
-            printf 'watch:\n'
-            printf '\t%s\n' "@find \$(SRC) -type f | entr -c make --no-print-directory run"
-            printf '\n'
-            printf '%s\n' "install: \$(EXEC)"
-            printf '\t%s\n' "install -d \"\$(BINDIR)\""
-            printf '\t%s\n' "install -m 755 \"\$(EXEC)\" \"\$(BINDIR)/\$(NAME)\""
+            printf '%s:\n' "\$(BIN)"
+            printf '\tmkdir -p %s\n' "\$(BINDIR)"
+            printf '\t%s %s -o %s %s %s\n' \
+                "\$(CC)" "\$(CFLAGS)" "\$(BIN)" "\$(SRC)" "\$(LDLIBS)"
             printf '\n'
             printf 'clean:\n'
-            printf '\t%s\n' "@rm -rf \$(BIN) \$(OBJ)"
+            printf '\trm -rf %s\n' "\$(BIN)"
             printf '\n'
-            printf '%s\n' "-include \$(DEPS)"
-            printf '\n'
-            printf '.PHONY: all run clean watch install\n'
+            printf 'install: %s\n' "\$(BIN)"
+            printf '\tinstall -d %s%s\n' "\$(DESTDIR)" "\$(INSTALLDIR)"
+            printf '\tinstall -m 755 %s %s%s/%s' \
+                "\$(BIN)" "\$(DESTDIR)" "\$(INSTALLDIR)" "\$(PROG)"
         } >"$PROJECT_NAME/Makefile"
     fi
 }
@@ -69,7 +49,7 @@ main_c() {
             printf '#include <stdio.h>\n'
             printf '\n'
             printf 'int main() {\n'
-            printf '    printf("Hello, fuckers!\\n");\n'
+            printf '    printf("Hello, fuckers!");\n'
             printf '\n'
             printf '    return 0;\n'
             printf '}\n'
@@ -82,9 +62,12 @@ dir_structure() {
 }
 
 create_git() {
-    touch "$PROJECT_NAME/.gitignore"
-    printf 'build/\n' >"$PROJECT_NAME/.gitignore"
-    git -C "$PROJECT_NAME" init
+    if [[ ! -d "$PROJECT_NAME/.git" ]]; then
+        touch "$PROJECT_NAME/.gitignore"
+        printf 'bin/\n' >>"$PROJECT_NAME/.gitignore"
+        printf 'obj/\n' >>"$PROJECT_NAME/.gitignore"
+        git -C "$PROJECT_NAME" init
+    fi
 }
 
 if [[ ! -d "$PROJECT_NAME" ]]; then
@@ -93,7 +76,7 @@ if [[ ! -d "$PROJECT_NAME" ]]; then
     dir_structure
     create_git
     main_c
-    makefile "$PROJECT_NAME"
+    makefile
 else
     echo -e "project name \"$PROJECT_NAME\" already exists"
 fi
