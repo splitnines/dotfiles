@@ -420,7 +420,11 @@ ms () {
 }
 
 z () {
-    nohup zathura "$1" >/dev/null 2>&1 &
+    if command -v zathura >/dev/null 2>&1; then
+        nohup zathura "$1" >/dev/null 2>&1 &
+    else
+        echo "error: zathura not found"
+    fi
 }
 
 # Aliases
