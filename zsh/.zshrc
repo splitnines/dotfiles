@@ -419,6 +419,10 @@ ms () {
         xargs -r man
 }
 
+z () {
+    nohup zathura "$1" >/dev/null 2>&1 &
+}
+
 # Aliases
 alias ....="cd ../../.."
 alias ...="cd ../.."
@@ -468,7 +472,7 @@ alias t="telnet"
 alias ta="tmux attach -t"
 alias ts="tailscale"
 alias vim="nvim"
-alias z='zathura'
+# alias z='zathura'
 
 # Load local aliases
 if [[ -f $HOME/.config/shell/local_aliases ]]; then
