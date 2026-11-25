@@ -6,6 +6,8 @@
 _G.uv = vim.uv or vim.loop
 
 vim.g.mapleader = " "
+vim.g.netrw_banner = 0
+vim.g.netrw_winsize = 24
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -161,7 +163,8 @@ vim.keymap.set("n", "<S-Tab>", ":bprevious<CR>")
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
 -- Explore
-vim.keymap.set("n", "<leader>d", "<CMD>Explore<CR>", { desc = "Directory explorer" })
+-- vim.keymap.set("n", "<leader>d", "<CMD>Explore<CR>", { desc = "Directory explorer" })
+vim.keymap.set("n", "<leader>d", "<CMD>Lexplore<CR>", { desc = "Directory explorer" })
 
 -- Center search results
 vim.keymap.set("n", "n", "nzzzv")
@@ -562,64 +565,63 @@ local plugin_telescope = {
             builtin.find_files({
                 hidden = true,
                 no_ignore = true,
+                previewer = false,
                 initial_mode = "normal",
                 prompt_title = "Find Files",
             })
         end, { desc = "Search files" })
+
         map("n", "<leader>sh", function()
             builtin.find_files({
                 cwd = "~",
                 hidden = true,
+                previewer = false,
                 no_ignore = true,
                 initial_mode = "normal",
-                prompt_title = "Search Home",
+                prompt_title = "Search home",
             })
         end, { desc = "Search home" })
+
+        map("n", "<leader>sg", function()
+            builtin.live_grep({
+                cwd = vim.fn.expand("~"),
+                initial_mode = "normal",
+                prompt_title = "Grep home",
+                previewer = true,
+            })
+        end, { desc = "Grep home" })
+
         map("n", "<leader>sb", function()
             builtin.live_grep({
                 grep_open_files = true,
                 initial_mode = "normal",
-                prompt_title = "Search Buffers",
+                prompt_title = "Grep Buffers",
             })
-        end, { desc = "Search buffers" })
-        map("n", "<leader>sa", function()
-            builtin.live_grep({
-                cwd = vim.loop.cwd(),
-                initial_mode = "normal",
-                prompt_title = "Search All Files",
-                preview_title = "Preview",
-                additional_args = function()
-                    return {
-                        "--hidden",
-                        "--glob", "!.git/*",
-                        "--glob", "!node_modules/*",
-                        "--glob", "!dist/*",
-                        "--glob", "!build/*",
-                        "--glob", "!target/*",
-                        "--glob", "!.venv/*",
-                    }
-                end,
-            })
-        end, { desc = "Search all files" })
-        map("n", "<leader><leader>", builtin.buffers, { desc = "Current buffers" })
+        end, { desc = "Grep buffers" })
+
+        map("n", "<leader><leader>", function()
+            builtin.buffers({ previewer = false })
+        end, { desc = "Current buffers" })
+
         map("n", "\\", function()
             telescope.extensions.file_browser.file_browser({
                 path = vim.loop.cwd(),
                 hidden = true,
                 grouped = true,
                 respect_gitignore = false,
-                previewer = true,
+                previewer = false,
                 display_stat = false,
                 initial_mode = "normal",
                 sorting_strategy = "descending",
             })
         end, { desc = "File browser" })
+
         map("n", "grr", function()
             require("telescope.builtin").lsp_references({
                 initial_mode = "normal",
                 show_line = true,
                 include_declaration = false,
-                previewer = true,
+                previewer = false,
                 layout_strategy = "flex",
                 sorting_strategy = "descending",
             })
