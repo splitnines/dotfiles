@@ -163,8 +163,7 @@ vim.keymap.set("n", "<S-Tab>", ":bprevious<CR>")
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
 -- Explore
--- vim.keymap.set("n", "<leader>d", "<CMD>Explore<CR>", { desc = "Directory explorer" })
-vim.keymap.set("n", "<leader>d", "<CMD>Lexplore<CR>", { desc = "Directory explorer" })
+vim.keymap.set("n", "<leader>d", "<CMD>Explore<CR>", { desc = "Directory explorer" })
 
 -- Center search results
 vim.keymap.set("n", "n", "nzzzv")
