@@ -76,8 +76,8 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 2. Clone the repository:
 
    ```sh
-   git clone git@github.com:splitnines/dotfiles.git ~/dotfiles
-   cd ~/dotfiles
+   git clone git@github.com:splitnines/dotfiles.git ~/.dotfiles
+   cd ~/.dotfiles
    ```
 
 3. Stow the required directories:
