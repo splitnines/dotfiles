@@ -498,6 +498,8 @@ local plugin_telescope = {
                         ["<C-Space>"] = function()
                             vim.cmd("stopinsert")
                         end,
+                        ["<C-j>"] = "move_selection_next",
+                        ["<C-k>"] = "move_selection_previous",
                     },
                     n = {
                         ["<Esc>"] = actions.close,
