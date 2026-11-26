@@ -1,5 +1,0 @@
-return {
-  {
-    "splitnines/cisco.nvim"
-  }
-}
