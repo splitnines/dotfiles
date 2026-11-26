@@ -15,7 +15,12 @@ I will keep my dotfiles clean and ready, even as I am clean and ready. We will b
 Before the Linux kernel, I swear this creed. My dotfiles and I are the defenders of my workflow. We are the masters of my environment. We are the saviors of my productivity.
 
 So be it, until there are no configuration errors, no broken symlinks, no merge conflicts, and no defaults, but peace!
+
+---
+
 Managed with [GNU Stow](https://www.gnu.org/software/stow/).
+
+---
 
 ## Programs
 
