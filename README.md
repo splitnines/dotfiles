@@ -1,11 +1,24 @@
 # Dotfiles
 
+This is my dotfiles repository. There are many like it, but this one is mine.
+
+My dotfiles are my best friend. They are my life. I must master them as I must master my operating system.
+
+Without me, my dotfiles are useless. Without my dotfiles, I am useless. I must configure my system correctly. I must work more efficiently than the default configuration that seeks to frustrate me.
+
+My dotfiles and I know that what counts in computing is not the commands we execute, the noise of our keyboards, nor the scripts we write. We know that it is the automation that counts.
+
+My dotfiles are human, even as I, because they are my life. Thus, I will learn them as a brother. I will learn their weaknesses, their strengths, their dependencies, their aliases, their functions, and their keybindings.
+
+I will keep my dotfiles clean and ready, even as I am clean and ready. We will become part of each other.
+
+Before the Linux kernel, I swear this creed. My dotfiles and I are the defenders of my workflow. We are the masters of my environment. We are the saviors of my productivity.
+
+So be it, until there are no configuration errors, no broken symlinks, no merge conflicts, and no defaults, but peace!
 Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
 ## Programs
 
-- Aim
-- Alacritty
 - Bash
 - dunst
 - gsimplecal
@@ -25,8 +38,6 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
 ## Directories
 
-- `aim/`
-- `alacritty/`
 - `applications/`
 - `autotiling/`
 - `bash/`
@@ -52,8 +63,6 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 ## Files
 
 - `.gitignore`
-- `.gp.md`
-- `local_colors.lua`
 - `README.md`
 
 ## Installation
@@ -69,11 +78,11 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 3. Stow the required directories:
 
    ```sh
-   stow <directory>...
+   stow --no-folding <directory>...
    ```
 
    Example:
 
    ```sh
-   stow zsh nvim tmux
+   stow --no-folding zsh nvim tmux
    ```
