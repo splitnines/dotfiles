@@ -165,6 +165,9 @@ vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 -- Explore
 vim.keymap.set("n", "<leader>d", "<CMD>Explore<CR>", { desc = "Directory explorer" })
 
+-- Paste without replacing register
+vim.keymap.set("v", "<leader>p", "\"_dP", { desc = "Paste without replacing register" })
+
 -- Center search results
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
