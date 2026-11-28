@@ -25,21 +25,22 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 ## Programs
 
 - Bash
-- dunst
-- gsimplecal
-- i3
 - Neovim
 - Pi
 - Picom
 - Polybar
 - Ranger
 - Rofi
-- Screenkey
 - SSH
-- tmux
+- Screenkey
 - WirePlumber
 - Zathura
 - Zsh
+- dunst
+- gsimplecal
+- i3
+- tmux
+- top
 
 ## Directories
 
@@ -61,6 +62,7 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 - `tests/`
 - `themes/`
 - `tmux/`
+- `top/`
 - `wireplumber/`
 - `zathura/`
 - `zsh/`
